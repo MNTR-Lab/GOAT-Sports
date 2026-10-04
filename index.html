@@ -286,13 +286,33 @@ async function openFanTeam(id){
  content.innerHTML=`<div class="teamHQHeader">${t.logo_url?`<img class="teamHQLogo" src="${t.logo_url}" alt="${t.team_name} logo">`:`<div class="teamHQFallback">${fanInitials(t.team_name)}</div>`}<div class="eyebrow">OFFICIAL GOAT TEAM STORE</div><h2>${t.team_name}</h2><p>${t.sport||''}${t.city||t.state?' • '+[t.city,t.state].filter(Boolean).join(', '):''}</p></div><div class="shopStatus">Loading team merchandise…</div>`;
  const teamModal=document.getElementById('teamHQModal'); teamModal.style.display='flex'; teamModal.classList.add('show');
  if(!t.shopify_collection_handle){content.innerHTML+=`<div class="teamEmpty">This team's Shopify collection has not been connected yet.</div>`;return}
- const q=`query FanTeamCollection($handle:String!){collection(handle:$handle){title products(first:50){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}}}}}}`;
+
+ const directQ=`query FanTeamCollection($handle:String!){collection(handle:$handle){id title handle products(first:100){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}}}}}}}`;
  try{
-  const d=await shopifyRequest(q,{handle:t.shopify_collection_handle});
-  teamProducts=d.collection?.products.nodes||[];
-  const st=content.querySelector('.shopStatus');st.textContent=`${teamProducts.length} products`;
-  content.insertAdjacentHTML('beforeend',teamProducts.length?`<div class="teamHQProducts">${teamProducts.map((p,i)=>`<button class="teamHQProduct" onclick="openTeamProduct(${i})">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}<div><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small></div></button>`).join('')}</div>`:`<div class="teamEmpty">No products are currently published in this team collection.</div>`);
- }catch(e){content.querySelector('.shopStatus').textContent='Could not load team products: '+e.message}
+  const d=await shopifyRequest(directQ,{handle:t.shopify_collection_handle});
+  const collection=d.collection;
+  teamProducts=collection?.products?.nodes||[];
+
+  if(collection && teamProducts.length===0){
+   const membershipQ=`query FanTeamProductMembership($first:Int!){products(first:$first){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}} collections(first:50){nodes{handle title}}}}}}`;
+   const fd=await shopifyRequest(membershipQ,{first:100});
+   teamProducts=(fd.products?.nodes||[]).filter(p=>(p.collections?.nodes||[]).some(c=>c.handle===t.shopify_collection_handle));
+  }
+
+  const st=content.querySelector('.shopStatus');
+  if(!collection){
+   st.textContent='Shopify collection not found';
+   content.insertAdjacentHTML('beforeend',`<div class="teamEmpty">Shopify did not return the collection handle <strong>${t.shopify_collection_handle}</strong> through the Storefront API.</div>`);
+   return;
+  }
+
+  st.textContent=`${collection.title} • ${teamProducts.length} products`;
+  content.insertAdjacentHTML('beforeend',teamProducts.length
+   ? `<div class="teamHQProducts">${teamProducts.map((p,i)=>`<button type="button" class="teamHQProduct" onclick="openTeamProduct(${i})">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}<div><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small></div></button>`).join('')}</div>`
+   : `<div class="teamEmpty">Shopify found <strong>${collection.title}</strong>, but no storefront-visible products are attached to it.</div>`);
+ }catch(e){
+  content.querySelector('.shopStatus').textContent='Could not load team products: '+e.message;
+ }
 }
 function closeFanTeamHQ(){
  const m=document.getElementById('teamHQModal');
