@@ -115,6 +115,11 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .accountActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 18px}.accountActions button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:16px 10px;text-align:left;font-weight:900}
 .signOutBtn{width:100%;border:1px solid #ddd;background:#fff;padding:13px;border-radius:6px;font-size:10px;font-weight:900}
 .orderCard{border:1px solid var(--line);background:#fff;border-radius:9px;padding:14px;margin:10px 0}.orderTop{display:flex;justify-content:space-between;gap:12px}.orderTop strong{font-size:13px}.orderTop span{font-size:12px;font-weight:900}.orderMeta{font-size:9px;color:#777;margin-top:5px}.orderStatus{display:inline-block;margin-top:9px;padding:5px 8px;border-radius:20px;background:#f0f0f2;font-size:8px;font-weight:900}.orderLink{display:block;margin-top:10px;font-size:9px;font-weight:900;color:var(--purple);text-decoration:none}
+
+.addressCard{padding:15px;border:1px solid var(--line);border-radius:9px;background:#fff;margin:10px 0 14px}
+.addressCard .eyebrow{margin-bottom:7px}.addressCard strong{display:block;font-size:12px;margin-bottom:4px}
+.addressCard p{font-size:10px;line-height:1.55;color:#555;margin:0}
+.lockerLocked{opacity:.98}.lockerState{display:block;margin:8px 0 12px;font-size:9px;font-weight:900;letter-spacing:.08em;color:#bbb}
 </style>
 </head>
 <body>
@@ -341,7 +346,7 @@ async function customerRequest(query,variables={}){
 async function loadCustomerData(){
  if(!customerToken()){customerProfile=null;customerOrdersCache=null;return}
  try{
-  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
+  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} defaultAddress{id name company address1 address2 city province zoneCode zip country formatted(withName:true,withCompany:true)} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
   const d=await customerRequest(q);customerProfile=d.customer;customerOrdersCache=d.customer.orders?.nodes||[];
  }catch(e){console.warn('Customer data load failed',e);customerProfile=null;customerOrdersCache=null}
 }
@@ -350,10 +355,19 @@ function renderCustomerAccount(){
  if(!customerToken()){el.innerHTML=`<p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button>`;return}
  if(!customerProfile){el.innerHTML='<p>Loading your account…</p>';loadCustomerData().then(renderCustomerAccount);return}
  const email=customerProfile.emailAddress?.emailAddress||'';
- el.innerHTML=`<div class="accountWelcome"><div class="eyebrow">WELCOME BACK</div><h2>${customerProfile.displayName||'GOAT Sports Customer'}</h2><p>${email}</p></div>
- <div class="accountActions"><button onclick="go('orders')">MY ORDERS<br><small>Purchases & tracking</small></button><button onclick="go('fanhq')">MY FANHQ<br><small>Official team stores</small></button></div>
- <div class="lockerAccess"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private custom-client workspace.</p><button class="cta" onclick="openLocker()">ENTER GOAT LOCKER</button></div>
+ const a=customerProfile.defaultAddress;
+ const addressHtml=a?`<div class="addressCard"><div class="eyebrow" style="color:var(--teal)">DEFAULT SHIPPING ADDRESS</div><strong>${a.name||customerProfile.displayName||''}</strong><p>${(a.formatted||[]).map(x=>escapeHtml(x)).join('<br>')}</p></div>`:
+ `<div class="addressCard"><div class="eyebrow" style="color:var(--teal)">DEFAULT SHIPPING ADDRESS</div><p>No default shipping address is currently listed on this Shopify customer account.</p></div>`;
+ el.innerHTML=`<div class="accountWelcome"><div class="eyebrow">WELCOME BACK</div><h2>${escapeHtml(customerProfile.displayName||'GOAT Sports Customer')}</h2><p>${escapeHtml(email)}</p></div>
+ ${addressHtml}
+ <div class="lockerAccess lockerLocked"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private workspace for designs, artwork approvals, rosters, sizing, quotes, documents and reorders.</p>
+ <span class="lockerState">TEAM REP ACCESS REQUIRED</span>
+ <button class="cta" onclick="activateLockerAccess()">TEAM REP? ACTIVATE ACCESS</button></div>
  <button class="signOutBtn" onclick="customerLogout()">SIGN OUT</button>`;
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function activateLockerAccess(){
+ alert('GOAT Locker team-rep activation is the next connection. Your Shopify sign-in will identify you, and an approved GOAT team assignment will control which Locker you can access.');
 }
 function renderCustomerOrders(){
  const el=document.getElementById('ordersContent');if(!el)return;
