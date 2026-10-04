@@ -363,14 +363,19 @@ async function customerRequest(query,variables={}){
 async function loadCustomerData(){
  if(!customerToken()){customerProfile=null;customerOrdersCache=null;return}
  try{
-  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} defaultAddress{id firstName lastName name company address1 address2 city province zoneCode zip country countryCodeV2 phoneNumber formatted(withName:true,withCompany:true)} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
+  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} defaultAddress{id firstName lastName name company address1 address2 city province zoneCode zip country countryCode phoneNumber formatted(withName:true,withCompany:true)} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
   const d=await customerRequest(q);customerProfile=d.customer;customerOrdersCache=d.customer.orders?.nodes||[];
- }catch(e){console.warn('Customer data load failed',e);customerProfile=null;customerOrdersCache=null}
+ }catch(e){
+  console.warn('Customer data load failed',e);
+  customerProfile={_loadError:e.message||'Unable to load customer account'};
+  customerOrdersCache=[];
+ }
 }
 function renderCustomerAccount(){
  const el=document.getElementById('accountContent');if(!el)return;
  if(!customerToken()){el.innerHTML=`<p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button>`;return}
  if(!customerProfile){el.innerHTML='<p>Loading your account…</p>';loadCustomerData().then(renderCustomerAccount);return}
+ if(customerProfile._loadError){el.innerHTML=`<p>We couldn't refresh your Shopify account information.</p><button class="cta" onclick="retryCustomerAccount()">TRY AGAIN</button>`;return}
  const email=customerProfile.emailAddress?.emailAddress||'';
  const a=customerProfile.defaultAddress;
  const addressHtml=a?`<div class="addressCard"><div class="eyebrow" style="color:var(--teal)">DEFAULT SHIPPING ADDRESS</div><strong>${a.name||customerProfile.displayName||''}</strong><p>${(a.formatted||[]).map(x=>escapeHtml(x)).join('<br>')}</p></div>`:
@@ -427,7 +432,7 @@ function openAddressEditor(){
  <label>CITY<input required name="city" autocomplete="address-level2" value="${escapeHtml(a.city||'')}"></label>
  <label>STATE / PROVINCE<input required name="zoneCode" autocomplete="address-level1" value="${escapeHtml(a.zoneCode||a.province||'')}"></label>
  <label>ZIP / POSTAL CODE<input required name="zip" autocomplete="postal-code" value="${escapeHtml(a.zip||'')}"></label>
- <label>COUNTRY CODE<input required maxlength="2" name="territoryCode" autocomplete="country" value="${escapeHtml(a.countryCodeV2||'US')}"></label>
+ <label>COUNTRY CODE<input required maxlength="2" name="territoryCode" autocomplete="country" value="${escapeHtml(a.countryCode||'US')}"></label>
  <label class="full">PHONE<input name="phoneNumber" autocomplete="tel" value="${escapeHtml(a.phoneNumber||'')}"></label>
  <div class="accountFormNote">Saving updates the shipping address stored with your Shopify customer account.</div>
  <button class="cta" type="submit">SAVE SHIPPING ADDRESS</button></form>`);
@@ -440,25 +445,21 @@ async function saveCustomerAddress(e){
   company:String(f.get('company')||'').trim()||null,address1:String(f.get('address1')||'').trim(),
   address2:String(f.get('address2')||'').trim()||null,city:String(f.get('city')||'').trim(),
   zoneCode:String(f.get('zoneCode')||'').trim(),zip:String(f.get('zip')||'').trim(),
-  territoryCode:String(f.get('territoryCode')||'US').trim().toUpperCase(),
+  countryCode:String(f.get('territoryCode')||'US').trim().toUpperCase(),
   phoneNumber:String(f.get('phoneNumber')||'').trim()||null
  };
  try{
   if(a?.id){
-   const q=`mutation UpdateGOATAddress($addressId:ID!,$address:CustomerAddressInput!){customerAddressUpdate(addressId:$addressId,address:$address){customerAddress{id} userErrors{field message}}}`;
-   const d=await customerMutation(q,{addressId:a.id,address:input});const errs=d.customerAddressUpdate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
+   const q=`mutation UpdateGOATAddress($addressId:ID!,$address:CustomerAddressInput!,$defaultAddress:Boolean){customerAddressUpdate(addressId:$addressId,address:$address,defaultAddress:$defaultAddress){customerAddress{id} userErrors{field message}}}`;
+   const d=await customerMutation(q,{addressId:a.id,address:input,defaultAddress:true});const errs=d.customerAddressUpdate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
   }else{
-   const q=`mutation CreateGOATAddress($address:CustomerAddressInput!){customerAddressCreate(address:$address){customerAddress{id} userErrors{field message}}}`;
-   const d=await customerMutation(q,{address:input});const errs=d.customerAddressCreate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
-   const newId=d.customerAddressCreate?.customerAddress?.id;
-   if(newId){
-    const q2=`mutation SetGOATDefaultAddress($addressId:ID!){customerDefaultAddressUpdate(addressId:$addressId){customer{id} userErrors{field message}}}`;
-    const d2=await customerMutation(q2,{addressId:newId});const errs2=d2.customerDefaultAddressUpdate?.userErrors||[];if(errs2.length)console.warn(errs2);
-   }
+   const q=`mutation CreateGOATAddress($address:CustomerAddressInput!,$defaultAddress:Boolean){customerAddressCreate(address:$address,defaultAddress:$defaultAddress){customerAddress{id} userErrors{field message}}}`;
+   const d=await customerMutation(q,{address:input,defaultAddress:true});const errs=d.customerAddressCreate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
   }
   await loadCustomerData();hide('accountEditModal');renderCustomerAccount();toast('Shipping address updated');
  }catch(err){btn.disabled=false;btn.textContent='SAVE SHIPPING ADDRESS';alert(err.message)}
 }
+async function retryCustomerAccount(){customerProfile=null;document.getElementById('accountContent').innerHTML='<p>Loading your account…</p>';await loadCustomerData();renderCustomerAccount()}
 function renderCustomerOrders(){
  const el=document.getElementById('ordersContent');if(!el)return;
  if(!customerToken()){el.innerHTML=`<p>Sign in to view purchases connected to your Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN TO VIEW ORDERS</button>`;return}
