@@ -358,7 +358,7 @@ async function openFanTeam(id){
        const collectionQ=`query FanTeamCollection($handle:String!){collection(handle:$handle){id title handle products(first:100,sortKey:COLLECTION_DEFAULT){nodes{${productFields}}}}}`;
        const collectionData=await shopifyRequest(collectionQ,{handle:collectionHandle});
        if(collectionData.collection){
-         teamProducts=collectionData.collection.products?.nodes||[];
+         teamProducts=(collectionData.collection.products?.nodes||[]).filter(p=>p.availableForSale);
          source='collection';
        }
      }catch(collectionError){
@@ -370,7 +370,7 @@ async function openFanTeam(id){
    if(source!=='collection'){
      const fallbackQ=`query FanTeamProducts($first:Int!,$query:String!){products(first:$first,query:$query,sortKey:TITLE){nodes{${productFields}}}}`;
      const fallbackData=await shopifyRequest(fallbackQ,{first:100,query:teamQuery});
-     teamProducts=fallbackData.products?.nodes||[];
+     teamProducts=(fallbackData.products?.nodes||[]).filter(p=>p.availableForSale);
    }
 
    const count=document.getElementById('teamStoreCount');
