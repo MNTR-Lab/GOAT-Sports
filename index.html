@@ -58,6 +58,9 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .header{position:sticky}
 .header>.iconbtn:first-child{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:3}
 .header>.iconbtn:last-child{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:3}
+
+/* Live Shopify Shop */
+.shopLiveHero{background:#0a0a0b;color:#fff;padding:38px 22px 30px}.shopLiveHero h1{font-size:43px;line-height:.88;letter-spacing:-2px;margin:9px 0 11px}.shopLiveHero p{font-size:11px;color:#aaa}.shopLiveBody{background:#f5f5f6}.shopControls{display:flex;gap:6px;overflow:auto;margin-bottom:14px}.shopControls #shopCollectionChips{display:flex;gap:6px}.shopStatus{font-size:10px;color:#777;padding:8px 0 15px}.liveProductGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.liveProduct{border:0;background:#fff;border-radius:9px;overflow:hidden;text-align:left;padding:0}.liveProduct .productImg{aspect-ratio:1/1;background:#ececee;display:grid;place-items:center;overflow:hidden}.liveProduct img{width:100%;height:100%;object-fit:cover}.liveProduct .noImg{font-size:9px;color:#999}.liveProduct .productCopy{padding:10px}.liveProduct strong{display:block;font-size:11px;line-height:1.25}.liveProduct small{display:block;font-size:10px;margin-top:5px;color:#555}.liveProduct em{display:block;font-style:normal;font-size:8px;color:var(--teal);font-weight:900;margin-top:6px}.productSheet{padding-bottom:100px}.productDetailImage{aspect-ratio:1/1;background:#eee;border-radius:10px;overflow:hidden}.productDetailImage img{width:100%;height:100%;object-fit:cover}.productSheet h2{font-size:25px;margin:15px 0 6px}.productPrice{font-weight:900;font-size:15px}.productDesc{font-size:10px;color:#666;line-height:1.5}.variantSelect{width:100%;height:44px;border:1px solid var(--line);border-radius:6px;padding:0 10px;margin:12px 0;background:#fff}.shopBuy{width:100%;border:0;border-radius:5px;background:var(--purple);color:#fff;padding:14px;font-size:10px;font-weight:900}.shopBuy:disabled{background:#aaa}
 </style>
 </head>
 <body>
@@ -75,12 +78,13 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 </section>
 
 <section id="shop" class="screen">
-<div class="storehero"><div class="eyebrow">CONNECTED STORE</div><h1>SHOP<br>GOAT SPORTS</h1><p>This shell is designed for your connected Shopify storefront. Products, collections, pricing, variants, cart and checkout will plug into this screen.</p></div>
-<div class="shopbar"><button class="chip active">FEATURED</button><button class="chip">FOOTBALL</button><button class="chip">BASKETBALL</button><button class="chip">SOFTBALL</button><button class="chip">APPAREL</button></div>
-<div class="products"><article class="product"><div class="productimg">SHOPIFY PRODUCT</div><div class="productinfo"><strong>Product from Shopify</strong><span>Price / variants</span><button>VIEW PRODUCT</button></div></article><article class="product"><div class="productimg">SHOPIFY PRODUCT</div><div class="productinfo"><strong>Product from Shopify</strong><span>Price / variants</span><button>VIEW PRODUCT</button></div></article></div>
-<div class="shopnote"><strong>Shopify-ready:</strong> this is intentionally a shell—not hard-coded fake inventory. We can connect the actual Storefront API data next.</div>
+<div class="shopLiveHero"><div class="eyebrow">GOAT SPORTS STORE</div><h1>SHOP<br>GOAT SPORTS</h1><p>Live products from the GOAT Sports Shopify store.</p></div>
+<div class="section shopLiveBody">
+ <div class="shopControls"><button class="chip active" data-collection="" onclick="loadShopCollection('',this)">ALL</button><div id="shopCollectionChips"></div></div>
+ <div id="shopStatus" class="shopStatus">Loading GOAT Sports products…</div>
+ <div id="shopProducts" class="liveProductGrid"></div>
+</div>
 </section>
-
 <section id="fanhq" class="screen">
 <div class="fanHero">
  <div class="eyebrow">OFFICIAL GOAT SPORTS TEAM STORES</div>
@@ -152,6 +156,9 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
   <div class="hqFeatured"><div><small>TEAM STORE FEATURE</small><strong>REP YOUR TEAM.</strong><p>Featured merchandise from this team's Shopify collection will appear here.</p></div><button onclick="teamStore()">SHOP NOW</button></div>
  </div>
 </div>
+<div id="productModal" class="modalShade" onclick="closeModal(event,'productModal')">
+<div class="modalSheet productSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('productModal')">‹ BACK TO SHOP</button>
+<div id="productDetail"></div></div></div>
 <div id="appToast" class="appToast"></div>
 <section id="locker" class="screen privateLocker">
 <div class="privateLockerHero"><button class="backMini" onclick="go('account')">‹ BACK TO ACCOUNT</button><div class="eyebrow">GOAT SPORTS CUSTOM</div><h1>GOAT<br>LOCKER</h1><p>Your designs, approvals and team-order tools in one private workspace.</p></div>
@@ -233,5 +240,47 @@ function openFinderSport(sport){
  document.querySelectorAll('.filterRow .chip').forEach(x=>x.classList.toggle('active',x.textContent.toLowerCase()===sport));
  filterTeams();
 }
+
+const SHOPIFY_STORE='186815-4c.myshopify.com';
+const SHOPIFY_PUBLIC_TOKEN='df49776e20924d7b35003c9e6b675938';
+const SHOPIFY_API_VERSION='2026-10';
+const SHOPIFY_ENDPOINT=`https://${SHOPIFY_STORE}/api/${SHOPIFY_API_VERSION}/graphql.json`;
+let liveProducts=[], currentProduct=null;
+
+async function shopifyRequest(query,variables={}){
+ const r=await fetch(SHOPIFY_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','X-Shopify-Storefront-Access-Token':SHOPIFY_PUBLIC_TOKEN},body:JSON.stringify({query,variables})});
+ const j=await r.json(); if(!r.ok||j.errors) throw new Error(j.errors?.[0]?.message||'Shopify request failed'); return j.data;
+}
+async function loadShop(){
+ const q=`query GOATProducts($first:Int!){products(first:$first){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}}}}}`;
+ try{const d=await shopifyRequest(q,{first:50});liveProducts=d.products.nodes||[];renderProducts(liveProducts);document.getElementById('shopStatus').textContent=liveProducts.length?`${liveProducts.length} products`:'No products are currently published to this storefront.';loadCollections();}
+ catch(e){document.getElementById('shopStatus').textContent='Could not load products: '+e.message;}
+}
+function money(a,c='USD'){return new Intl.NumberFormat('en-US',{style:'currency',currency:c}).format(Number(a))}
+function renderProducts(items){
+ const el=document.getElementById('shopProducts');el.innerHTML=items.map((p,i)=>`<button class="liveProduct" onclick="openProduct(${i})"><div class="productImg">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.featuredImage.altText||p.title}">`:'<span class="noImg">NO IMAGE</span>'}</div><div class="productCopy"><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small><em>${p.availableForSale?'AVAILABLE':'SOLD OUT'}</em></div></button>`).join('');
+}
+async function loadCollections(){
+ const q=`query GOATCollections{collections(first:100){nodes{title handle products(first:1){nodes{id}}}}}`;
+ try{const d=await shopifyRequest(q);const cs=(d.collections.nodes||[]).filter(x=>x.products.nodes.length).slice(0,8);document.getElementById('shopCollectionChips').innerHTML=cs.map(c=>`<button class="chip" onclick="loadShopCollection('${c.handle}',this)">${c.title}</button>`).join('');}catch(e){}
+}
+async function loadShopCollection(handle,btn){
+ document.querySelectorAll('.shopControls .chip').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');
+ if(!handle){renderProducts(liveProducts);document.getElementById('shopStatus').textContent=`${liveProducts.length} products`;return}
+ document.getElementById('shopStatus').textContent='Loading collection…';
+ const q=`query GOATCollection($handle:String!){collection(handle:$handle){title products(first:50){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}}}}}}`;
+ try{const d=await shopifyRequest(q,{handle});const items=d.collection?.products.nodes||[];liveProducts=items;renderProducts(items);document.getElementById('shopStatus').textContent=`${d.collection?.title||'Collection'} • ${items.length} products`;}catch(e){document.getElementById('shopStatus').textContent=e.message}
+}
+function openProduct(i){
+ const p=liveProducts[i];currentProduct=p;const variants=p.variants.nodes||[];
+ document.getElementById('productDetail').innerHTML=`<div class="productDetailImage">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}</div><h2>${p.title}</h2><div class="productPrice">${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</div><p class="productDesc">${p.description||''}</p><select id="shopVariant" class="variantSelect">${variants.map(v=>`<option value="${v.id}" ${!v.availableForSale?'disabled':''}>${v.title} — ${money(v.price.amount,v.price.currencyCode)}${!v.availableForSale?' — SOLD OUT':''}</option>`).join('')}</select><button class="shopBuy" onclick="startShopifyCart()" ${!p.availableForSale?'disabled':''}>${p.availableForSale?'ADD TO CART':'SOLD OUT'}</button>`;
+ document.getElementById('productModal').classList.add('show');
+}
+async function startShopifyCart(){
+ const merchandiseId=document.getElementById('shopVariant').value;
+ const q=`mutation CartCreate($input:CartInput!){cartCreate(input:$input){cart{id checkoutUrl totalQuantity} userErrors{field message}}}`;
+ try{const d=await shopifyRequest(q,{input:{lines:[{merchandiseId,quantity:1}]}});const e=d.cartCreate.userErrors||[];if(e.length)throw new Error(e[0].message);localStorage.setItem('goat_cart_id',d.cartCreate.cart.id);hide('productModal');toast('Added to cart');if(confirm('Item added. Continue to secure Shopify checkout?'))location.href=d.cartCreate.cart.checkoutUrl;}catch(e){toast('Cart error: '+e.message)}
+}
+document.addEventListener('DOMContentLoaded',loadShop);
 </script>
 </body></html>
