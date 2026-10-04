@@ -51,8 +51,13 @@ button,a{font:inherit}.app{width:100%;max-width:520px;min-height:100vh;margin:au
 .clientEntry{background:linear-gradient(145deg,#151518,#070708);color:#fff;border-radius:11px;padding:22px}.clientEntry .eyebrow{color:#a9abb0}.clientEntry h2{font-size:27px;line-height:.95;margin:8px 0 10px}.clientEntry p{font-size:10px;color:#bbb;line-height:1.5;margin:0 0 15px}.clientEntry button{border:0;background:var(--purple);color:#fff;border-radius:5px;padding:12px 14px;font-size:9px;font-weight:900}
 
 /* Exact uploaded GOAT Sports header artwork */
-header .brand{position:absolute;left:50%;transform:translateX(-50%);height:48px;display:flex;align-items:center;justify-content:center;max-width:62%;overflow:hidden}
-header .brand img{display:block;max-height:42px;max-width:100%;width:auto;object-fit:contain}
+header .brand{position:absolute;left:50%;transform:translateX(-50%);height:60px;display:flex;align-items:center;justify-content:center;max-width:62%;overflow:hidden}
+header .brand img{display:block;max-height:55.44px;max-width:100%;width:auto;object-fit:contain}
+
+/* Keep header controls pinned while the centered brand stays independent */
+.header{position:sticky}
+.header>.iconbtn:first-child{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:3}
+.header>.iconbtn:last-child{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:3}
 </style>
 </head>
 <body>
