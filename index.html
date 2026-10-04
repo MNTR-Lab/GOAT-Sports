@@ -156,114 +156,27 @@
 
 
 <style id="goat-video-hero-styles">
-.goat-video-hero{
-  position:relative;
-  width:100%;
-  height:clamp(430px,68vh,680px);
-  min-height:430px;
-  overflow:hidden;
-  background:#111;
-  isolation:isolate;
-}
-.goat-hero-video{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center;
-  z-index:-3;
-}
-.goat-hero-shade{
-  position:absolute;
-  inset:0;
-  z-index:-2;
-  background:
-    linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.43) 46%,rgba(0,0,0,.10) 78%),
-    linear-gradient(0deg,rgba(0,0,0,.45) 0%,transparent 45%);
-}
-.goat-hero-content{
-  height:100%;
-  max-width:1180px;
-  margin:0 auto;
-  padding:0 7vw 64px;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-  align-items:flex-start;
-  color:#fff;
-}
-.goat-hero-kicker{
-  margin-bottom:10px;
-  font:800 12px/1.1 Arial,sans-serif;
-  letter-spacing:.22em;
-}
-.goat-hero-content h1{
-  margin:0;
-  max-width:720px;
-  font:900 clamp(50px,8vw,96px)/.84 Arial,sans-serif;
-  letter-spacing:-.055em;
-}
-.goat-hero-content p{
-  margin:17px 0 21px;
-  font:500 clamp(16px,2vw,20px)/1.3 Arial,sans-serif;
-}
-.goat-hero-cta{
-  border:0;
-  border-radius:999px;
-  padding:14px 21px;
-  background:#109488;
-  color:#fff;
-  font:800 12px/1 Arial,sans-serif;
-  letter-spacing:.07em;
-  cursor:pointer;
-}
+.goat-video-hero{position:relative;width:100%;height:clamp(430px,68vh,680px);min-height:430px;overflow:hidden;background:#111;isolation:isolate}
+.goat-hero-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility .7s ease;z-index:0}
+.goat-hero-slide.active{opacity:1;visibility:visible;z-index:1}
+.goat-hero-video,.goat-hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.goat-hero-image{transform:scale(1.02)}
+.goat-hero-slide.active .goat-hero-image{animation:goatKenBurns 8s ease-out both}
+@keyframes goatKenBurns{from{transform:scale(1.02)}to{transform:scale(1.08)}}
+.goat-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.76) 0%,rgba(0,0,0,.46) 46%,rgba(0,0,0,.12) 78%),linear-gradient(0deg,rgba(0,0,0,.46) 0%,transparent 45%)}
+.goat-hero-content{position:relative;z-index:2;height:100%;max-width:1180px;margin:0 auto;padding:0 7vw 64px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;color:#fff}
+.goat-hero-kicker{margin-bottom:10px;font:800 12px/1.1 Arial,sans-serif;letter-spacing:.22em}
+.goat-hero-content h1{margin:0;max-width:720px;font:900 clamp(50px,8vw,96px)/.84 Arial,sans-serif;letter-spacing:-.055em}
+.goat-hero-content p{margin:17px 0 21px;font:500 clamp(16px,2vw,20px)/1.3 Arial,sans-serif}
+.goat-hero-cta{border:0;border-radius:999px;padding:14px 21px;background:#109488;color:#fff;font:800 12px/1 Arial,sans-serif;letter-spacing:.07em;cursor:pointer}
 .goat-hero-cta span{margin-left:8px;font-size:16px}
-.goat-video-toggle{
-  position:absolute;
-  right:18px;
-  bottom:18px;
-  width:38px;
-  height:38px;
-  border:1px solid rgba(255,255,255,.5);
-  border-radius:50%;
-  background:rgba(0,0,0,.28);
-  backdrop-filter:blur(6px);
-  color:#fff;
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-}
-.goat-slide-dots{
-  position:absolute;
-  left:50%;
-  bottom:22px;
-  transform:translateX(-50%);
-  display:flex;
-  gap:7px;
-}
-.goat-slide-dots button{
-  width:7px;height:7px;padding:0;border:0;border-radius:50%;
-  background:rgba(255,255,255,.48);
-}
-.goat-slide-dots button.active{
-  width:24px;border-radius:10px;background:#fff;
-}
-@media(max-width:600px){
-  .goat-video-hero{height:58vh;min-height:460px;max-height:610px}
-  .goat-hero-video{object-position:center center}
-  .goat-hero-shade{
-    background:linear-gradient(0deg,rgba(0,0,0,.78) 0%,rgba(0,0,0,.34) 58%,rgba(0,0,0,.06) 100%);
-  }
-  .goat-hero-content{padding:0 22px 72px}
-  .goat-hero-content h1{font-size:clamp(48px,16vw,70px)}
-  .goat-hero-content p{margin:13px 0 18px}
-  .goat-video-toggle{right:14px;bottom:16px}
-  .goat-slide-dots{bottom:28px}
-}
-@media(prefers-reduced-motion:reduce){
-  .goat-hero-video{display:none}
-}
+.goat-video-toggle{position:absolute;right:18px;bottom:18px;width:38px;height:38px;border:1px solid rgba(255,255,255,.5);border-radius:50%;background:rgba(0,0,0,.28);backdrop-filter:blur(6px);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:5}
+.goat-video-toggle.hidden{display:none}
+.goat-slide-dots{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:7px;z-index:6}
+.goat-slide-dots button{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.48);cursor:pointer}
+.goat-slide-dots button.active{width:24px;border-radius:10px;background:#fff}
+@media(max-width:600px){.goat-video-hero{height:58vh;min-height:460px;max-height:610px}.goat-hero-video{object-position:center center}.goat-hero-image{object-position:center center}.goat-hero-shade{background:linear-gradient(0deg,rgba(0,0,0,.80) 0%,rgba(0,0,0,.38) 58%,rgba(0,0,0,.08) 100%)}.goat-hero-content{padding:0 22px 72px}.goat-hero-content h1{font-size:clamp(48px,16vw,70px)}.goat-hero-content p{margin:13px 0 18px}.goat-video-toggle{right:14px;bottom:16px}.goat-slide-dots{bottom:28px}}
+@media(prefers-reduced-motion:reduce){.goat-hero-slide{transition:none}.goat-hero-slide.active .goat-hero-image{animation:none}}
 </style>
 
 </head><body><div class="app">
@@ -289,29 +202,37 @@
 </header>
 <div id="headerNotice" class="header-notice" role="status" aria-live="polite"></div>
 
-<section class="goat-video-hero" aria-label="Built to Compete">
-  <video class="goat-hero-video" autoplay muted loop playsinline preload="metadata">
-    <source src="https://cdn.shopify.com/videos/c/o/v/cc58821dc5344833863b85f326f2a419.mp4" type="video/mp4">
-  </video>
-  <div class="goat-hero-shade"></div>
-  <div class="goat-hero-content">
-    <div class="goat-hero-kicker">GOAT SPORTS</div>
-    <h1>BUILT TO<br>COMPETE.</h1>
-    <p>Custom uniforms built for your team.</p>
-    <button type="button" class="goat-hero-cta" onclick="showHeaderNotice('design')">
-      START YOUR DESIGN <span>→</span>
-    </button>
+<section class="goat-video-hero" aria-label="GOAT Sports featured promotions">
+  <div class="goat-hero-slide active" data-slide="0">
+    <video class="goat-hero-video" autoplay muted loop playsinline preload="metadata">
+      <source src="https://cdn.shopify.com/videos/c/o/v/cc58821dc5344833863b85f326f2a419.mp4" type="video/mp4">
+    </video>
+    <div class="goat-hero-shade"></div>
+    <div class="goat-hero-content">
+      <div class="goat-hero-kicker">GOAT SPORTS</div>
+      <h1>BUILT TO<br>COMPETE.</h1>
+      <p>Custom uniforms built for your team.</p>
+      <button type="button" class="goat-hero-cta" onclick="showHeaderNotice('design')">START YOUR DESIGN <span>→</span></button>
+    </div>
   </div>
-  <button class="goat-video-toggle" type="button" aria-label="Pause video" onclick="toggleGoatHero(this)">
-    <span class="pause-symbol">Ⅱ</span>
-  </button>
+
+  <div class="goat-hero-slide" data-slide="1">
+    <img class="goat-hero-image" src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/Cinematic_GOATivated_Gym_Apparel_Collage_1.png?v=1791073060" alt="GOATIVATED apparel collection">
+    <div class="goat-hero-shade"></div>
+    <div class="goat-hero-content">
+      <div class="goat-hero-kicker">GOATIVATED</div>
+      <h1>WEAR THE<br>MINDSET.</h1>
+      <p>GOATIVATED — built for more than the game.</p>
+      <button type="button" class="goat-hero-cta" onclick="go('shop')">SHOP GOATIVATED <span>→</span></button>
+    </div>
+  </div>
+
+  <button class="goat-video-toggle" type="button" aria-label="Pause video" onclick="toggleGoatHero(this)"><span class="pause-symbol">Ⅱ</span></button>
   <div class="goat-slide-dots" aria-label="Hero slides">
-    <button class="active" aria-label="Slide 1"></button>
-    <button aria-label="Slide 2"></button>
-    <button aria-label="Slide 3"></button>
+    <button class="active" type="button" aria-label="Show slide 1" onclick="showGoatHeroSlide(0,true)"></button>
+    <button type="button" aria-label="Show slide 2" onclick="showGoatHeroSlide(1,true)"></button>
   </div>
 </section>
-
 
 <section id="home" class="screen active"><div class="hero"><div class="eyebrow">GOAT SPORTS • PERFORMANCE + IDENTITY</div><h1>BUILT TO<br>COMPETE.</h1><p>Custom uniforms, team apparel and GOATIVATED gear built for athletes and organizations that refuse to blend in.</p><div class="buttons"><button class="cta white" onclick="go('shop')">SHOP GOAT</button><button class="cta teal" onclick="go('locker')">OPEN MY LOCKER</button></div></div><div class="section"><h2>Trending Now</h2><div class="sub">Performance gear. Team identity. GOAT style.</div><div class="scroll"><div class="tile"><b>Custom Uniforms</b><span>Built for your program →</span></div><div class="tile"><b>GOATIVATED</b><span>Shop the collection →</span></div><div class="tile"><b>Team Stores</b><span>Wear your colors →</span></div></div></div><div class="feature"><div class="eyebrow">CUSTOM TEAM SERVICES</div><h2>YOUR TEAM.<br>YOUR IDENTITY.</h2><p>From concept to competition, build your program with custom uniforms, apparel and a dedicated team store.</p><button class="cta teal">START YOUR DESIGN</button></div><div class="section"><h2>Your GOAT</h2><div class="order"><span class="status">IN PRODUCTION</span><h3>48 Custom Football Uniforms</h3><div class="progress"><i></i></div><small>Production progress • 68%</small></div></div><div class="feature tealbg"><div class="eyebrow">BE GOATIVATED</div><h2>MORE THAN<br>A UNIFORM.</h2><p>Performance. Identity. Mindset.</p><button class="cta white" onclick="go('shop')">SHOP THE COLLECTION</button></div></section>
 <section id="shop" class="screen"><div class="pagehead"><div class="eyebrow">GOAT SPORTS</div><h1>SHOP</h1></div><div class="section"><h2>Shop by Category</h2><div class="products"><div class="product"><b>Custom Uniforms</b><small>Football • Basketball • More</small></div><div class="product"><b>GOATIVATED</b><small>Lifestyle + performance</small></div><div class="product"><b>Graphic Tees</b><small>Fresh GOAT designs</small></div><div class="product"><b>Team Stores</b><small>Shop your organization</small></div></div></div></section>
@@ -334,19 +255,44 @@ function showHeaderNotice(type){
 
 
 <script id="goat-video-hero-js">
-function toggleGoatHero(btn){
-  const video = document.querySelector('.goat-hero-video');
-  if(!video) return;
-  if(video.paused){
-    video.play();
-    btn.innerHTML='<span class="pause-symbol">Ⅱ</span>';
-    btn.setAttribute('aria-label','Pause video');
-  } else {
-    video.pause();
-    btn.innerHTML='▶';
-    btn.setAttribute('aria-label','Play video');
+let goatHeroIndex=0;
+let goatHeroTimer=null;
+const goatHeroDelay=8000;
+function showGoatHeroSlide(index,restartTimer=false){
+  const hero=document.querySelector('.goat-video-hero');
+  if(!hero)return;
+  const slides=[...hero.querySelectorAll('.goat-hero-slide')];
+  const dots=[...hero.querySelectorAll('.goat-slide-dots button')];
+  if(!slides.length)return;
+  goatHeroIndex=(index+slides.length)%slides.length;
+  slides.forEach((slide,i)=>slide.classList.toggle('active',i===goatHeroIndex));
+  dots.forEach((dot,i)=>dot.classList.toggle('active',i===goatHeroIndex));
+  const video=hero.querySelector('.goat-hero-video');
+  const toggle=hero.querySelector('.goat-video-toggle');
+  if(video){
+    if(goatHeroIndex===0){video.play().catch(()=>{});if(toggle){toggle.classList.remove('hidden');toggle.innerHTML='<span class="pause-symbol">Ⅱ</span>';toggle.setAttribute('aria-label','Pause video')}}
+    else{video.pause();if(toggle)toggle.classList.add('hidden')}
   }
+  if(restartTimer)startGoatHeroTimer();
 }
+function startGoatHeroTimer(){
+  clearInterval(goatHeroTimer);
+  goatHeroTimer=setInterval(()=>showGoatHeroSlide(goatHeroIndex+1,false),goatHeroDelay);
+}
+function toggleGoatHero(btn){
+  const video=document.querySelector('.goat-hero-video');
+  if(!video)return;
+  if(video.paused){video.play();btn.innerHTML='<span class="pause-symbol">Ⅱ</span>';btn.setAttribute('aria-label','Pause video')}
+  else{video.pause();btn.innerHTML='▶';btn.setAttribute('aria-label','Play video')}
+}
+(function(){
+  const hero=document.querySelector('.goat-video-hero');
+  if(!hero)return;
+  let startX=0;
+  hero.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});
+  hero.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>45)showGoatHeroSlide(goatHeroIndex+(dx<0?1:-1),true)},{passive:true});
+  startGoatHeroTimer();
+})();
 </script>
 
 </body></html>
