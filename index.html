@@ -161,6 +161,7 @@
 .goat-hero-slide.active{opacity:1;visibility:visible;z-index:1}
 .goat-hero-video,.goat-hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
 .goat-hero-image{transform:scale(1.02)}
+.goat-team-store-slide{cursor:pointer;background:#07080a}.goat-team-store-image{object-fit:cover;object-position:center;transform:none}.goat-team-store-slide.active .goat-team-store-image{animation:none}
 .goat-hero-slide.active .goat-hero-image{animation:goatKenBurns 8s ease-out both}
 @keyframes goatKenBurns{from{transform:scale(1.02)}to{transform:scale(1.08)}}
 .goat-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.76) 0%,rgba(0,0,0,.46) 46%,rgba(0,0,0,.12) 78%),linear-gradient(0deg,rgba(0,0,0,.46) 0%,transparent 45%)}
@@ -175,7 +176,7 @@
 .goat-slide-dots{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:7px;z-index:6}
 .goat-slide-dots button{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.48);cursor:pointer}
 .goat-slide-dots button.active{width:24px;border-radius:10px;background:#fff}
-@media(max-width:600px){.goat-video-hero{height:58vh;min-height:460px;max-height:610px}.goat-hero-video{object-position:center center}.goat-hero-image{object-position:center center}.goat-hero-shade{background:linear-gradient(0deg,rgba(0,0,0,.80) 0%,rgba(0,0,0,.38) 58%,rgba(0,0,0,.08) 100%)}.goat-hero-content{padding:0 22px 72px}.goat-hero-content h1{font-size:clamp(48px,16vw,70px)}.goat-hero-content p{margin:13px 0 18px}.goat-video-toggle{right:14px;bottom:16px}.goat-slide-dots{bottom:28px}}
+@media(max-width:600px){.goat-video-hero{height:58vh;min-height:460px;max-height:610px}.goat-team-store-image{object-fit:contain;background:#07080a}.goat-hero-video{object-position:center center}.goat-hero-image{object-position:center center}.goat-hero-shade{background:linear-gradient(0deg,rgba(0,0,0,.80) 0%,rgba(0,0,0,.38) 58%,rgba(0,0,0,.08) 100%)}.goat-hero-content{padding:0 22px 72px}.goat-hero-content h1{font-size:clamp(48px,16vw,70px)}.goat-hero-content p{margin:13px 0 18px}.goat-video-toggle{right:14px;bottom:16px}.goat-slide-dots{bottom:28px}}
 @media(prefers-reduced-motion:reduce){.goat-hero-slide{transition:none}.goat-hero-slide.active .goat-hero-image{animation:none}}
 </style>
 
@@ -227,10 +228,15 @@
     </div>
   </div>
 
+  <div class="goat-hero-slide goat-team-store-slide" data-slide="2" role="button" tabindex="0" aria-label="Find your team store" onclick="go('shop')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('shop')}">
+    <img class="goat-hero-image goat-team-store-image" src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/Neon_GOAT_Team_Store_Showcase.png?v=1791118832" alt="GOAT Sports Team Stores showcase">
+  </div>
+
   <button class="goat-video-toggle" type="button" aria-label="Pause video" onclick="toggleGoatHero(this)"><span class="pause-symbol">Ⅱ</span></button>
   <div class="goat-slide-dots" aria-label="Hero slides">
     <button class="active" type="button" aria-label="Show slide 1" onclick="showGoatHeroSlide(0,true)"></button>
     <button type="button" aria-label="Show slide 2" onclick="showGoatHeroSlide(1,true)"></button>
+    <button type="button" aria-label="Show slide 3" onclick="showGoatHeroSlide(2,true)"></button>
   </div>
 </section>
 
