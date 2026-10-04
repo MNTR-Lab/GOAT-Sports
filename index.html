@@ -344,11 +344,35 @@ async function openFanTeam(id){
      <div id="teamStoreProducts" class="teamStoreLoading">Loading team merchandise…</div>
    </div>`;
 
+ const productFields=`id title handle description availableForSale featuredImage{url altText width height} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode} compareAtPrice{amount currencyCode}}}`;
+ const collectionHandle=String(t.shopify_collection_handle||'').trim();
  const teamQuery=`title:"${String(t.team_name||'').replace(/"/g,'\\"')}"`;
- const q=`query FanTeamProducts($first:Int!,$query:String!){products(first:$first,query:$query,sortKey:TITLE){nodes{id title handle description availableForSale featuredImage{url altText width height} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode} compareAtPrice{amount currencyCode}}}}}}`;
+
  try{
-   const d=await shopifyRequest(q,{first:100,query:teamQuery});
-   teamProducts=d.products?.nodes||[];
+   teamProducts=[];
+   let source='title';
+
+   // Preferred route: use the team's Shopify collection and preserve its Shopify arrangement.
+   if(collectionHandle){
+     try{
+       const collectionQ=`query FanTeamCollection($handle:String!){collection(handle:$handle){id title handle products(first:100,sortKey:COLLECTION_DEFAULT){nodes{${productFields}}}}}`;
+       const collectionData=await shopifyRequest(collectionQ,{handle:collectionHandle});
+       if(collectionData.collection){
+         teamProducts=collectionData.collection.products?.nodes||[];
+         source='collection';
+       }
+     }catch(collectionError){
+       console.warn('Team collection lookup failed; using title fallback.',collectionError);
+     }
+   }
+
+   // Safe fallback: keep the title-based system that is already working.
+   if(source!=='collection'){
+     const fallbackQ=`query FanTeamProducts($first:Int!,$query:String!){products(first:$first,query:$query,sortKey:TITLE){nodes{${productFields}}}}`;
+     const fallbackData=await shopifyRequest(fallbackQ,{first:100,query:teamQuery});
+     teamProducts=fallbackData.products?.nodes||[];
+   }
+
    const count=document.getElementById('teamStoreCount');
    const grid=document.getElementById('teamStoreProducts');
    if(!grid)return;
@@ -356,7 +380,7 @@ async function openFanTeam(id){
    grid.className=teamProducts.length?'teamStoreProducts':'teamStoreEmpty';
    grid.innerHTML=teamProducts.length
      ? teamProducts.map((p,i)=>`<button type="button" class="teamStoreProduct" onclick="openTeamProduct(${i})"><div class="imageBox">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}</div><div class="teamStoreProductInfo"><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small></div></button>`).join('')
-     : `No storefront products were found with <strong>${t.team_name}</strong> in the product title.`;
+     : `No storefront products were found for <strong>${t.team_name}</strong>.`;
  }catch(e){
    const grid=document.getElementById('teamStoreProducts');
    if(grid){grid.className='teamStoreEmpty';grid.textContent='Could not load team products: '+e.message}
