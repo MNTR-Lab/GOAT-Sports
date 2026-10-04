@@ -285,29 +285,22 @@ async function openFanTeam(id){
  const content=document.getElementById('teamHQContent');
  content.innerHTML=`<div class="teamHQHeader">${t.logo_url?`<img class="teamHQLogo" src="${t.logo_url}" alt="${t.team_name} logo">`:`<div class="teamHQFallback">${fanInitials(t.team_name)}</div>`}<div class="eyebrow">OFFICIAL GOAT TEAM STORE</div><h2>${t.team_name}</h2><p>${t.sport||''}${t.city||t.state?' • '+[t.city,t.state].filter(Boolean).join(', '):''}</p></div><div class="shopStatus">Loading team merchandise…</div>`;
  const teamModal=document.getElementById('teamHQModal'); teamModal.style.display='flex'; teamModal.classList.add('show');
- if(!t.shopify_collection_handle){content.innerHTML+=`<div class="teamEmpty">This team's Shopify collection has not been connected yet.</div>`;return}
 
- const directQ=`query FanTeamCollection($handle:String!){collection(handle:$handle){id title handle products(first:50,sortKey:TITLE){nodes{id title handle description availableForSale featuredImage{url altText width height} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode} compareAtPrice{amount currencyCode}}}}}}}`;
+ // Team stores are keyed from the team name already stored in Supabase.
+ // Shopify search syntax uses title:<quoted team name>, so no extra tags are required.
+ const teamQuery=`title:"${String(t.team_name||'').replace(/"/g,'\\"')}"`;
+ const q=`query FanTeamProducts($first:Int!,$query:String!){products(first:$first,query:$query,sortKey:TITLE){nodes{id title handle description availableForSale featuredImage{url altText width height} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode} compareAtPrice{amount currencyCode}}}}}}`;
+
  try{
-  const d=await shopifyRequest(directQ,{handle:t.shopify_collection_handle});
-  const collection=d.collection;
-  teamProducts=collection?.products?.nodes||[];
-
-
-
-  const st=content.querySelector('.shopStatus');
-  if(!collection){
-   st.textContent='Shopify collection not found';
-   content.insertAdjacentHTML('beforeend',`<div class="teamEmpty">Shopify did not return the collection handle <strong>${t.shopify_collection_handle}</strong> through the Storefront API.</div>`);
-   return;
-  }
-
-  st.textContent=`${collection.title} • ${teamProducts.length} products`;
-  content.insertAdjacentHTML('beforeend',teamProducts.length
-   ? `<div class="teamHQProducts">${teamProducts.map((p,i)=>`<button type="button" class="teamHQProduct" onclick="openTeamProduct(${i})">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}<div><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small></div></button>`).join('')}</div>`
-   : `<div class="teamEmpty">Shopify found <strong>${collection.title}</strong>, but no storefront-visible products are attached to it.</div>`);
+   const d=await shopifyRequest(q,{first:100,query:teamQuery});
+   teamProducts=d.products?.nodes||[];
+   const st=content.querySelector('.shopStatus');
+   st.textContent=`${teamProducts.length} product${teamProducts.length===1?'':'s'}`;
+   content.insertAdjacentHTML('beforeend',teamProducts.length
+     ? `<div class="teamHQProducts">${teamProducts.map((p,i)=>`<button type="button" class="teamHQProduct" onclick="openTeamProduct(${i})">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}<div><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small></div></button>`).join('')}</div>`
+     : `<div class="teamEmpty">No storefront products were found with <strong>${t.team_name}</strong> in the product title.</div>`);
  }catch(e){
-  content.querySelector('.shopStatus').textContent='Could not load team products: '+e.message;
+   content.querySelector('.shopStatus').textContent='Could not load team products: '+e.message;
  }
 }
 function closeFanTeamHQ(){
