@@ -108,6 +108,13 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .cartSummary{padding:18px 0 6px}.cartTotal{display:flex;justify-content:space-between;font-size:17px;font-weight:1000;margin-bottom:12px}
 .checkoutBtn{width:100%;border:0;border-radius:6px;background:#111;color:#fff;padding:15px;font-size:11px;font-weight:1000;letter-spacing:.05em}
 .cartEmpty{text-align:center;padding:35px 10px;color:#777;font-weight:800}
+
+/* Customer Account */
+.accountWelcome{padding:18px;border:1px solid var(--line);border-radius:10px;background:#fff;margin:14px 0}
+.accountWelcome h2{font-size:24px;margin:0 0 5px}.accountWelcome p{font-size:10px;color:#666;margin:0}
+.accountActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 18px}.accountActions button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:16px 10px;text-align:left;font-weight:900}
+.signOutBtn{width:100%;border:1px solid #ddd;background:#fff;padding:13px;border-radius:6px;font-size:10px;font-weight:900}
+.orderCard{border:1px solid var(--line);background:#fff;border-radius:9px;padding:14px;margin:10px 0}.orderTop{display:flex;justify-content:space-between;gap:12px}.orderTop strong{font-size:13px}.orderTop span{font-size:12px;font-weight:900}.orderMeta{font-size:9px;color:#777;margin-top:5px}.orderStatus{display:inline-block;margin-top:9px;padding:5px 8px;border-radius:20px;background:#f0f0f2;font-size:8px;font-weight:900}.orderLink{display:block;margin-top:10px;font-size:9px;font-weight:900;color:var(--purple);text-decoration:none}
 </style>
 </head>
 <body>
@@ -159,23 +166,14 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
   <div id="teamStoreContent"></div>
 </section>
 
-<section id="orders" class="screen plain"><div class="eyebrow" style="color:var(--teal)">PRODUCTION TRACKING</div><h1>ORDERS</h1><p>Track custom orders through artwork, production, quality control, shipping and delivery.</p><div class="placeholdercard"><h3>Order center foundation ready</h3><p>Shopify orders and GOAT production statuses will meet here.</p></div></section>
+<section id="orders" class="screen plain">
+<div class="eyebrow" style="color:var(--teal)">SHOPIFY CUSTOMER ACCOUNT</div><h1>MY ORDERS</h1>
+<div id="ordersContent"><p>Sign in to view your Shopify order history.</p><button class="cta" onclick="customerLogin()">SIGN IN TO VIEW ORDERS</button></div>
+</section>
 <section id="account" class="screen plain">
 <div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h1>ACCOUNT</h1>
-<p>Manage your profile, orders, followed teams and GOAT Sports custom work.</p>
-<div class="accountGrid">
- <button onclick="go('orders')"><b>▤</b><strong>My Orders</strong><small>Purchases & tracking</small></button>
- <button onclick="go('fanhq')"><b>★</b><strong>My FanHQ</strong><small>Teams & official stores</small></button>
-</div>
-<div class="lockerAccess">
- <div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div>
- <h2>GOAT LOCKER</h2>
- <p>Your private workspace for designs, artwork approvals, rosters, sizing, quotes, documents and reorders.</p>
- <button class="cta" onclick="openLocker()">ENTER GOAT LOCKER</button>
- <small>GOAT Locker requires a customer/team account with custom work connected to it.</small>
-</div>
+<div id="accountContent"><p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button></div>
 </section>
-
 
 <div id="teamHQModal" class="modalShade" onclick="if(event.target===this)closeFanTeamHQ()">
   <div class="modalSheet teamHQSheet">
@@ -217,6 +215,8 @@ function go(id,btn){
  document.getElementById(id).classList.add('active');
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===(id==='teamstore'?'fanhq':id)));
  window.scrollTo({top:0,behavior:'instant'});
+ if(id==='account') renderCustomerAccount();
+ if(id==='orders') renderCustomerOrders();
 }
 function notice(){alert('Notifications are ready to connect once we build account/order data.')}
 
@@ -259,6 +259,121 @@ function openFinderSport(sport){
  filterTeams();
 }
 
+
+/* Shopify Customer Account API — Public OAuth client with PKCE */
+const CUSTOMER_CLIENT_ID='0ce1ce65-71f0-40f5-840c-b30f69e3e924';
+const CUSTOMER_SHOP_DOMAIN='www.begoativated.com';
+const CUSTOMER_REDIRECT_URI='https://mntr-lab.github.io/GOAT-Sports/';
+const CUSTOMER_SCOPE='openid email customer-account-api:full';
+let customerProfile=null, customerOrdersCache=null;
+
+function b64url(bytes){
+ return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function randomUrlSafe(size=32){const a=new Uint8Array(size);crypto.getRandomValues(a);return b64url(a)}
+async function sha256url(value){
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));
+ return b64url(new Uint8Array(digest));
+}
+async function customerDiscovery(){
+ const cached=sessionStorage.getItem('goat_customer_discovery');
+ if(cached)return JSON.parse(cached);
+ const [oidcR,apiR]=await Promise.all([
+   fetch(`https://${CUSTOMER_SHOP_DOMAIN}/.well-known/openid-configuration`),
+   fetch(`https://${CUSTOMER_SHOP_DOMAIN}/.well-known/customer-account-api`)
+ ]);
+ if(!oidcR.ok||!apiR.ok)throw new Error('Could not connect to Shopify customer accounts');
+ const cfg={...(await oidcR.json()),...(await apiR.json())};
+ sessionStorage.setItem('goat_customer_discovery',JSON.stringify(cfg));return cfg;
+}
+async function customerLogin(){
+ try{
+  const cfg=await customerDiscovery();
+  const verifier=randomUrlSafe(48), state=randomUrlSafe(24), nonce=randomUrlSafe(24);
+  sessionStorage.setItem('goat_pkce_verifier',verifier);
+  sessionStorage.setItem('goat_oauth_state',state);
+  sessionStorage.setItem('goat_oauth_nonce',nonce);
+  const u=new URL(cfg.authorization_endpoint);
+  u.searchParams.set('scope',CUSTOMER_SCOPE);
+  u.searchParams.set('client_id',CUSTOMER_CLIENT_ID);
+  u.searchParams.set('response_type','code');
+  u.searchParams.set('redirect_uri',CUSTOMER_REDIRECT_URI);
+  u.searchParams.set('state',state);u.searchParams.set('nonce',nonce);
+  u.searchParams.set('code_challenge',await sha256url(verifier));
+  u.searchParams.set('code_challenge_method','S256');
+  location.href=u.toString();
+ }catch(e){toast('Sign-in error: '+e.message)}
+}
+async function handleCustomerCallback(){
+ const u=new URL(location.href), code=u.searchParams.get('code');
+ if(!code)return false;
+ const returnedState=u.searchParams.get('state'), expected=sessionStorage.getItem('goat_oauth_state');
+ if(!expected||returnedState!==expected){toast('Sign-in security check failed');return true}
+ try{
+  const cfg=await customerDiscovery(), verifier=sessionStorage.getItem('goat_pkce_verifier');
+  const body=new URLSearchParams({
+   grant_type:'authorization_code',client_id:CUSTOMER_CLIENT_ID,
+   redirect_uri:CUSTOMER_REDIRECT_URI,code,code_verifier:verifier
+  });
+  const r=await fetch(cfg.token_endpoint,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+  const t=await r.json();if(!r.ok||!t.access_token)throw new Error(t.error_description||t.error||'Token exchange failed');
+  sessionStorage.setItem('goat_customer_access_token',t.access_token);
+  sessionStorage.setItem('goat_customer_token_expires',String(Date.now()+(Number(t.expires_in||3600)*1000)));
+  if(t.id_token)sessionStorage.setItem('goat_customer_id_token',t.id_token);
+  sessionStorage.removeItem('goat_pkce_verifier');sessionStorage.removeItem('goat_oauth_state');sessionStorage.removeItem('goat_oauth_nonce');
+  history.replaceState({},'',CUSTOMER_REDIRECT_URI);
+  await loadCustomerData();go('account');toast('Signed in');
+ }catch(e){history.replaceState({},'',CUSTOMER_REDIRECT_URI);toast('Sign-in error: '+e.message)}
+ return true;
+}
+function customerToken(){
+ const token=sessionStorage.getItem('goat_customer_access_token');
+ const exp=Number(sessionStorage.getItem('goat_customer_token_expires')||0);
+ if(!token||Date.now()>exp){sessionStorage.removeItem('goat_customer_access_token');return null}
+ return token;
+}
+async function customerRequest(query,variables={}){
+ const token=customerToken();if(!token)throw new Error('SIGN_IN_REQUIRED');
+ const cfg=await customerDiscovery();
+ const r=await fetch(cfg.graphql_api,{method:'POST',headers:{'Content-Type':'application/json','Authorization':token},body:JSON.stringify({query,variables})});
+ const j=await r.json();if(!r.ok||j.errors)throw new Error(j.errors?.[0]?.message||'Customer account request failed');return j.data;
+}
+async function loadCustomerData(){
+ if(!customerToken()){customerProfile=null;customerOrdersCache=null;return}
+ try{
+  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
+  const d=await customerRequest(q);customerProfile=d.customer;customerOrdersCache=d.customer.orders?.nodes||[];
+ }catch(e){console.warn('Customer data load failed',e);customerProfile=null;customerOrdersCache=null}
+}
+function renderCustomerAccount(){
+ const el=document.getElementById('accountContent');if(!el)return;
+ if(!customerToken()){el.innerHTML=`<p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button>`;return}
+ if(!customerProfile){el.innerHTML='<p>Loading your account…</p>';loadCustomerData().then(renderCustomerAccount);return}
+ const email=customerProfile.emailAddress?.emailAddress||'';
+ el.innerHTML=`<div class="accountWelcome"><div class="eyebrow">WELCOME BACK</div><h2>${customerProfile.displayName||'GOAT Sports Customer'}</h2><p>${email}</p></div>
+ <div class="accountActions"><button onclick="go('orders')">MY ORDERS<br><small>Purchases & tracking</small></button><button onclick="go('fanhq')">MY FANHQ<br><small>Official team stores</small></button></div>
+ <div class="lockerAccess"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private custom-client workspace.</p><button class="cta" onclick="openLocker()">ENTER GOAT LOCKER</button></div>
+ <button class="signOutBtn" onclick="customerLogout()">SIGN OUT</button>`;
+}
+function renderCustomerOrders(){
+ const el=document.getElementById('ordersContent');if(!el)return;
+ if(!customerToken()){el.innerHTML=`<p>Sign in to view purchases connected to your Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN TO VIEW ORDERS</button>`;return}
+ if(!customerProfile){el.innerHTML='<p>Loading your orders…</p>';loadCustomerData().then(renderCustomerOrders);return}
+ const orders=customerOrdersCache||[];
+ if(!orders.length){el.innerHTML='<p>No Shopify orders were found for this customer account.</p>';return}
+ el.innerHTML=orders.map(o=>`<article class="orderCard"><div class="orderTop"><strong>${o.name}</strong><span>${money(o.totalPrice.amount,o.totalPrice.currencyCode)}</span></div><div class="orderMeta">${new Date(o.processedAt).toLocaleDateString()}</div><span class="orderStatus">${String(o.fulfillmentStatus||'ORDER RECEIVED').replace(/_/g,' ')}</span>${o.statusPageUrl?`<a class="orderLink" href="${o.statusPageUrl}" target="_blank" rel="noopener">VIEW ORDER DETAILS →</a>`:''}</article>`).join('');
+}
+async function customerLogout(){
+ try{
+  const cfg=await customerDiscovery(), idToken=sessionStorage.getItem('goat_customer_id_token');
+  sessionStorage.removeItem('goat_customer_access_token');sessionStorage.removeItem('goat_customer_token_expires');sessionStorage.removeItem('goat_customer_id_token');
+  customerProfile=null;customerOrdersCache=null;
+  const u=new URL(cfg.end_session_endpoint||cfg.logout_endpoint);
+  if(idToken)u.searchParams.set('id_token_hint',idToken);
+  u.searchParams.set('post_logout_redirect_uri',CUSTOMER_REDIRECT_URI);
+  location.href=u.toString();
+ }catch(e){sessionStorage.clear();location.href=CUSTOMER_REDIRECT_URI}
+}
 const SHOPIFY_STORE='186815-4c.myshopify.com';
 const SHOPIFY_PUBLIC_TOKEN='df49776e20924d7b35003c9e6b675938';
 const SHOPIFY_API_VERSION='2026-10';
@@ -371,7 +486,7 @@ function goToCheckout(){
 async function restoreCart(){
  const cart=await getCart();if(cart)saveCart(cart);
 }
-document.addEventListener('DOMContentLoaded',()=>{loadShop();restoreCart()});
+document.addEventListener('DOMContentLoaded',async()=>{loadShop();restoreCart();if(!(await handleCustomerCallback())){await loadCustomerData();renderCustomerAccount();}});
 
 const SUPABASE_URL='https://qpavspvpdebtbbffdcmo.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_NoP_3R4R1WeoM7tivVJPAA_i4flKD1b';
