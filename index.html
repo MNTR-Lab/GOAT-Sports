@@ -64,6 +64,10 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 
 /* Live FanHQ */
 .fanHero{background:#0a0a0b;color:#fff;padding:36px 22px 26px}.fanHero h1{font-size:41px;line-height:.95;letter-spacing:-1.8px;margin:8px 0 10px}.fanHero p{font-size:11px;line-height:1.5;color:#b8b8ba;margin-bottom:16px}.teamSearch{width:100%;height:44px;border:1px solid #343438;border-radius:7px;background:#171719;color:#fff;padding:0 13px;font-size:11px}.fanTeamGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fanTeamCard{border:0;background:#fff;border-radius:9px;overflow:hidden;text-align:left;box-shadow:0 1px 8px rgba(0,0,0,.06);padding:0}.fanTeamLogo{aspect-ratio:1.25/1;background:#f0f0f2;display:grid;place-items:center;padding:18px}.fanTeamLogo img{width:100%;height:100%;object-fit:contain}.fanInitials{font-size:25px;font-weight:1000;color:var(--purple)}.fanTeamCopy{padding:11px}.fanTeamCopy strong{font-size:11px;display:block;line-height:1.25}.fanTeamCopy small{font-size:9px;color:#6d6d70;display:block;margin-top:4px}.fanTeamCopy em{font-size:8px;color:var(--teal);font-weight:900;font-style:normal;display:block;margin-top:7px}.lockerEntry{margin-top:18px;padding:20px;background:#111;color:#fff;border-radius:9px}.lockerEntry h2{font-size:21px;margin:5px 0 7px}.lockerEntry p{font-size:10px;color:#aaa;line-height:1.5}.teamHQHeader{text-align:center;padding:10px 0 16px}.teamHQLogo{width:120px;height:100px;object-fit:contain;margin:auto;display:block}.teamHQFallback{height:100px;display:grid;place-items:center;font-size:36px;font-weight:1000;color:var(--purple)}.teamHQHeader h2{font-size:26px;margin:8px 0 4px}.teamHQHeader p{font-size:10px;color:#777}.teamHQProducts{display:grid;grid-template-columns:1fr 1fr;gap:9px}.teamHQProduct{border:0;background:#f5f5f6;border-radius:8px;overflow:hidden;text-align:left;padding:0}.teamHQProduct img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#eee}.teamHQProduct div{padding:8px}.teamHQProduct strong{font-size:9px;line-height:1.2;display:block}.teamHQProduct small{font-size:9px;display:block;margin-top:4px}.teamEmpty{text-align:center;padding:30px 10px;color:#777;font-size:10px}
+
+/* Modal visibility normalization */
+.modalShade{display:none}
+.modalShade.show{display:flex}
 </style>
 </head>
 <body>
@@ -240,7 +244,7 @@ async function loadFanTeams(){
 function fanInitials(name=''){return name.split(/\s+/).map(x=>x[0]).join('').slice(0,3).toUpperCase()}
 function renderFanTeams(items){
  const grid=document.getElementById('fanTeamGrid');
- grid.innerHTML=items.map(t=>`<button class="fanTeamCard" onclick="openFanTeam(${t.id})">
+ grid.innerHTML=items.map(t=>`<button type="button" class="fanTeamCard" onclick="openFanTeam(${t.id})">
    <div class="fanTeamLogo">${t.logo_url?`<img src="${t.logo_url}" alt="${t.team_name} logo">`:`<span class="fanInitials">${fanInitials(t.team_name)}</span>`}</div>
    <div class="fanTeamCopy"><strong>${t.team_name}</strong><small>${[t.city,t.state].filter(Boolean).join(', ')}</small><em>${(t.sport||'TEAM').toUpperCase()}</em></div>
  </button>`).join('');
@@ -255,7 +259,7 @@ async function openFanTeam(id){
  const t=fanTeams.find(x=>String(x.id)===String(id)); if(!t)return; activeFanTeam=t;
  const content=document.getElementById('teamHQContent');
  content.innerHTML=`<div class="teamHQHeader">${t.logo_url?`<img class="teamHQLogo" src="${t.logo_url}" alt="${t.team_name} logo">`:`<div class="teamHQFallback">${fanInitials(t.team_name)}</div>`}<div class="eyebrow">OFFICIAL GOAT TEAM STORE</div><h2>${t.team_name}</h2><p>${t.sport||''}${t.city||t.state?' • '+[t.city,t.state].filter(Boolean).join(', '):''}</p></div><div class="shopStatus">Loading team merchandise…</div>`;
- document.getElementById('teamHQModal').classList.add('show');
+ const teamModal=document.getElementById('teamHQModal'); teamModal.style.display='flex'; teamModal.classList.add('show');
  if(!t.shopify_collection_handle){content.innerHTML+=`<div class="teamEmpty">This team's Shopify collection has not been connected yet.</div>`;return}
  const q=`query FanTeamCollection($handle:String!){collection(handle:$handle){title products(first:50){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}}}}}}`;
  try{
@@ -265,10 +269,14 @@ async function openFanTeam(id){
   content.insertAdjacentHTML('beforeend',teamProducts.length?`<div class="teamHQProducts">${teamProducts.map((p,i)=>`<button class="teamHQProduct" onclick="openTeamProduct(${i})">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}<div><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small></div></button>`).join('')}</div>`:`<div class="teamEmpty">No products are currently published in this team collection.</div>`);
  }catch(e){content.querySelector('.shopStatus').textContent='Could not load team products: '+e.message}
 }
+function closeFanTeamHQ(){
+ const m=document.getElementById('teamHQModal');
+ if(m){m.classList.remove('show');m.style.display='none'}
+}
 function openTeamProduct(i){
  const p=teamProducts[i]; if(!p)return;
  liveProducts=teamProducts;
- hide('teamHQModal');
+ closeFanTeamHQ();
  openProduct(i);
 }
 document.addEventListener('DOMContentLoaded',loadFanTeams);
