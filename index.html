@@ -1,434 +1,76 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>GOAT Sports V3</title><style>
-:root{--p:#683695;--t:#109488;--s:#868e92;--o:#be5927;--black:#0c0c0d;--white:#fff;--bg:#f4f4f5}*{box-sizing:border-box}body{margin:0;background:#d9dadd;font-family:Arial,Helvetica,sans-serif;color:#111}.app{max-width:520px;margin:auto;min-height:100vh;background:#fff;padding-bottom:78px;box-shadow:0 0 35px #0002}header{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#fff;position:sticky;top:0;z-index:9;border-bottom:1px solid #eee}.brand{display:flex;align-items:center;gap:8px;height:54px}.brand img{height:45px;width:auto}.icon{border:0;background:none;font-size:22px}.screen{display:none}.screen.active{display:block}.hero{min-height:520px;padding:34px 22px;background:linear-gradient(160deg,#090909 0%,#29173a 48%,#683695 78%,#109488 140%);color:white;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}.hero:before{content:'GOAT';position:absolute;right:-20px;top:48px;font-size:125px;font-weight:1000;letter-spacing:-12px;color:#ffffff0c}.eyebrow{font-size:11px;letter-spacing:2.6px;font-weight:900;color:#c8c8cc}h1{font-size:52px;line-height:.91;margin:9px 0 15px;letter-spacing:-3px}.hero p{font-size:15px;line-height:1.5;max-width:360px;color:#e5e5e7}.buttons{display:flex;gap:9px;margin-top:10px}button.cta{padding:13px 17px;border:0;font-weight:900;font-size:12px}.white{background:#fff;color:#111}.teal{background:var(--t);color:#fff}.section{padding:28px 18px}.section h2{font-size:27px;margin:0 0 6px;letter-spacing:-1px}.sub{color:#6d7075;font-size:13px;margin-bottom:16px}.scroll{display:flex;gap:11px;overflow-x:auto;padding-bottom:5px;scrollbar-width:none}.tile{min-width:210px;height:265px;background:linear-gradient(145deg,#222,#683695);color:#fff;padding:17px;display:flex;flex-direction:column;justify-content:flex-end}.tile:nth-child(2){background:linear-gradient(145deg,#0b5f59,#109488)}.tile:nth-child(3){background:linear-gradient(145deg,#555,#868e92)}.tile b{font-size:21px}.tile span{font-size:12px;margin-top:5px;color:#eee}.feature{padding:38px 22px;background:#101011;color:white}.feature h2{font-size:36px;line-height:.95;margin:6px 0 12px;letter-spacing:-2px}.feature.tealbg{background:linear-gradient(145deg,#0c7770,#109488)}.lockerCard{margin-top:18px;background:#fff;color:#111;padding:20px}.lockerbrand{display:flex;align-items:center;gap:10px;margin-bottom:14px}.lockerbrand img{height:42px;width:auto}.lockerbrand b{font-size:24px;letter-spacing:-1px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini{padding:18px 14px;background:#f2f2f3;min-height:92px;font-weight:800}.mini small{display:block;color:#777;margin-top:5px;font-weight:500}.order{background:#f5f5f6;padding:20px;margin-bottom:12px;border-left:5px solid var(--t)}.status{display:inline-block;background:var(--t);color:#fff;padding:5px 8px;font-size:10px;font-weight:900;letter-spacing:1px}.progress{height:7px;background:#ddd;margin:16px 0 8px}.progress i{display:block;width:68%;height:100%;background:linear-gradient(90deg,var(--p),var(--t))}.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);height:72px;background:#fff;border-top:1px solid #ddd;display:grid;grid-template-columns:repeat(5,1fr);z-index:20}.nav button{border:0;background:#fff;font-size:10px;font-weight:800;color:#707278}.nav button.active{color:var(--p)}.nav .goat img{height:28px;display:block;margin:0 auto 2px}.pagehead{padding:35px 18px 22px;background:#111;color:#fff}.pagehead h1{font-size:38px;margin:0}.products{display:grid;grid-template-columns:1fr 1fr;gap:10px}.product{background:#f3f3f4;min-height:220px;padding:15px;display:flex;flex-direction:column;justify-content:flex-end}.product b{font-size:16px}.orange{color:var(--o)}
-/* ===== Integrated GOAT Locker / app screens ===== */
-.page{display:none}.page.active{display:block}
-.locker{background:#f5f5f7;color:#111217;min-height:calc(100vh - 146px);padding-bottom:24px}
-.locker-hero{background:linear-gradient(135deg,#111 0%,#222 65%,#683695 160%);color:#fff;padding:28px 22px 25px}
-.locker-eyebrow{font-size:11px;letter-spacing:2.2px;color:#bfc2c8;font-weight:900}
-.locker-hero h1{font-size:36px;line-height:.95;margin:8px 0 9px;letter-spacing:-1.5px}
-.locker-hero p{margin:0;color:#d9d9dd;font-size:14px;line-height:1.4}
-.locker-teamcard{margin:18px 16px 0;border:1px solid #e8e8ec;border-radius:16px;padding:16px;background:#fff;box-shadow:0 7px 24px #0000000d}
-.locker-teamtop{display:flex;align-items:center;gap:13px}.locker-teamlogo{width:54px;height:54px;border-radius:13px;background:#111;color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px}
-.locker-teamtop h2{margin:0;font-size:19px}.locker-teamtop p{margin:3px 0 0;color:#6f737b;font-size:12px}
-.locker-switch{margin-left:auto;border:1px solid #e8e8ec;background:#fff;border-radius:10px;padding:8px 10px;color:#683695;font-weight:900;font-size:11px}
-.locker-progress{margin-top:15px;background:#eee;height:7px;border-radius:99px;overflow:hidden}.locker-progress span{display:block;width:68%;height:100%;background:#109488}
-.locker-progressrow{display:flex;justify-content:space-between;margin-top:7px;font-size:11px;color:#6f737b}.locker-progressrow strong{color:#109488}
-.locker-section{padding:21px 16px 0}.locker-sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:11px}.locker-sectionhead h3{margin:0;font-size:18px}.locker-sectionhead button{border:0;background:none;color:#683695;font-weight:900;font-size:12px}
-.locker-alert{border-radius:14px;background:#f7f1fb;border:1px solid #e7daf1;padding:14px;display:flex;gap:12px;align-items:center}
-.locker-alertmark{width:40px;height:40px;border-radius:11px;background:#683695;color:#fff;display:grid;place-items:center;font-size:20px}.locker-alert h4{margin:0 0 3px;font-size:14px}.locker-alert p{margin:0;color:#6f737b;font-size:11px}
-.locker-approve{margin-left:auto;border:0;background:#683695;color:#fff;border-radius:9px;padding:9px 10px;font-size:10px;font-weight:900}
-.locker-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.locker-tile{border:1px solid #e8e8ec;border-radius:14px;background:#fff;padding:16px;min-height:118px;text-align:left;position:relative;color:#111217}
-.locker-tile .ico{font-size:25px;margin-bottom:14px}.locker-tile strong{display:block;font-size:14px}.locker-tile small{display:block;color:#6f737b;font-size:10px;margin-top:4px}
-.locker-count{position:absolute;right:12px;top:12px;background:#eef8f7;color:#109488;border-radius:99px;padding:4px 7px;font-size:9px;font-weight:900}
-.locker-order{border:1px solid #e8e8ec;border-radius:14px;padding:14px;background:#fff}.locker-orderhead{display:flex;justify-content:space-between}.locker-order h4{margin:0;font-size:13px}.locker-order small{color:#6f737b;font-size:10px}.locker-status{color:#109488;font-weight:900;font-size:10px}
-.locker-stages{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:13px}.locker-stages i{height:5px;border-radius:99px;background:#e6e6e9}.locker-stages i.on{background:#109488}
-.locker-stagewords{display:flex;justify-content:space-between;color:#6f737b;font-size:8px;margin-top:6px}
-.locker-quick{display:flex;gap:8px;overflow:auto;padding-bottom:2px}.locker-pill{white-space:nowrap;border:1px solid #e8e8ec;background:#fff;border-radius:99px;padding:9px 12px;font-size:10px;font-weight:900}
-.app-screen{min-height:calc(100vh - 146px);background:#f5f5f7;color:#111217;padding:28px 18px 110px}.app-screen h1{font-size:34px;margin:5px 0 8px}.app-screen p{color:#6f737b;line-height:1.5}
-.nav button.active{color:#683695}.toast{display:none;position:fixed;bottom:84px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:11px 16px;border-radius:10px;font-size:12px;z-index:60;white-space:nowrap}
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GOAT Sports App</title>
+<style>
+:root{--purple:#683695;--teal:#109488;--orange:#BE5927;--silver:#868e92;--ink:#0a0b0d;--paper:#fff;--soft:#f4f5f6;--line:#e6e7e9}
+*{box-sizing:border-box}html,body{margin:0;background:#e9eaec;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+button,a{font:inherit}.app{width:100%;max-width:520px;min-height:100vh;margin:auto;background:#fff;position:relative;padding-bottom:74px;box-shadow:0 0 30px #00000010}
+.header{height:72px;position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);display:grid;grid-template-columns:56px 1fr 56px;align-items:center;padding:0 10px}
+.iconbtn{border:0;background:transparent;color:var(--teal);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative}
+.iconbtn svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2}.badge{position:absolute;right:4px;top:3px;background:var(--orange);color:#fff;font-size:9px;font-weight:900;min-width:17px;height:17px;border-radius:20px;display:grid;place-items:center;border:2px solid #fff}
+.brand{text-align:center;color:var(--purple);font-weight:1000;letter-spacing:-1px;font-size:21px}.brand span{display:block;font-size:8px;letter-spacing:3px;margin-top:1px}
+.screen{display:none}.screen.active{display:block}
+.hero{min-height:390px;background:linear-gradient(145deg,#050506,#16171a);color:#fff;display:flex;align-items:flex-end;padding:35px 22px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:270px;height:270px;border:55px solid #ffffff08;border-radius:50%;right:-120px;top:25px}
+.eyebrow{font-size:10px;letter-spacing:2.4px;font-weight:900;color:#d0d2d6}.hero h1{font-size:48px;line-height:.89;letter-spacing:-2.4px;margin:10px 0 13px}.hero p{font-size:14px;line-height:1.45;color:#d6d7da;max-width:320px;margin:0 0 18px}
+.cta{border:0;background:var(--purple);color:#fff;padding:13px 17px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.6px}.cta.alt{background:#fff;color:#111;margin-left:6px}
+.section{padding:24px 16px}.sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:13px}.sectionhead h2{font-size:20px;margin:0;letter-spacing:-.5px}.sectionhead button{border:0;background:none;color:var(--purple);font-size:11px;font-weight:900}
+.categorygrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.category{height:130px;border:0;border-radius:7px;padding:14px;text-align:left;color:#fff;font-weight:900;font-size:17px;display:flex;align-items:flex-end;background:linear-gradient(145deg,#222,#080808)}
+.category:nth-child(2){background:linear-gradient(145deg,#683695,#261238)}.category:nth-child(3){background:linear-gradient(145deg,#109488,#063f3a)}.category:nth-child(4){background:linear-gradient(145deg,#555,#151515)}
+.splitcards{display:grid;grid-template-columns:1fr 1fr;gap:9px}.promo{min-height:180px;border-radius:8px;padding:17px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;background:#111}.promo:nth-child(2){background:var(--purple)}.promo small{font-size:9px;letter-spacing:1.4px;font-weight:900}.promo strong{font-size:22px;line-height:.95;margin-top:6px}
+.storehero{padding:29px 20px;background:#0b0c0e;color:#fff}.storehero h1,.plain h1{font-size:38px;line-height:.95;margin:7px 0 10px}.storehero p,.plain p{color:#aeb2b8;line-height:1.5;font-size:13px}
+.shopbar{padding:12px 16px;display:flex;gap:8px;overflow:auto;border-bottom:1px solid var(--line)}.chip{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:30px;padding:9px 12px;font-size:10px;font-weight:900}.chip.active{background:#111;color:#fff;border-color:#111}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px}.product{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}.productimg{height:155px;background:linear-gradient(145deg,#f2f2f2,#d9dadd);display:grid;place-items:center;color:#999;font-size:11px;font-weight:900}.productinfo{padding:11px}.productinfo strong{font-size:12px;display:block}.productinfo span{font-size:11px;color:#666;display:block;margin-top:5px}.productinfo button{margin-top:9px;width:100%;border:0;background:#111;color:#fff;padding:9px;font-size:9px;font-weight:900}
+.shopnote{margin:0 16px 18px;background:#eef8f7;border-left:4px solid var(--teal);padding:12px;font-size:11px;line-height:1.4}
+.plain{padding:32px 18px 110px;background:var(--soft);min-height:calc(100vh - 72px)}.placeholdercard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;margin-top:18px}.placeholdercard h3{margin:0 0 7px;font-size:16px}.placeholdercard p{margin:0;color:#6e7278}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:60;width:100%;max-width:520px;height:72px;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:#fff;color:#777;font-size:8px;font-weight:900;padding:8px 2px 5px}.nav svg{width:20px;height:20px;display:block;margin:0 auto 4px;fill:none;stroke:currentColor;stroke-width:2}.nav button.active{color:var(--purple)}
+@media(min-width:700px){.app{margin:18px auto;min-height:calc(100vh - 36px);border-radius:14px;overflow:hidden}.nav{bottom:18px;border-radius:0 0 14px 14px}}
 </style>
-<style id="goat-header-controls">
-.goat-app-header{
-  position:sticky;
-  top:0;
-  z-index:1000;
-  display:grid;
-  grid-template-columns:56px minmax(0,1fr) 56px;
-  align-items:center;
-  min-height:72px;
-  padding:8px 10px;
-  background:#683695;
-  box-shadow:0 2px 14px rgba(0,0,0,.12);
-}
-.header-brand{
-  min-width:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  overflow:hidden;
-}
-.header-brand img{
-  display:block;
-  max-width:100%;
-  height:48px !important;
-  width:auto !important;
-  object-fit:contain;
-}
-.header-icon-btn{
-  position:relative;
-  width:44px;
-  height:44px;
-  margin:auto;
-  border:0;
-  border-radius:50%;
-  background:rgba(255,255,255,.10);
-  color:#fff;
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-}
-.header-icon-btn:active{transform:scale(.96)}
-.header-icon-btn svg{
-  width:23px;
-  height:23px;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.9;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-.notification-badge{
-  position:absolute;
-  top:2px;
-  right:1px;
-  min-width:18px;
-  height:18px;
-  padding:0 4px;
-  border:2px solid #683695;
-  border-radius:999px;
-  background:#109488;
-  color:#fff;
-  font:700 10px/14px Arial,sans-serif;
-  display:grid;
-  place-items:center;
-}
-.header-notice{
-  position:fixed;
-  z-index:1200;
-  top:80px;
-  left:50%;
-  transform:translate(-50%,-12px);
-  width:min(88vw,380px);
-  padding:12px 14px;
-  border-radius:12px;
-  background:#fff;
-  color:#202124;
-  box-shadow:0 8px 28px rgba(0,0,0,.20);
-  border-left:4px solid #109488;
-  font:600 13px/1.35 Arial,sans-serif;
-  opacity:0;
-  pointer-events:none;
-  transition:.2s ease;
-}
-.header-notice.show{opacity:1;transform:translate(-50%,0)}
-@media (max-width:430px){
-  .goat-app-header{grid-template-columns:50px minmax(0,1fr) 50px;min-height:68px;padding:7px 6px}
-  .header-brand{gap:5px}
-  .header-brand img{height:42px !important}
-  .header-icon-btn{width:40px;height:40px}
-}
-</style>
-
-
-<style id="goat-white-header-override">
-/* GOAT V3 white premium header */
-.goat-app-header{
-  background:#ffffff !important;
-  border-bottom:1px solid rgba(134,142,146,.24);
-  box-shadow:0 2px 12px rgba(0,0,0,.055) !important;
-}
-
-/* Turn the existing black transparent logo/wordmark into GOAT purple.
-   Black source pixels -> #683695 while transparent pixels remain transparent. */
-.header-brand img{
-  filter: invert(28%) sepia(36%) saturate(2448%) hue-rotate(247deg) brightness(82%) contrast(93%) !important;
-}
-
-/* Bell + login/account */
-.header-icon-btn{
-  background:transparent !important;
-  color:#109488 !important;
-}
-.header-icon-btn:hover,
-.header-icon-btn:focus-visible{
-  background:rgba(16,148,136,.08) !important;
-  outline:none;
-}
-
-/* Burnt-orange unread notification only */
-.notification-badge{
-  background:#BE5927 !important;
-  color:#fff !important;
-  border-color:#fff !important;
-}
-
-/* Keep temporary preview notice coordinated with the header */
-.header-notice{
-  border-left-color:#109488 !important;
-}
-</style>
-
-
-<style id="official-goat-logo-override">
-.header-brand img,
-.header-brand .official-goat-header-logo{
-  filter:none !important;
-}
-.header-brand .official-goat-header-logo{
-  width:auto !important;
-  height:48px !important;
-  max-width:min(100%, 420px) !important;
-  object-fit:contain !important;
-}
-@media (max-width:430px){
-  .header-brand .official-goat-header-logo{
-    height:42px !important;
-    max-width:100% !important;
-  }
-}
-</style>
-
-
-<style id="goat-video-hero-styles">
-.goat-video-hero{position:relative;width:100%;height:clamp(300px,52vh,470px);min-height:300px;overflow:hidden;background:#111;isolation:isolate}
-.goat-hero-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .7s ease,visibility .7s ease;z-index:0}
-.goat-hero-slide.active{opacity:1;visibility:visible;z-index:1}
-.goat-hero-video,.goat-hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;background:#07080a}
-.goat-hero-image{transform:none}
-.goat-team-store-slide{cursor:pointer;background:#07080a}.goat-team-store-image{object-fit:contain;object-position:center;background:#07080a;transform:none}.goat-team-store-slide.active .goat-team-store-image{animation:none}
-.goat-hero-slide.active .goat-hero-image{animation:goatKenBurns 8s ease-out both}
-@keyframes goatKenBurns{from{transform:scale(1.02)}to{transform:scale(1.08)}}
-.goat-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.76) 0%,rgba(0,0,0,.46) 46%,rgba(0,0,0,.12) 78%),linear-gradient(0deg,rgba(0,0,0,.46) 0%,transparent 45%)}
-.goat-hero-content{position:relative;z-index:2;height:100%;max-width:1180px;margin:0 auto;padding:0 7vw 64px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;color:#fff}
-.goat-hero-kicker{margin-bottom:10px;font:800 12px/1.1 Arial,sans-serif;letter-spacing:.22em}
-.goat-hero-content h1{margin:0;max-width:720px;font:900 clamp(50px,8vw,96px)/.84 Arial,sans-serif;letter-spacing:-.055em}
-.goat-hero-content p{margin:17px 0 21px;font:500 clamp(16px,2vw,20px)/1.3 Arial,sans-serif}
-.goat-hero-cta{border:0;border-radius:999px;padding:14px 21px;background:#109488;color:#fff;font:800 12px/1 Arial,sans-serif;letter-spacing:.07em;cursor:pointer}
-.goat-hero-cta span{margin-left:8px;font-size:16px}
-.goat-video-toggle{position:absolute;right:18px;bottom:18px;width:38px;height:38px;border:1px solid rgba(255,255,255,.5);border-radius:50%;background:rgba(0,0,0,.28);backdrop-filter:blur(6px);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:5}
-.goat-video-toggle.hidden{display:none}
-.goat-slide-dots{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;gap:7px;z-index:6}
-.goat-slide-dots button{width:7px;height:7px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.48);cursor:pointer}
-.goat-slide-dots button.active{width:24px;border-radius:10px;background:#fff}
-@media(max-width:600px){.goat-video-hero{height:clamp(250px,46vh,360px);min-height:250px;max-height:360px}.goat-team-store-image{object-fit:contain;background:#07080a}.goat-hero-video{object-position:center center}.goat-hero-image{object-position:center center}.goat-hero-shade{background:linear-gradient(0deg,rgba(0,0,0,.80) 0%,rgba(0,0,0,.38) 58%,rgba(0,0,0,.08) 100%)}.goat-hero-content{padding:0 20px 52px}.goat-hero-content h1{font-size:clamp(36px,12vw,54px)}.goat-hero-content p{margin:13px 0 18px}.goat-video-toggle{right:14px;bottom:16px}.goat-slide-dots{bottom:28px}}
-@media(prefers-reduced-motion:reduce){.goat-hero-slide{transition:none}.goat-hero-slide.active .goat-hero-image{animation:none}}
-</style>
-
-</head><body><div class="app">
-<header class="goat-app-header">
-  <button class="header-icon-btn notification-btn" type="button" aria-label="Notifications"
-          onclick="showHeaderNotice('notifications')">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
-      <path d="M10 21h4"></path>
-    </svg>
-    <span class="notification-badge" aria-label="3 unread notifications">3</span>
-  </button>
-
-  <div class="header-brand" aria-label="GOAT Sports"><img class="official-goat-header-logo" src="data:image/png;base64,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" alt="GOAT Sports"></div>
-
-  <button class="header-icon-btn account-btn" type="button" aria-label="Login or account"
-          onclick="showHeaderNotice('account')">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="8" r="4"></circle>
-      <path d="M4 21a8 8 0 0 1 16 0"></path>
-    </svg>
-  </button>
+</head>
+<body>
+<main class="app">
+<header class="header">
+<button class="iconbtn" aria-label="Notifications" onclick="notice()"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="badge">2</span></button>
+<div class="brand">GOAT SPORTS<span>GOATIVATED</span></div>
+<button class="iconbtn" aria-label="Account" onclick="go('account')"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button>
 </header>
-<div id="headerNotice" class="header-notice" role="status" aria-live="polite"></div>
 
-<section class="goat-video-hero" aria-label="GOAT Sports featured promotions">
-  <div class="goat-hero-slide active" data-slide="0">
-    <video class="goat-hero-video" autoplay muted loop playsinline preload="metadata">
-      <source src="https://cdn.shopify.com/videos/c/o/v/cc58821dc5344833863b85f326f2a419.mp4" type="video/mp4">
-    </video>
-    <div class="goat-hero-shade"></div>
-    <div class="goat-hero-content">
-      <div class="goat-hero-kicker">GOAT SPORTS</div>
-      <h1>BUILT TO<br>COMPETE.</h1>
-      <p>Custom uniforms built for your team.</p>
-      <button type="button" class="goat-hero-cta" onclick="showHeaderNotice('design')">START YOUR DESIGN <span>→</span></button>
-    </div>
-  </div>
-
-  <div class="goat-hero-slide" data-slide="1">
-    <img class="goat-hero-image" src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/Cinematic_GOATivated_Gym_Apparel_Collage_1.png?v=1791073060" alt="GOATIVATED apparel collection">
-    <div class="goat-hero-shade"></div>
-    <div class="goat-hero-content">
-      <div class="goat-hero-kicker">GOATIVATED</div>
-      <h1>WEAR THE<br>MINDSET.</h1>
-      <p>GOATIVATED — built for more than the game.</p>
-      <button type="button" class="goat-hero-cta" onclick="go('shop')">SHOP GOATIVATED <span>→</span></button>
-    </div>
-  </div>
-
-  <div class="goat-hero-slide goat-team-store-slide" data-slide="2" role="button" tabindex="0" aria-label="Find your team store" onclick="go('shop')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('shop')}">
-    <img class="goat-hero-image goat-team-store-image" src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/Neon_GOAT_Team_Store_Showcase.png?v=1791118832" alt="GOAT Sports Team Stores showcase">
-  </div>
-
-  <button class="goat-video-toggle" type="button" aria-label="Pause video" onclick="toggleGoatHero(this)"><span class="pause-symbol">Ⅱ</span></button>
-  <div class="goat-slide-dots" aria-label="Hero slides">
-    <button class="active" type="button" aria-label="Show slide 1" onclick="showGoatHeroSlide(0,true)"></button>
-    <button type="button" aria-label="Show slide 2" onclick="showGoatHeroSlide(1,true)"></button>
-    <button type="button" aria-label="Show slide 3" onclick="showGoatHeroSlide(2,true)"></button>
-  </div>
+<section id="home" class="screen active">
+<div class="hero"><div><div class="eyebrow">GOAT SPORTS • BUILT FOR THE GAME</div><h1>GEAR.<br>TEAMS.<br>MINDSET.</h1><p>Custom team gear, GOATIVATED apparel and everything your organization needs—connected in one place.</p><button class="cta" onclick="go('shop')">SHOP GOAT SPORTS</button><button class="cta alt" onclick="go('locker')">GOAT LOCKER</button></div></div>
+<div class="section"><div class="sectionhead"><h2>Shop by Sport</h2><button onclick="go('shop')">VIEW ALL</button></div><div class="categorygrid"><button class="category" onclick="go('shop')">FOOTBALL</button><button class="category" onclick="go('shop')">BASKETBALL</button><button class="category" onclick="go('shop')">SOFTBALL</button><button class="category" onclick="go('shop')">TRAINING</button></div></div>
+<div class="section" style="padding-top:0"><div class="splitcards"><button class="promo" onclick="go('shop')"><small>BUILT FOR YOUR TEAM</small><strong>CUSTOM<br>UNIFORMS</strong></button><button class="promo" onclick="go('shop')"><small>YOUR ORGANIZATION</small><strong>TEAM<br>STORES</strong></button></div></div>
 </section>
 
-<section id="home" class="screen active"><div class="section"><h2>Trending Now</h2><div class="sub">Performance gear. Team identity. GOAT style.</div><div class="scroll"><div class="tile"><b>Custom Uniforms</b><span>Built for your program →</span></div><div class="tile"><b>GOATIVATED</b><span>Shop the collection →</span></div><div class="tile"><b>Team Stores</b><span>Wear your colors →</span></div></div></div><div class="feature"><div class="eyebrow">CUSTOM TEAM SERVICES</div><h2>YOUR TEAM.<br>YOUR IDENTITY.</h2><p>From concept to competition, build your program with custom uniforms, apparel and a dedicated team store.</p><button class="cta teal">START YOUR DESIGN</button></div><div class="section"><h2>Your GOAT</h2><div class="order"><span class="status">IN PRODUCTION</span><h3>48 Custom Football Uniforms</h3><div class="progress"><i></i></div><small>Production progress • 68%</small></div></div><div class="feature tealbg"><div class="eyebrow">BE GOATIVATED</div><h2>MORE THAN<br>A UNIFORM.</h2><p>Performance. Identity. Mindset.</p><button class="cta white" onclick="go('shop')">SHOP THE COLLECTION</button></div></section>
-<section id="shop" class="screen"><div class="pagehead"><div class="eyebrow">GOAT SPORTS</div><h1>SHOP</h1></div><div class="section shop-live"><div class="shop-live-head"><div><h2>Shop GOAT Sports</h2><div class="sub">Live products from Shopify</div></div><button class="shop-refresh" type="button" onclick="loadShopifyProducts(true)" aria-label="Refresh products">↻</button></div><div id="shopify-status" class="shopify-status">Loading products…</div><div id="shopify-products" class="shopify-grid" aria-live="polite"></div></div></section>
-<section id="locker" class="screen"><div class="locker">
-<section class="locker-hero"><div class="locker-eyebrow">YOUR TEAM. YOUR GEAR. ONE PLACE.</div><h1>GOAT<br>LOCKER</h1><p>Manage designs, rosters, team stores, quotes and reorders without starting over every season.</p></section>
-<div class="locker-teamcard"><div class="locker-teamtop"><div class="locker-teamlogo">T</div><div><h2>Tigers Football</h2><p>2027 Team Account • Football</p></div><button class="locker-switch" onclick="toast('Team switcher opened')">SWITCH ▾</button></div><div class="locker-progress"><span></span></div><div class="locker-progressrow"><span>2027 uniform order</span><strong>IN PRODUCTION</strong></div></div>
-<section class="locker-section"><div class="locker-sectionhead"><h3>Needs Your Attention</h3></div><div class="locker-alert"><div class="locker-alertmark">✓</div><div><h4>Artwork ready for approval</h4><p>Home Football Uniform • Revision 2</p></div><button class="locker-approve" onclick="toast('Artwork approval opened')">REVIEW</button></div></section>
-<section class="locker-section"><div class="locker-sectionhead"><h3>My Locker</h3><button onclick="toast('Manage locker')">MANAGE</button></div><div class="locker-grid">
-<button class="locker-tile" onclick="toast('My Teams opened')"><span class="locker-count">2 TEAMS</span><div class="ico">♜</div><strong>My Teams</strong><small>Organizations & team profiles</small></button>
-<button class="locker-tile" onclick="toast('My Designs opened')"><span class="locker-count">8 SAVED</span><div class="ico">✎</div><strong>My Designs</strong><small>Uniforms, apparel & concepts</small></button>
-<button class="locker-tile" onclick="toast('Artwork opened')"><span class="locker-count">1 ACTION</span><div class="ico">▣</div><strong>Artwork</strong><small>Proofs & approvals</small></button>
-<button class="locker-tile" onclick="toast('Rosters & Sizes opened')"><div class="ico">☷</div><strong>Rosters & Sizes</strong><small>Players, numbers and sizing</small></button>
-<button class="locker-tile" onclick="toast('Team Stores opened')"><span class="locker-count">LIVE</span><div class="ico">▤</div><strong>Team Stores</strong><small>Manage your organization stores</small></button>
-<button class="locker-tile" onclick="toast('Quotes opened')"><span class="locker-count">2 OPEN</span><div class="ico">$</div><strong>Quotes</strong><small>Current estimates & proposals</small></button>
-<button class="locker-tile" onclick="toast('Reorders opened')"><div class="ico">↻</div><strong>Reorders</strong><small>Order proven designs again</small></button>
-<button class="locker-tile" onclick="toast('Documents opened')"><div class="ico">▧</div><strong>Documents</strong><small>Invoices, forms & files</small></button>
-</div></section>
-<section class="locker-section"><div class="locker-sectionhead"><h3>Active Order</h3><button onclick="go('orders')">VIEW ALL</button></div><div class="locker-order"><div class="locker-orderhead"><div><h4>#GS-270184 • Tigers Football</h4><small>Home & Away Uniform Package</small></div><div class="locker-status">PRODUCTION</div></div><div class="locker-stages"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div><div class="locker-stagewords"><span>Ordered</span><span>Artwork</span><span>Production</span><span>QC</span><span>Shipped</span><span>Delivered</span></div></div></section>
-<section class="locker-section" style="padding-bottom:22px"><div class="locker-sectionhead"><h3>Quick Actions</h3></div><div class="locker-quick"><button class="locker-pill" onclick="toast('Design Studio started')">＋ START A DESIGN</button><button class="locker-pill" onclick="toast('Roster upload opened')">↑ UPLOAD ROSTER</button><button class="locker-pill" onclick="toast('Reorder opened')">↻ REORDER GEAR</button><button class="locker-pill" onclick="toast('Quote request opened')">$ REQUEST QUOTE</button></div></section>
-</div></section><section id="orders" class="screen"><div class="pagehead"><div class="eyebrow">GOAT ORDER CENTER</div><h1>ORDERS</h1></div><div class="section"><div class="order"><span class="status">IN PRODUCTION</span><h2>Pueblo Football</h2><p>48 Custom Uniform Sets</p><div class="progress"><i></i></div><b>68% Complete</b><p>✓ Order received<br>✓ Artwork approved<br>● In production<br>○ Quality control<br>○ Shipping</p><button class="cta teal">VIEW ORDER</button></div><div class="order" style="border-left-color:#683695"><span class="status" style="background:#683695">ARTWORK READY</span><h2>Coaches Apparel</h2><p>Approval needed before production.</p><button class="cta white" style="border:1px solid #ccc">REVIEW ARTWORK</button></div></div></section>
-<section id="account" class="screen"><div class="pagehead"><div class="eyebrow">MY GOAT</div><h1>ACCOUNT</h1></div><div class="section"><h2>Welcome Back</h2><div class="grid"><div class="mini">Profile<small>Contact information</small></div><div class="mini">Addresses<small>Shipping & billing</small></div><div class="mini">Notifications<small>Order updates</small></div><div class="mini">Support<small>Contact GOAT</small></div></div><p class="sub" style="margin-top:28px">Burnt orange is intentionally reserved for limited alerts, special releases and moments requiring attention.</p></div></section>
-<nav class="nav"><button class="active" onclick="go('home',this)">⌂<br>HOME</button><button onclick="go('shop',this)">▦<br>SHOP</button><button class="goat" onclick="go('locker',this)"><img src="data:image/png;base64,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">LOCKER</button><button onclick="go('orders',this)">▤<br>ORDERS</button><button onclick="go('account',this)">○<br>ACCOUNT</button></nav><div id="lockerToast" style="display:none;position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:90;background:#111;color:#fff;padding:11px 16px;border-radius:10px;font:700 12px Arial;white-space:nowrap"></div></div><script>function go(id,b){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');else{let bs=[...document.querySelectorAll('.nav button')];let m={home:0,shop:1,locker:2,orders:3,account:4};bs[m[id]].classList.add('active')}window.scrollTo(0,0)}
-let __lockerToastTimer;
-function toast(msg){const e=document.getElementById('lockerToast');if(!e)return;e.textContent=msg;e.style.display='block';clearTimeout(__lockerToastTimer);__lockerToastTimer=setTimeout(()=>e.style.display='none',1400);}
+<section id="shop" class="screen">
+<div class="storehero"><div class="eyebrow">CONNECTED STORE</div><h1>SHOP<br>GOAT SPORTS</h1><p>This shell is designed for your connected Shopify storefront. Products, collections, pricing, variants, cart and checkout will plug into this screen.</p></div>
+<div class="shopbar"><button class="chip active">FEATURED</button><button class="chip">FOOTBALL</button><button class="chip">BASKETBALL</button><button class="chip">SOFTBALL</button><button class="chip">APPAREL</button></div>
+<div class="products"><article class="product"><div class="productimg">SHOPIFY PRODUCT</div><div class="productinfo"><strong>Product from Shopify</strong><span>Price / variants</span><button>VIEW PRODUCT</button></div></article><article class="product"><div class="productimg">SHOPIFY PRODUCT</div><div class="productinfo"><strong>Product from Shopify</strong><span>Price / variants</span><button>VIEW PRODUCT</button></div></article></div>
+<div class="shopnote"><strong>Shopify-ready:</strong> this is intentionally a shell—not hard-coded fake inventory. We can connect the actual Storefront API data next.</div>
+</section>
+
+<section id="locker" class="screen plain"><div class="eyebrow" style="color:var(--purple)">TEAM MANAGEMENT</div><h1>GOAT<br>LOCKER</h1><p>Your persistent team workspace for designs, artwork, rosters, sizes, team stores, quotes, reorders and documents.</p><div class="placeholdercard"><h3>Locker foundation ready</h3><p>We will build this screen after the Home and connected Shop are approved.</p></div></section>
+<section id="orders" class="screen plain"><div class="eyebrow" style="color:var(--teal)">PRODUCTION TRACKING</div><h1>ORDERS</h1><p>Track custom orders through artwork, production, quality control, shipping and delivery.</p><div class="placeholdercard"><h3>Order center foundation ready</h3><p>Shopify orders and GOAT production statuses will meet here.</p></div></section>
+<section id="account" class="screen plain"><div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h1>ACCOUNT</h1><p>Profile, organization information, saved addresses, notifications and order history.</p><div class="placeholdercard"><h3>Account foundation ready</h3><p>This is prepared for Shopify Customer Account integration later.</p></div></section>
+
+<nav class="nav">
+<button class="active" data-id="home" onclick="go('home',this)"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/></svg>HOME</button>
+<button data-id="shop" onclick="go('shop',this)"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8z"/><path d="M8 8a4 4 0 0 1 8 0"/></svg>SHOP</button>
+<button data-id="locker" onclick="go('locker',this)"><svg viewBox="0 0 24 24"><path d="M4 3h16v18H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>GOAT LOCKER</button>
+<button data-id="orders" onclick="go('orders',this)"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>ORDERS</button>
+<button data-id="account" onclick="go('account',this)"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>ACCOUNT</button>
+</nav>
+</main>
+<script>
+function go(id,btn){
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+ window.scrollTo({top:0,behavior:'instant'});
+}
+function notice(){alert('Notifications are ready to connect once we build account/order data.')}
 </script>
-<script id="goat-header-controls-js">
-function showHeaderNotice(type){
-  const el = document.getElementById('headerNotice');
-  if(!el) return;
-  el.textContent = type === 'notifications'
-    ? 'Notifications — artwork approvals, order updates, shipping alerts and GOAT news will appear here.'
-    : 'Login / Account — customer sign-in and profile access will open here.';
-  el.classList.add('show');
-  clearTimeout(window.__goatHeaderNoticeTimer);
-  window.__goatHeaderNoticeTimer = setTimeout(() => el.classList.remove('show'), 2600);
-}
-</script>
-
-
-<script id="goat-video-hero-js">
-let goatHeroIndex=0;
-let goatHeroTimer=null;
-const goatHeroDelay=8000;
-function showGoatHeroSlide(index,restartTimer=false){
-  const hero=document.querySelector('.goat-video-hero');
-  if(!hero)return;
-  const slides=[...hero.querySelectorAll('.goat-hero-slide')];
-  const dots=[...hero.querySelectorAll('.goat-slide-dots button')];
-  if(!slides.length)return;
-  goatHeroIndex=(index+slides.length)%slides.length;
-  slides.forEach((slide,i)=>slide.classList.toggle('active',i===goatHeroIndex));
-  dots.forEach((dot,i)=>dot.classList.toggle('active',i===goatHeroIndex));
-  const video=hero.querySelector('.goat-hero-video');
-  const toggle=hero.querySelector('.goat-video-toggle');
-  if(video){
-    if(goatHeroIndex===0){video.play().catch(()=>{});if(toggle){toggle.classList.remove('hidden');toggle.innerHTML='<span class="pause-symbol">Ⅱ</span>';toggle.setAttribute('aria-label','Pause video')}}
-    else{video.pause();if(toggle)toggle.classList.add('hidden')}
-  }
-  if(restartTimer)startGoatHeroTimer();
-}
-function startGoatHeroTimer(){
-  clearInterval(goatHeroTimer);
-  goatHeroTimer=setInterval(()=>showGoatHeroSlide(goatHeroIndex+1,false),goatHeroDelay);
-}
-function toggleGoatHero(btn){
-  const video=document.querySelector('.goat-hero-video');
-  if(!video)return;
-  if(video.paused){video.play();btn.innerHTML='<span class="pause-symbol">Ⅱ</span>';btn.setAttribute('aria-label','Pause video')}
-  else{video.pause();btn.innerHTML='▶';btn.setAttribute('aria-label','Play video')}
-}
-(function(){
-  const hero=document.querySelector('.goat-video-hero');
-  if(!hero)return;
-  let startX=0;
-  hero.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});
-  hero.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-startX;if(Math.abs(dx)>45)showGoatHeroSlide(goatHeroIndex+(dx<0?1:-1),true)},{passive:true});
-  startGoatHeroTimer();
-})();
-</script>
-
-
-<style id="shopify-live-styles">
-.shop-live{padding-top:22px}.shop-live-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}.shop-live-head h2{margin-bottom:3px}.shop-refresh{width:38px;height:38px;border:1px solid #ddd;background:#fff;border-radius:50%;font-size:20px;cursor:pointer}.shopify-status{padding:24px 0;color:#6d7075;font-size:13px}.shopify-status.error{color:#9b2525}.shopify-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.shopify-card{border:0;background:#fff;padding:0;text-align:left;cursor:pointer;min-width:0}.shopify-image{position:relative;aspect-ratio:1/1;background:#f3f3f4;overflow:hidden}.shopify-image img{width:100%;height:100%;object-fit:cover;display:block}.shopify-image .no-image{height:100%;display:grid;place-items:center;color:#868e92;font-size:11px;font-weight:800;letter-spacing:.08em}.shopify-badge{position:absolute;left:8px;top:8px;background:#fff;padding:5px 7px;font-size:9px;font-weight:900;letter-spacing:.08em}.shopify-info{padding:10px 2px 14px}.shopify-title{font-size:14px;line-height:1.2;font-weight:800;margin-bottom:6px}.shopify-price{font-size:13px;font-weight:900}.shopify-compare{font-size:11px;color:#868e92;text-decoration:line-through;margin-left:5px}.shopify-sold{font-size:10px;color:#868e92;margin-top:5px;font-weight:700}.shopify-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none;align-items:flex-end;justify-content:center}.shopify-modal.open{display:flex}.shopify-sheet{width:min(100%,520px);max-height:86vh;overflow:auto;background:#fff;border-radius:18px 18px 0 0;padding:20px}.shopify-sheet-top{display:flex;justify-content:space-between;gap:12px}.shopify-close{border:0;background:#f1f1f2;width:36px;height:36px;border-radius:50%;font-size:18px}.shopify-sheet img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#f3f3f4;margin:12px 0 16px}.shopify-sheet h2{font-size:26px;margin:0 0 8px}.shopify-sheet .detail-price{font-size:18px;font-weight:900;margin-bottom:14px}.shopify-variants{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.shopify-variant{border:1px solid #bbb;background:#fff;padding:9px 11px;font-weight:800;font-size:11px}.shopify-variant:disabled{opacity:.35}.shopify-buy{width:100%;border:0;background:#683695;color:#fff;padding:15px;font-weight:900;margin-top:8px}.shopify-buy:disabled{background:#aaa}.shopify-note{font-size:11px;color:#6d7075;margin-top:10px;line-height:1.4}
-</style>
-
-<div id="shopify-modal" class="shopify-modal" onclick="if(event.target===this)closeShopifyProduct()"><div class="shopify-sheet" id="shopify-sheet"></div></div>
-
-<script id="shopify-live-script">
-const SHOPIFY_STORE='186815-4c.myshopify.com';
-const SHOPIFY_PUBLIC_TOKEN='df49776e20924d7b35003c9e6b675938';
-const SHOPIFY_API_VERSION='2026-10';
-const SHOPIFY_ENDPOINT=`https://${SHOPIFY_STORE}/api/${SHOPIFY_API_VERSION}/graphql.json`;
-let shopifyProducts=[];
-let shopifyLoaded=false;
-const PRODUCTS_QUERY=`query GOATProducts($first:Int!){products(first:$first,sortKey:TITLE){nodes{id title handle description availableForSale featuredImage{url altText width height} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode} compareAtPrice{amount currencyCode}}}}}}`;
-function money(amount,currency='USD'){try{return new Intl.NumberFormat('en-US',{style:'currency',currency}).format(Number(amount))}catch(e){return '$'+Number(amount).toFixed(2)}}
-async function shopifyRequest(query,variables={}){const r=await fetch(SHOPIFY_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','X-Shopify-Storefront-Access-Token':SHOPIFY_PUBLIC_TOKEN},body:JSON.stringify({query,variables})});const payload=await r.json().catch(()=>({}));if(!r.ok||payload.errors)throw new Error(payload.errors?.[0]?.message||`Shopify request failed (${r.status})`);return payload.data}
-async function loadShopifyProducts(force=false){if(shopifyLoaded&&!force)return;const status=document.getElementById('shopify-status'),grid=document.getElementById('shopify-products');if(!status||!grid)return;status.className='shopify-status';status.textContent='Loading products…';grid.innerHTML='';try{const data=await shopifyRequest(PRODUCTS_QUERY,{first:40});shopifyProducts=data.products.nodes||[];shopifyLoaded=true;renderShopifyProducts();status.style.display=shopifyProducts.length?'none':'block';if(!shopifyProducts.length)status.textContent='No products are currently published to this storefront.'}catch(err){status.style.display='block';status.className='shopify-status error';status.textContent='Could not load Shopify products. '+err.message;console.error(err)}}
-function renderShopifyProducts(){const grid=document.getElementById('shopify-products');grid.innerHTML=shopifyProducts.map((p,i)=>{const v=p.variants.nodes[0],price=p.priceRange.minVariantPrice,img=p.featuredImage;return `<button class="shopify-card" type="button" onclick="openShopifyProduct(${i})"><div class="shopify-image">${img?`<img src="${img.url}" alt="${(img.altText||p.title).replace(/"/g,'&quot;')}" loading="lazy">`:'<div class="no-image">GOAT SPORTS</div>'}${!p.availableForSale?'<span class="shopify-badge">SOLD OUT</span>':''}</div><div class="shopify-info"><div class="shopify-title">${p.title}</div><span class="shopify-price">${money(price.amount,price.currencyCode)}</span>${v?.compareAtPrice?`<span class="shopify-compare">${money(v.compareAtPrice.amount,v.compareAtPrice.currencyCode)}</span>`:''}${!p.availableForSale?'<div class="shopify-sold">Currently unavailable</div>':''}</div></button>`}).join('')}
-function openShopifyProduct(i){const p=shopifyProducts[i],sheet=document.getElementById('shopify-sheet'),modal=document.getElementById('shopify-modal');if(!p)return;const variants=p.variants.nodes||[],img=p.featuredImage;sheet.innerHTML=`<div class="shopify-sheet-top"><div><div class="eyebrow" style="color:#683695">GOAT SPORTS</div><h2>${p.title}</h2></div><button class="shopify-close" onclick="closeShopifyProduct()" aria-label="Close">×</button></div>${img?`<img src="${img.url}" alt="${(img.altText||p.title).replace(/"/g,'&quot;')}">`:''}<div class="detail-price">${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</div>${p.description?`<p style="font-size:13px;line-height:1.5;color:#555">${p.description}</p>`:''}<div class="shopify-variants">${variants.map(v=>`<button class="shopify-variant" ${v.availableForSale?'':'disabled'}>${v.title}</button>`).join('')}</div><button class="shopify-buy" ${p.availableForSale?'':'disabled'} onclick="alert('Cart connection is the next step. Product and variant data are now live from Shopify.')">${p.availableForSale?'ADD TO CART':'SOLD OUT'}</button><div class="shopify-note">Live Shopify product data. Cart and checkout will be connected in the next build.</div>`;modal.classList.add('open');document.body.style.overflow='hidden'}
-function closeShopifyProduct(){document.getElementById('shopify-modal')?.classList.remove('open');document.body.style.overflow=''}
-const originalGo=window.go;window.go=function(id,b){originalGo(id,b);if(id==='shop')loadShopifyProducts()};
-</script>
-</body></html><style id="goat-hero-uniform-sizing">
-/* Uniform 16:9 treatment for all three hero slides */
-.goat-video-hero{
-  height:auto !important;
-  min-height:0 !important;
-  max-height:none !important;
-  aspect-ratio:16 / 9;
-  background:#07080a;
-}
-.goat-hero-video,
-.goat-hero-image,
-.goat-team-store-image{
-  width:100%;
-  height:100%;
-  object-fit:contain !important;
-  object-position:center !important;
-  background:#07080a;
-}
-/* Keep slides 1 and 2 readable without overwhelming the artwork */
-.goat-hero-content{
-  padding:0 5.5% 13% !important;
-  justify-content:flex-end;
-  max-width:62%;
-  margin:0;
-}
-.goat-hero-kicker{
-  margin-bottom:5px;
-  font-size:8px;
-  letter-spacing:.20em;
-}
-.goat-hero-content h1{
-  max-width:100%;
-  font-size:clamp(25px,7.2vw,38px) !important;
-  line-height:.88 !important;
-  letter-spacing:-.045em !important;
-}
-.goat-hero-content p{
-  max-width:240px;
-  margin:8px 0 10px !important;
-  font-size:clamp(10px,2.7vw,13px) !important;
-  line-height:1.25 !important;
-}
-.goat-hero-cta{
-  padding:9px 13px !important;
-  font-size:9px !important;
-}
-.goat-hero-cta span{font-size:12px}
-.goat-hero-shade{
-  background:linear-gradient(90deg,rgba(0,0,0,.70) 0%,rgba(0,0,0,.40) 43%,rgba(0,0,0,.06) 74%),linear-gradient(0deg,rgba(0,0,0,.35),transparent 45%) !important;
-}
-.goat-slide-dots{bottom:10px !important}
-.goat-video-toggle{right:10px !important;bottom:8px !important;transform:scale(.82);transform-origin:bottom right}
-/* Slide 3 already has its own finished typography/artwork */
-.goat-team-store-slide .goat-hero-shade,
-.goat-team-store-slide .goat-hero-content{display:none !important}
-@media(max-width:600px){
-  .goat-video-hero{height:auto !important;min-height:0 !important;max-height:none !important;aspect-ratio:16 / 9}
-  .goat-hero-content{padding:0 5% 14% !important;max-width:65%}
-  .goat-hero-content h1{font-size:clamp(24px,7.4vw,36px) !important}
-  .goat-hero-content p{font-size:clamp(9px,2.5vw,12px) !important;max-width:220px}
-  .goat-slide-dots{bottom:9px !important}
-}
-</style>
+</body></html>
