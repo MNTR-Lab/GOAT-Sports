@@ -130,6 +130,25 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 </div>
 </section>
 
+
+<div id="teamHQModal" class="modalShade" onclick="if(event.target===this)closeFanTeamHQ()">
+  <div class="modalSheet teamHQSheet">
+    <div class="sheetHandle"></div>
+    <button type="button" class="backMini" onclick="closeFanTeamHQ()">‹ BACK TO FANHQ</button>
+    <div id="teamHQContent"></div>
+  </div>
+</div>
+
+<div id="productModal" class="modalShade" onclick="if(event.target===this)hideProductModal()">
+  <div class="modalSheet productSheet">
+    <div class="sheetHandle"></div>
+    <button type="button" class="backMini" onclick="hideProductModal()">‹ BACK</button>
+    <div id="productDetail"></div>
+  </div>
+</div>
+
+<div id="appToast" class="appToast"></div>
+
 <nav class="nav">
 <button class="active" data-id="home" onclick="go('home',this)"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/></svg>HOME</button>
 <button data-id="shop" onclick="go('shop',this)"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8z"/><path d="M8 8a4 4 0 0 1 8 0"/></svg>SHOP</button>
@@ -149,7 +168,13 @@ function notice(){alert('Notifications are ready to connect once we build accoun
 
 let activeSport='all',toastTimer;
 function openFinder(){document.getElementById('finderModal').classList.add('show');setTimeout(()=>document.getElementById('teamSearch').focus(),150)}
-function hide(id){document.getElementById(id).classList.remove('show')}
+function hide(id){
+ const el=document.getElementById(id);
+ if(!el)return;
+ el.classList.remove('show');
+ if(el.classList.contains('modalShade')) el.style.display='none';
+}
+function hideProductModal(){hide('productModal')}
 function closeModal(e,id){if(e.target.id===id)hide(id)}
 function setSport(btn,sport){activeSport=sport;document.querySelectorAll('.filterRow .chip').forEach(x=>x.classList.remove('active'));btn.classList.add('active');filterTeams()}
 function filterTeams(){const q=document.getElementById('teamSearch').value.toLowerCase();document.querySelectorAll('#teamResults article').forEach(x=>{x.style.display=((activeSport==='all'||x.dataset.sport===activeSport)&&x.dataset.search.includes(q))?'grid':'none'})}
@@ -213,7 +238,7 @@ async function loadShopCollection(handle,btn){
 function openProduct(i){
  const p=liveProducts[i];currentProduct=p;const variants=p.variants.nodes||[];
  document.getElementById('productDetail').innerHTML=`<div class="productDetailImage">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}</div><h2>${p.title}</h2><div class="productPrice">${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</div><p class="productDesc">${p.description||''}</p><select id="shopVariant" class="variantSelect">${variants.map(v=>`<option value="${v.id}" ${!v.availableForSale?'disabled':''}>${v.title} — ${money(v.price.amount,v.price.currencyCode)}${!v.availableForSale?' — SOLD OUT':''}</option>`).join('')}</select><button class="shopBuy" onclick="startShopifyCart()" ${!p.availableForSale?'disabled':''}>${p.availableForSale?'ADD TO CART':'SOLD OUT'}</button>`;
- document.getElementById('productModal').classList.add('show');
+ const pm=document.getElementById('productModal'); pm.style.display='flex'; pm.classList.add('show');
 }
 async function startShopifyCart(){
  const merchandiseId=document.getElementById('shopVariant').value;
