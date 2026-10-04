@@ -129,6 +129,12 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .accountForm .full{grid-column:1/-1}.accountForm label{font-size:8px;font-weight:900;letter-spacing:.08em;color:#666}
 .accountForm input,.accountForm select{width:100%;box-sizing:border-box;margin-top:5px;border:1px solid #d8d8dc;border-radius:6px;padding:12px;background:#fff;font:inherit;font-size:12px}
 .accountForm .cta{grid-column:1/-1;margin-top:4px}.accountFormNote{grid-column:1/-1;font-size:9px;color:#777;line-height:1.45}
+
+.adminBadge{display:inline-block;background:var(--orange);color:#fff;border-radius:999px;padding:6px 9px;font-size:8px;font-weight:1000;letter-spacing:.08em;margin-top:8px}
+.adminPanel{margin-top:14px;border:2px solid var(--purple);border-radius:11px;padding:18px;background:#fff}.adminPanel h2{font-size:25px;margin:5px 0 7px}.adminPanel p{font-size:10px;color:#666;line-height:1.5}
+.adminAccessList{display:grid;gap:8px;margin-top:14px}.adminAccessRow{border:1px solid var(--line);border-radius:8px;padding:11px}.adminAccessRow strong,.adminAccessRow small{display:block}.adminAccessRow small{font-size:8px;color:#777;margin-top:3px}.adminAccessRow button{margin-top:8px;border:0;border-radius:5px;padding:8px 10px;font-size:8px;font-weight:900}
+.adminForm{display:grid;gap:9px;margin-top:12px}.adminForm input,.adminForm select{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:12px;background:#fff;font-size:11px}.adminForm label{font-size:8px;font-weight:900;letter-spacing:.06em}
+.lockerTeamCard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:15px;margin-bottom:10px}.lockerTeamCard h3{margin:4px 0;font-size:19px}.lockerTeamCard p{font-size:9px;color:#777}
 </style>
 </head>
 <body>
@@ -180,6 +186,12 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
   <div id="teamStoreContent"></div>
 </section>
 
+<section id="locker" class="screen privateLocker">
+ <div class="privateLockerHero"><button class="backMini" onclick="go('account')">‹ ACCOUNT</button><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h1>GOAT<br>LOCKER</h1><p id="lockerIdentity">Your organization's private GOAT Sports workspace.</p></div>
+ <div class="section lockerTools"><div id="lockerAssignedTeams"></div>
+ <div class="toolGrid"><button><b>01</b><strong>MY DESIGNS</strong><small>Uniform and apparel concepts</small></button><button><b>02</b><strong>ARTWORK & APPROVALS</strong><small>Review and approve artwork</small></button><button><b>03</b><strong>ROSTERS & SIZES</strong><small>Team roster and sizing</small></button><button><b>04</b><strong>QUOTES</strong><small>Pricing and active quotes</small></button><button><b>05</b><strong>REORDERS</strong><small>Repeat previous orders</small></button><button><b>06</b><strong>DOCUMENTS</strong><small>Team files and documents</small></button></div></div>
+</section>
+
 <section id="orders" class="screen plain">
 <div class="eyebrow" style="color:var(--teal)">SHOPIFY CUSTOMER ACCOUNT</div><h1>MY ORDERS</h1>
 <div id="ordersContent"><p>Sign in to view your Shopify order history.</p><button class="cta" onclick="customerLogin()">SIGN IN TO VIEW ORDERS</button></div>
@@ -203,6 +215,20 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
     <button type="button" class="backMini" onclick="hideProductModal()">‹ BACK</button>
     <div id="productDetail"></div>
   </div>
+</div>
+
+<div id="lockerAdminModal" class="modalShade" onclick="if(event.target===this)hide('lockerAdminModal')">
+ <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('lockerAdminModal')">‹ BACK TO ACCOUNT</button>
+ <div class="eyebrow" style="color:var(--orange)">GOAT SPORTS MASTER ADMIN</div><h2>LOCKER ACCESS</h2>
+ <p style="font-size:10px;color:#666">Link a Shopify customer email to an organization's GOAT Locker. Removing access does not affect their Shopify customer account.</p>
+ <form class="adminForm" onsubmit="grantLockerAccess(event)">
+  <label>CUSTOMER / TEAM REP EMAIL<input required type="email" name="email" placeholder="rep@example.com"></label>
+  <label>GOAT LOCKER<select required name="teamId" id="adminLockerTeamSelect"><option value="">Select organization…</option></select></label>
+  <label>ROLE<input name="role" value="Team Rep" placeholder="Owner, Coach, Equipment Manager…"></label>
+  <button class="cta" type="submit">LINK TO LOCKER</button>
+ </form>
+ <div id="adminAccessList" class="adminAccessList"></div>
+ </div>
 </div>
 
 <div id="accountEditModal" class="modalShade" onclick="if(event.target===this)hide('accountEditModal')">
@@ -235,10 +261,11 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 function go(id,btn){
  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
  document.getElementById(id).classList.add('active');
- document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===(id==='teamstore'?'fanhq':id)));
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===(id==='teamstore'?'fanhq':(id==='locker'?'account':id))));
  window.scrollTo({top:0,behavior:'instant'});
  if(id==='account') renderCustomerAccount();
  if(id==='orders') renderCustomerOrders();
+ if(id==='locker') renderLocker();
 }
 function notice(){alert('Notifications are ready to connect once we build account/order data.')}
 
@@ -262,16 +289,11 @@ function openHQ(name,sport,loc,mark){document.getElementById('hqName').textConte
 function teamStore(){hide('hqModal');go('shop');toast('Opening this team’s Shopify store')}
 function toast(msg){const e=document.getElementById('appToast');e.textContent=msg;e.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.style.display='none',1500)}
 
-function openLocker(){
-  const signedIn=localStorage.getItem('goat_demo_signed_in')==='1';
-  const hasLocker=localStorage.getItem('goat_demo_locker')==='1';
-  if(signedIn && hasLocker){go('locker');return}
-  if(confirm('GOAT Locker is for signed-in custom clients.\\n\\nFor this prototype, enable a demo client account to preview it?')){
-    localStorage.setItem('goat_demo_signed_in','1');
-    localStorage.setItem('goat_demo_locker','1');
-    go('locker');
-    toast('Demo custom-client access enabled');
-  }
+async function openLocker(){
+ if(!customerToken()){await customerLogin();return}
+ await loadLockerSession();
+ if(lockerSession.adminRole||lockerSession.lockerAccess.length){go('locker');return}
+ alert('This Shopify customer account is not currently linked to a GOAT Locker. Contact your GOAT Sports administrator for access.');
 }
 
 function openFinderSport(sport){
@@ -287,7 +309,7 @@ const CUSTOMER_CLIENT_ID='0ce1ce65-71f0-40f5-840c-b30f69e3e924';
 const CUSTOMER_SHOP_DOMAIN='www.begoativated.com';
 const CUSTOMER_REDIRECT_URI='https://mntr-lab.github.io/GOAT-Sports/';
 const CUSTOMER_SCOPE='openid email customer-account-api:full';
-let customerProfile=null, customerOrdersCache=null;
+let customerProfile=null, customerOrdersCache=null, lockerSession={adminRole:null,lockerAccess:[]};
 
 function b64url(bytes){
  return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -371,6 +393,47 @@ async function loadCustomerData(){
   customerOrdersCache=[];
  }
 }
+
+async function lockerApi(action,payload={}){
+ const token=customerToken();if(!token)throw new Error('Sign in required');
+ const r=await fetch(`${SUPABASE_URL}/functions/v1/goat-locker-access`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({action,...payload})});
+ const j=await r.json();if(!r.ok)throw new Error(j.error||'Locker access request failed');return j;
+}
+async function loadLockerSession(){
+ try{const d=await lockerApi('me');lockerSession={adminRole:d.adminRole||null,lockerAccess:d.lockerAccess||[]};}
+ catch(e){console.warn('Locker access check failed',e);lockerSession={adminRole:null,lockerAccess:[]}}
+ return lockerSession;
+}
+async function renderLocker(){
+ const el=document.getElementById('lockerAssignedTeams');if(!el)return;
+ await loadLockerSession();
+ if(lockerSession.adminRole){
+  el.innerHTML=`<div class="lockerTeamCard"><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h3>GOAT SPORTS ADMIN ACCESS</h3><p>You have administrative access to GOAT Locker management.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button></div>`+
+  lockerSession.lockerAccess.map(lockerTeamHtml).join('');
+ }else if(lockerSession.lockerAccess.length) el.innerHTML=lockerSession.lockerAccess.map(lockerTeamHtml).join('');
+ else el.innerHTML='<div class="lockerTeamCard"><h3>NO LOCKER ASSIGNED</h3><p>Your account is signed in but has not been linked to a GOAT Locker.</p></div>';
+}
+function lockerTeamHtml(x){const t=x.goat_teams||{};return `<div class="lockerTeamCard"><div class="eyebrow" style="color:var(--teal)">AUTHORIZED LOCKER</div><h3>${escapeHtml(t.organization_name||t.team_name||'GOAT Sports Team')}</h3><p>${escapeHtml(x.role||'Team Rep')}${t.sport?' • '+escapeHtml(t.sport):''}</p></div>`}
+async function openLockerAdmin(){
+ try{
+  const d=await lockerApi('list');
+  const m=document.getElementById('lockerAdminModal');m.style.display='flex';m.classList.add('show');
+  const sel=document.getElementById('adminLockerTeamSelect');
+  sel.innerHTML='<option value="">Select organization…</option>'+d.teams.map(t=>`<option value="${t.id}">${escapeHtml(t.organization_name||t.team_name)}</option>`).join('');
+  renderAdminAccess(d.access);
+ }catch(e){alert(e.message)}
+}
+function renderAdminAccess(rows){
+ const el=document.getElementById('adminAccessList');
+ el.innerHTML='<div class="eyebrow" style="margin-top:8px">CURRENT LOCKER ACCESS</div>'+((rows||[]).length?rows.map(x=>`<div class="adminAccessRow"><strong>${escapeHtml(x.customer_email)}</strong><small>${escapeHtml(x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team')} • ${escapeHtml(x.role)} • ${x.active?'ACTIVE':'REVOKED'}</small>${x.active?`<button onclick="revokeLockerAccess(${x.id})">REMOVE ACCESS</button>`:`<button onclick="reactivateLockerAccess(${x.id})">RESTORE ACCESS</button>`}</div>`).join(''):'<p style="font-size:9px;color:#777">No team reps have been linked yet.</p>');
+}
+async function grantLockerAccess(e){
+ e.preventDefault();const f=new FormData(e.currentTarget),btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='LINKING…';
+ try{await lockerApi('grant',{email:String(f.get('email')).trim(),teamId:Number(f.get('teamId')),role:String(f.get('role')||'Team Rep').trim()});e.currentTarget.reset();toast('Locker access linked');await openLockerAdmin();}
+ catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='LINK TO LOCKER'}
+}
+async function revokeLockerAccess(id){if(!confirm('Remove this person’s GOAT Locker access? Their Shopify account will remain active.'))return;try{await lockerApi('revoke',{id});toast('Locker access removed');await openLockerAdmin()}catch(e){alert(e.message)}}
+async function reactivateLockerAccess(id){try{await lockerApi('reactivate',{id});toast('Locker access restored');await openLockerAdmin()}catch(e){alert(e.message)}}
 function renderCustomerAccount(){
  const el=document.getElementById('accountContent');if(!el)return;
  if(!customerToken()){el.innerHTML=`<p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button>`;return}
@@ -383,14 +446,22 @@ function renderCustomerAccount(){
  el.innerHTML=`<div class="accountWelcome"><div class="eyebrow">WELCOME BACK</div><h2>${escapeHtml(customerProfile.displayName||'GOAT Sports Customer')}</h2><p>${escapeHtml(email)}</p></div>
  <div class="editAccountGrid"><button onclick="openProfileEditor()">EDIT PROFILE</button><button onclick="openAddressEditor()">EDIT SHIPPING ADDRESS</button></div>
  ${addressHtml}
- <div class="lockerAccess lockerLocked"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private workspace for designs, artwork approvals, rosters, sizing, quotes, documents and reorders.</p>
- <span class="lockerState">TEAM REP ACCESS REQUIRED</span>
- <button class="cta" onclick="activateLockerAccess()">TEAM REP? ACTIVATE ACCESS</button></div>
+ <div id="accountLockerAccess" class="lockerAccess"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Checking your team access…</p></div>
  <button class="signOutBtn" onclick="customerLogout()">SIGN OUT</button>`;
+ renderAccountLockerAccess();
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function activateLockerAccess(){
- alert('GOAT Locker team-rep activation is the next connection. Your Shopify sign-in will identify you, and an approved GOAT team assignment will control which Locker you can access.');
+async function renderAccountLockerAccess(){
+ const el=document.getElementById('accountLockerAccess');if(!el)return;
+ await loadLockerSession();
+ if(lockerSession.adminRole){
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER</h2><p>Manage organization Locker access and enter GOAT Locker.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button><button class="cta alt" onclick="openLocker()">ENTER GOAT LOCKER</button>`;
+ }else if(lockerSession.lockerAccess.length){
+  const names=lockerSession.lockerAccess.map(x=>x.goat_teams?.organization_name||x.goat_teams?.team_name).filter(Boolean).join(', ');
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>MY GOAT LOCKER</h2><p>${escapeHtml(names)}</p><span class="lockerState">AUTHORIZED TEAM REP</span><button class="cta" onclick="openLocker()">ENTER GOAT LOCKER</button>`;
+ }else{
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private workspace for designs, artwork approvals, rosters, sizing, quotes, documents and reorders.</p><span class="lockerState">TEAM REP ACCESS REQUIRED</span><p style="font-size:9px;color:#aaa">Ask your GOAT Sports administrator to link this customer account to your organization's Locker.</p>`;
+ }
 }
 
 async function customerMutation(query,variables={}){
