@@ -120,6 +120,15 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .addressCard .eyebrow{margin-bottom:7px}.addressCard strong{display:block;font-size:12px;margin-bottom:4px}
 .addressCard p{font-size:10px;line-height:1.55;color:#555;margin:0}
 .lockerLocked{opacity:.98}.lockerState{display:block;margin:8px 0 12px;font-size:9px;font-weight:900;letter-spacing:.08em;color:#bbb}
+
+.editAccountGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0 14px}
+.editAccountGrid button,.editAddressBtn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:12px;font-size:9px;font-weight:900;text-align:center}
+.editAddressBtn{width:100%;margin-top:12px}
+.accountEditSheet{max-height:88vh;overflow:auto}
+.accountForm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.accountForm .full{grid-column:1/-1}.accountForm label{font-size:8px;font-weight:900;letter-spacing:.08em;color:#666}
+.accountForm input,.accountForm select{width:100%;box-sizing:border-box;margin-top:5px;border:1px solid #d8d8dc;border-radius:6px;padding:12px;background:#fff;font:inherit;font-size:12px}
+.accountForm .cta{grid-column:1/-1;margin-top:4px}.accountFormNote{grid-column:1/-1;font-size:9px;color:#777;line-height:1.45}
 </style>
 </head>
 <body>
@@ -193,6 +202,14 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
     <div class="sheetHandle"></div>
     <button type="button" class="backMini" onclick="hideProductModal()">‹ BACK</button>
     <div id="productDetail"></div>
+  </div>
+</div>
+
+<div id="accountEditModal" class="modalShade" onclick="if(event.target===this)hide('accountEditModal')">
+  <div class="modalSheet accountEditSheet">
+    <div class="sheetHandle"></div>
+    <button type="button" class="backMini" onclick="hide('accountEditModal')">‹ BACK TO ACCOUNT</button>
+    <div id="accountEditContent"></div>
   </div>
 </div>
 
@@ -346,7 +363,7 @@ async function customerRequest(query,variables={}){
 async function loadCustomerData(){
  if(!customerToken()){customerProfile=null;customerOrdersCache=null;return}
  try{
-  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} defaultAddress{id name company address1 address2 city province zoneCode zip country formatted(withName:true,withCompany:true)} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
+  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} defaultAddress{id firstName lastName name company address1 address2 city province zoneCode zip country countryCodeV2 phoneNumber formatted(withName:true,withCompany:true)} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
   const d=await customerRequest(q);customerProfile=d.customer;customerOrdersCache=d.customer.orders?.nodes||[];
  }catch(e){console.warn('Customer data load failed',e);customerProfile=null;customerOrdersCache=null}
 }
@@ -359,6 +376,7 @@ function renderCustomerAccount(){
  const addressHtml=a?`<div class="addressCard"><div class="eyebrow" style="color:var(--teal)">DEFAULT SHIPPING ADDRESS</div><strong>${a.name||customerProfile.displayName||''}</strong><p>${(a.formatted||[]).map(x=>escapeHtml(x)).join('<br>')}</p></div>`:
  `<div class="addressCard"><div class="eyebrow" style="color:var(--teal)">DEFAULT SHIPPING ADDRESS</div><p>No default shipping address is currently listed on this Shopify customer account.</p></div>`;
  el.innerHTML=`<div class="accountWelcome"><div class="eyebrow">WELCOME BACK</div><h2>${escapeHtml(customerProfile.displayName||'GOAT Sports Customer')}</h2><p>${escapeHtml(email)}</p></div>
+ <div class="editAccountGrid"><button onclick="openProfileEditor()">EDIT PROFILE</button><button onclick="openAddressEditor()">EDIT SHIPPING ADDRESS</button></div>
  ${addressHtml}
  <div class="lockerAccess lockerLocked"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private workspace for designs, artwork approvals, rosters, sizing, quotes, documents and reorders.</p>
  <span class="lockerState">TEAM REP ACCESS REQUIRED</span>
@@ -368,6 +386,78 @@ function renderCustomerAccount(){
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function activateLockerAccess(){
  alert('GOAT Locker team-rep activation is the next connection. Your Shopify sign-in will identify you, and an approved GOAT team assignment will control which Locker you can access.');
+}
+
+async function customerMutation(query,variables={}){
+ const data=await customerRequest(query,variables);
+ return data;
+}
+function showAccountEdit(html){
+ const m=document.getElementById('accountEditModal');
+ document.getElementById('accountEditContent').innerHTML=html;m.style.display='flex';m.classList.add('show');
+}
+function openProfileEditor(){
+ const c=customerProfile||{};
+ showAccountEdit(`<div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h2>EDIT PROFILE</h2>
+ <form class="accountForm" onsubmit="saveCustomerProfile(event)">
+ <label>FIRST NAME<input name="firstName" autocomplete="given-name" value="${escapeHtml(c.firstName||'')}"></label>
+ <label>LAST NAME<input name="lastName" autocomplete="family-name" value="${escapeHtml(c.lastName||'')}"></label>
+ <div class="accountFormNote">Your sign-in email is managed by Shopify Customer Accounts and is shown on your account screen.</div>
+ <button class="cta" type="submit">SAVE PROFILE</button></form>`);
+}
+async function saveCustomerProfile(e){
+ e.preventDefault();const f=new FormData(e.currentTarget),btn=e.currentTarget.querySelector('button[type=submit]');
+ btn.disabled=true;btn.textContent='SAVING…';
+ try{
+  const q=`mutation UpdateGOATCustomer($input:CustomerUpdateInput!){customerUpdate(input:$input){customer{firstName lastName displayName} userErrors{field message}}}`;
+  const d=await customerMutation(q,{input:{firstName:String(f.get('firstName')||'').trim(),lastName:String(f.get('lastName')||'').trim()}});
+  const errs=d.customerUpdate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
+  await loadCustomerData();hide('accountEditModal');renderCustomerAccount();toast('Profile updated');
+ }catch(err){btn.disabled=false;btn.textContent='SAVE PROFILE';alert(err.message)}
+}
+function openAddressEditor(){
+ const a=customerProfile?.defaultAddress||{};
+ showAccountEdit(`<div class="eyebrow" style="color:var(--teal)">CUSTOMER ACCOUNT</div><h2>EDIT SHIPPING ADDRESS</h2>
+ <form class="accountForm" onsubmit="saveCustomerAddress(event)">
+ <label>FIRST NAME<input name="firstName" autocomplete="given-name" value="${escapeHtml(a.firstName||customerProfile?.firstName||'')}"></label>
+ <label>LAST NAME<input name="lastName" autocomplete="family-name" value="${escapeHtml(a.lastName||customerProfile?.lastName||'')}"></label>
+ <label class="full">COMPANY<input name="company" autocomplete="organization" value="${escapeHtml(a.company||'')}"></label>
+ <label class="full">ADDRESS<input required name="address1" autocomplete="address-line1" value="${escapeHtml(a.address1||'')}"></label>
+ <label class="full">APT / SUITE / UNIT<input name="address2" autocomplete="address-line2" value="${escapeHtml(a.address2||'')}"></label>
+ <label>CITY<input required name="city" autocomplete="address-level2" value="${escapeHtml(a.city||'')}"></label>
+ <label>STATE / PROVINCE<input required name="zoneCode" autocomplete="address-level1" value="${escapeHtml(a.zoneCode||a.province||'')}"></label>
+ <label>ZIP / POSTAL CODE<input required name="zip" autocomplete="postal-code" value="${escapeHtml(a.zip||'')}"></label>
+ <label>COUNTRY CODE<input required maxlength="2" name="territoryCode" autocomplete="country" value="${escapeHtml(a.countryCodeV2||'US')}"></label>
+ <label class="full">PHONE<input name="phoneNumber" autocomplete="tel" value="${escapeHtml(a.phoneNumber||'')}"></label>
+ <div class="accountFormNote">Saving updates the shipping address stored with your Shopify customer account.</div>
+ <button class="cta" type="submit">SAVE SHIPPING ADDRESS</button></form>`);
+}
+async function saveCustomerAddress(e){
+ e.preventDefault();const f=new FormData(e.currentTarget),a=customerProfile?.defaultAddress,btn=e.currentTarget.querySelector('button[type=submit]');
+ btn.disabled=true;btn.textContent='SAVING…';
+ const input={
+  firstName:String(f.get('firstName')||'').trim(),lastName:String(f.get('lastName')||'').trim(),
+  company:String(f.get('company')||'').trim()||null,address1:String(f.get('address1')||'').trim(),
+  address2:String(f.get('address2')||'').trim()||null,city:String(f.get('city')||'').trim(),
+  zoneCode:String(f.get('zoneCode')||'').trim(),zip:String(f.get('zip')||'').trim(),
+  territoryCode:String(f.get('territoryCode')||'US').trim().toUpperCase(),
+  phoneNumber:String(f.get('phoneNumber')||'').trim()||null
+ };
+ try{
+  if(a?.id){
+   const q=`mutation UpdateGOATAddress($addressId:ID!,$address:CustomerAddressInput!){customerAddressUpdate(addressId:$addressId,address:$address){customerAddress{id} userErrors{field message}}}`;
+   const d=await customerMutation(q,{addressId:a.id,address:input});const errs=d.customerAddressUpdate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
+  }else{
+   const q=`mutation CreateGOATAddress($address:CustomerAddressInput!){customerAddressCreate(address:$address){customerAddress{id} userErrors{field message}}}`;
+   const d=await customerMutation(q,{address:input});const errs=d.customerAddressCreate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
+   const newId=d.customerAddressCreate?.customerAddress?.id;
+   if(newId){
+    const q2=`mutation SetGOATDefaultAddress($addressId:ID!){customerDefaultAddressUpdate(addressId:$addressId){customer{id} userErrors{field message}}}`;
+    const d2=await customerMutation(q2,{addressId:newId});const errs2=d2.customerDefaultAddressUpdate?.userErrors||[];if(errs2.length)console.warn(errs2);
+   }
+  }
+  await loadCustomerData();hide('accountEditModal');renderCustomerAccount();toast('Shipping address updated');
+ }catch(err){btn.disabled=false;btn.textContent='SAVE SHIPPING ADDRESS';alert(err.message)}
 }
 function renderCustomerOrders(){
  const el=document.getElementById('ordersContent');if(!el)return;
