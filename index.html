@@ -29,6 +29,14 @@ button,a{font:inherit}.app{width:100%;max-width:520px;min-height:100vh;margin:au
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:60;width:100%;max-width:520px;height:72px;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
 .nav button{border:0;background:#fff;color:#777;font-size:8px;font-weight:900;padding:8px 2px 5px}.nav svg{width:20px;height:20px;display:block;margin:0 auto 4px;fill:none;stroke:currentColor;stroke-width:2}.nav button.active{color:var(--purple)}
 @media(min-width:700px){.app{margin:18px auto;min-height:calc(100vh - 36px);border-radius:14px;overflow:hidden}.nav{bottom:18px;border-radius:0 0 14px 14px}}
+
+/* GOAT Locker */
+.lockerHero{background:linear-gradient(145deg,#09090a 0%,#17181b 72%,#683695 160%);color:#fff;padding:38px 22px 32px;min-height:285px;display:flex;flex-direction:column;justify-content:flex-end}.lockerHero h1{font-size:47px;line-height:.86;letter-spacing:-2.3px;margin:9px 0 13px}.lockerHero p{font-size:13px;color:#c8cacf;line-height:1.5;margin:0 0 18px;max-width:360px}.lockerHero .cta{align-self:flex-start}
+.lockerSection{background:#f5f5f6}.teamStack{display:grid;gap:9px}.teamCard{display:grid;grid-template-columns:52px 1fr auto;gap:11px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}.teamMark,.resultMark{width:48px;height:48px;border-radius:9px;background:#111;color:#fff;display:grid;place-items:center;font-size:22px;font-weight:1000}.teamMeta{min-width:0}.teamMeta small,.teamMeta span{display:block;font-size:8px;color:#7b7f85}.teamMeta strong{display:block;font-size:14px;margin:3px 0}.enterHQ{border:0;background:var(--purple);color:#fff;border-radius:5px;padding:10px 9px;font-size:8px;font-weight:900}
+.nearCard{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:15px;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;text-align:left}.nearIcon{width:40px;height:40px;border-radius:50%;background:#eaf7f5;color:var(--teal);display:grid;place-items:center;font-size:21px}.nearCard strong,.nearCard small{display:block}.nearCard strong{font-size:13px}.nearCard small{font-size:9px;color:#777;margin-top:3px}.nearCard b{font-size:25px;color:#aaa}
+.miniTeams{display:grid;grid-template-columns:1fr 1fr;gap:9px}.miniTeams button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:15px;text-align:left}.miniTeams span{width:38px;height:38px;background:#111;color:#fff;border-radius:8px;display:grid;place-items:center;font-weight:900;margin-bottom:11px}.miniTeams strong,.miniTeams small{display:block}.miniTeams strong{font-size:12px}.miniTeams small{font-size:9px;color:#777;margin-top:3px}
+.modalShade{display:none;position:fixed;z-index:100;inset:0;background:#0009;align-items:flex-end;justify-content:center}.modalShade.show{display:flex}.modalSheet{width:100%;max-width:520px;max-height:88vh;overflow:auto;background:#fff;border-radius:18px 18px 0 0;padding:10px 16px 28px}.sheetHandle{width:42px;height:4px;border-radius:10px;background:#d4d5d7;margin:0 auto 18px}.sheetIntro{font-size:11px;color:#777;margin:-3px 0 14px}.searchbox{height:46px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;padding:0 12px;gap:8px}.searchbox input{border:0;outline:0;width:100%;font-size:12px}.filterRow{display:flex;gap:6px;overflow:auto;padding:12px 0}.resultList{display:grid;gap:8px}.resultList article{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:10px}.resultList strong,.resultList small{display:block}.resultList strong{font-size:12px}.resultList small{font-size:9px;color:#777;margin-top:3px}.resultList button{border:0;background:#111;color:#fff;border-radius:5px;padding:9px 11px;font-size:8px;font-weight:900}
+.backMini{border:0;background:none;color:var(--purple);font-size:9px;font-weight:900;padding:0 0 15px}.hqIdentity{display:flex;gap:13px;align-items:center}.hqMark{width:64px;height:64px;border-radius:12px;background:#111;color:#fff;display:grid;place-items:center;font-size:28px;font-weight:1000}.hqIdentity small,.hqIdentity span{font-size:8px;color:#777}.hqIdentity h2{margin:3px 0;font-size:22px}.teamStoreBtn{width:100%;border:0;background:var(--purple);color:#fff;border-radius:6px;padding:14px;margin:18px 0 10px;font-size:10px;font-weight:900}.hqGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hqGrid button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:14px;text-align:left}.hqGrid b{display:block;font-size:20px;color:var(--teal);margin-bottom:10px}.hqGrid strong,.hqGrid small{display:block}.hqGrid strong{font-size:12px}.hqGrid small{font-size:9px;color:#777;margin-top:3px}.hqFeatured{margin-top:15px;background:#101114;color:#fff;border-radius:10px;padding:18px}.hqFeatured small{font-size:8px;letter-spacing:1.3px;color:#aaa}.hqFeatured strong{display:block;font-size:25px;margin-top:5px}.hqFeatured p{font-size:10px;color:#aaa;line-height:1.4}.hqFeatured button{border:0;background:var(--teal);color:#fff;padding:10px 13px;font-size:9px;font-weight:900;border-radius:4px}.appToast{display:none;position:fixed;z-index:150;bottom:84px;left:50%;transform:translateX(-50%);background:#111;color:#fff;border-radius:7px;padding:11px 15px;font-size:10px;font-weight:800;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -52,7 +60,73 @@ button,a{font:inherit}.app{width:100%;max-width:520px;min-height:100vh;margin:au
 <div class="shopnote"><strong>Shopify-ready:</strong> this is intentionally a shell—not hard-coded fake inventory. We can connect the actual Storefront API data next.</div>
 </section>
 
-<section id="locker" class="screen plain"><div class="eyebrow" style="color:var(--purple)">TEAM MANAGEMENT</div><h1>GOAT<br>LOCKER</h1><p>Your persistent team workspace for designs, artwork, rosters, sizes, team stores, quotes, reorders and documents.</p><div class="placeholdercard"><h3>Locker foundation ready</h3><p>We will build this screen after the Home and connected Shop are approved.</p></div></section>
+<section id="locker" class="screen">
+<div class="lockerHero">
+  <div class="eyebrow">YOUR TEAMS • YOUR STORES • YOUR LOCKER</div>
+  <h1>GOAT<br>LOCKER</h1>
+  <p>Follow the teams that matter to you and keep their official GOAT stores in one place.</p>
+  <button class="cta" onclick="openFinder()">＋ FIND YOUR TEAM</button>
+</div>
+
+<div class="section lockerSection">
+  <div class="sectionhead"><h2>My Teams</h2><button onclick="openFinder()">ADD TEAM</button></div>
+  <div id="myTeams" class="teamStack">
+    <article class="teamCard">
+      <div class="teamMark">T</div>
+      <div class="teamMeta"><small>FOOTBALL • HICKORY, NC</small><strong>Tigers Football</strong><span>Official GOAT Team HQ</span></div>
+      <button class="enterHQ" onclick="openHQ('Tigers Football','Football','Hickory, NC','T')">ENTER HQ</button>
+    </article>
+  </div>
+</div>
+
+<div class="section lockerSection" style="padding-top:0">
+  <div class="sectionhead"><h2>Discover Teams</h2><button onclick="openFinder()">SEARCH</button></div>
+  <button class="nearCard" onclick="openFinder()">
+    <span class="nearIcon">⌖</span><span><strong>Find teams near you</strong><small>Search by city, state, sport or team name</small></span><b>›</b>
+  </button>
+</div>
+
+<div class="section lockerSection" style="padding-top:0">
+  <div class="sectionhead"><h2>Recently Visited</h2></div>
+  <div class="miniTeams">
+    <button onclick="openHQ('Tigers Football','Football','Hickory, NC','T')"><span>T</span><strong>Tigers</strong><small>Football</small></button>
+    <button onclick="openFinder()"><span>＋</span><strong>Add Team</strong><small>Find a store</small></button>
+  </div>
+</div>
+</section>
+
+<div id="finderModal" class="modalShade" onclick="closeModal(event,'finderModal')">
+ <div class="modalSheet">
+  <div class="sheetHandle"></div>
+  <div class="sectionhead"><h2>Find Your Team</h2><button onclick="hide('finderModal')">CLOSE</button></div>
+  <p class="sheetIntro">Search GOAT team stores and add the teams you follow to your Locker.</p>
+  <div class="searchbox"><span>⌕</span><input id="teamSearch" placeholder="Team, city, state or sport" oninput="filterTeams()"></div>
+  <div class="filterRow"><button class="chip active" onclick="setSport(this,'all')">ALL</button><button class="chip" onclick="setSport(this,'football')">FOOTBALL</button><button class="chip" onclick="setSport(this,'basketball')">BASKETBALL</button><button class="chip" onclick="setSport(this,'softball')">SOFTBALL</button></div>
+  <div id="teamResults" class="resultList">
+   <article data-search="tigers football hickory nc" data-sport="football"><div class="resultMark">T</div><div><strong>Tigers Football</strong><small>Hickory, NC • Football</small></div><button onclick="addTeam('Tigers Football','Football','Hickory, NC','T')">ADD</button></article>
+   <article data-search="apex football dallas texas" data-sport="football"><div class="resultMark">A</div><div><strong>Apex Football</strong><small>Dallas, TX • Football</small></div><button onclick="addTeam('Apex Football','Football','Dallas, TX','A')">ADD</button></article>
+   <article data-search="storm basketball pueblo colorado" data-sport="basketball"><div class="resultMark">S</div><div><strong>Storm Basketball</strong><small>Pueblo, CO • Basketball</small></div><button onclick="addTeam('Storm Basketball','Basketball','Pueblo, CO','S')">ADD</button></article>
+   <article data-search="goat softball omaha nebraska" data-sport="softball"><div class="resultMark">G</div><div><strong>GOAT Softball</strong><small>Omaha, NE • Softball</small></div><button onclick="addTeam('GOAT Softball','Softball','Omaha, NE','G')">ADD</button></article>
+  </div>
+ </div>
+</div>
+
+<div id="hqModal" class="modalShade" onclick="closeModal(event,'hqModal')">
+ <div class="modalSheet hqSheet">
+  <div class="sheetHandle"></div>
+  <button class="backMini" onclick="hide('hqModal')">‹ BACK TO LOCKER</button>
+  <div class="hqIdentity"><div id="hqMark" class="hqMark">T</div><div><small id="hqLocation">HICKORY, NC • FOOTBALL</small><h2 id="hqName">Tigers Football</h2><span>OFFICIAL GOAT TEAM HQ</span></div></div>
+  <button class="teamStoreBtn" onclick="teamStore()">SHOP OFFICIAL TEAM STORE →</button>
+  <div class="hqGrid">
+   <button onclick="teamStore()"><b>▦</b><strong>Team Store</strong><small>Official team gear</small></button>
+   <button onclick="toast('New drops will appear here')"><b>★</b><strong>New Drops</strong><small>Latest team releases</small></button>
+   <button onclick="go('orders');hide('hqModal')"><b>▤</b><strong>My Orders</strong><small>Orders from this team</small></button>
+   <button onclick="toast('Team favorites saved')"><b>♡</b><strong>Favorites</strong><small>Save gear for later</small></button>
+  </div>
+  <div class="hqFeatured"><div><small>TEAM STORE FEATURE</small><strong>REP YOUR TEAM.</strong><p>Featured merchandise from this team's Shopify collection will appear here.</p></div><button onclick="teamStore()">SHOP NOW</button></div>
+ </div>
+</div>
+<div id="appToast" class="appToast"></div>
 <section id="orders" class="screen plain"><div class="eyebrow" style="color:var(--teal)">PRODUCTION TRACKING</div><h1>ORDERS</h1><p>Track custom orders through artwork, production, quality control, shipping and delivery.</p><div class="placeholdercard"><h3>Order center foundation ready</h3><p>Shopify orders and GOAT production statuses will meet here.</p></div></section>
 <section id="account" class="screen plain"><div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h1>ACCOUNT</h1><p>Profile, organization information, saved addresses, notifications and order history.</p><div class="placeholdercard"><h3>Account foundation ready</h3><p>This is prepared for Shopify Customer Account integration later.</p></div></section>
 
@@ -72,5 +146,19 @@ function go(id,btn){
  window.scrollTo({top:0,behavior:'instant'});
 }
 function notice(){alert('Notifications are ready to connect once we build account/order data.')}
+
+let activeSport='all',toastTimer;
+function openFinder(){document.getElementById('finderModal').classList.add('show');setTimeout(()=>document.getElementById('teamSearch').focus(),150)}
+function hide(id){document.getElementById(id).classList.remove('show')}
+function closeModal(e,id){if(e.target.id===id)hide(id)}
+function setSport(btn,sport){activeSport=sport;document.querySelectorAll('.filterRow .chip').forEach(x=>x.classList.remove('active'));btn.classList.add('active');filterTeams()}
+function filterTeams(){const q=document.getElementById('teamSearch').value.toLowerCase();document.querySelectorAll('#teamResults article').forEach(x=>{x.style.display=((activeSport==='all'||x.dataset.sport===activeSport)&&x.dataset.search.includes(q))?'grid':'none'})}
+function addTeam(name,sport,loc,mark){
+ const exists=[...document.querySelectorAll('#myTeams .teamMeta strong')].some(x=>x.textContent===name);
+ if(!exists){const a=document.createElement('article');a.className='teamCard';a.innerHTML='<div class="teamMark">'+mark+'</div><div class="teamMeta"><small>'+sport.toUpperCase()+' • '+loc.toUpperCase()+'</small><strong>'+name+'</strong><span>Official GOAT Team HQ</span></div><button class="enterHQ">ENTER HQ</button>';a.querySelector('button').onclick=()=>openHQ(name,sport,loc,mark);document.getElementById('myTeams').appendChild(a)}
+ hide('finderModal');toast(name+' added to your Locker')}
+function openHQ(name,sport,loc,mark){document.getElementById('hqName').textContent=name;document.getElementById('hqLocation').textContent=loc.toUpperCase()+' • '+sport.toUpperCase();document.getElementById('hqMark').textContent=mark;document.getElementById('hqModal').classList.add('show')}
+function teamStore(){hide('hqModal');go('shop');toast('Opening this team’s Shopify store')}
+function toast(msg){const e=document.getElementById('appToast');e.textContent=msg;e.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.style.display='none',1500)}
 </script>
 </body></html>
