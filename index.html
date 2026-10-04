@@ -72,14 +72,14 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 /* Full Team Store template */
 .teamStoreScreen{background:#fff;min-height:100vh;padding-bottom:105px}
 .teamStoreBack{position:sticky;top:75px;z-index:12;width:100%;border:0;border-bottom:1px solid #e9e9e9;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:14px 18px;text-align:left;font:900 12px/1 Arial;letter-spacing:.08em;color:#111}
-.teamStoreHero{position:relative;overflow:hidden;background:#071018}
-.teamStoreBanner{display:block;width:100%;height:auto;max-height:240px;object-fit:cover;object-position:center}
+.teamStoreHero{position:relative;overflow:hidden;background:transparent;line-height:0}
+.teamStoreBanner{display:block;width:100%;height:auto;margin:0;padding:0}
 .teamStoreIdentity{padding:16px 18px 17px;background:#fff;border-bottom:4px solid var(--team-secondary,#FFEF00)}
 .teamStoreIdentityInner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .teamStoreIdentity .eyebrow{color:var(--team-primary,#0080C6);margin-bottom:4px}
 .teamStoreIdentity h1{font-size:20px;line-height:1;margin:0 0 5px;text-transform:uppercase;letter-spacing:-.025em}
 .teamStoreIdentity p{margin:0;color:#666;font-size:12px;font-weight:800}
-.teamStorePowered{flex:0 0 auto;background:#111;color:#fff;padding:8px 10px;border-radius:999px;font-size:9px;font-weight:900;letter-spacing:.08em}
+.teamStorePowered{flex:0 0 auto;color:#555;padding:0;font-size:9px;font-weight:900;letter-spacing:.08em;background:none;border:0;border-radius:0}
 .teamStoreBody{max-width:900px;margin:0 auto;padding:30px 18px 20px}
 .teamStoreTitleRow{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
 .teamStoreTitleRow .eyebrow{color:var(--team-primary,#683695);margin-bottom:5px}
@@ -93,7 +93,7 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .teamStoreProductInfo strong{display:block;font-size:13px;line-height:1.25;margin-bottom:7px}
 .teamStoreProductInfo small{display:block;font-size:12px;font-weight:900;color:var(--team-primary,#683695)}
 .teamStoreLoading,.teamStoreEmpty{padding:34px 0;text-align:center;color:#666;font-weight:800}
-@media(min-width:700px){.teamStoreProducts{grid-template-columns:repeat(3,minmax(0,1fr))}.teamStoreBanner{max-height:300px}.teamStoreBody{padding:40px 30px}.teamStoreIdentity{padding:18px 30px}}
+@media(min-width:700px){.teamStoreProducts{grid-template-columns:repeat(3,minmax(0,1fr))}.teamStoreBanner{height:auto}.teamStoreBody{padding:40px 30px}.teamStoreIdentity{padding:18px 30px}}
 </style>
 </head>
 <body>
@@ -334,7 +334,6 @@ async function openFanTeam(id){
          <h1>${t.team_name}</h1>
          <p>${[t.sport,place].filter(Boolean).join(' • ')}</p>
        </div>
-       <span class="teamStorePowered">POWERED BY GOAT SPORTS</span>
      </div>
    </div>
    <div class="teamStoreBody">
