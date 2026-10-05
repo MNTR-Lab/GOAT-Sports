@@ -143,6 +143,8 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .adminLockerDirectory{margin:14px 0 18px}.adminLockerDirectoryHead{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}.adminLockerDirectoryHead h2{font-size:24px;margin:2px 0}.adminLockerGrid{display:grid;grid-template-columns:1fr;gap:9px}.adminLockerTile{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:13px;text-align:left;display:flex;align-items:center;gap:11px}.adminLockerTile img{width:48px;height:48px;object-fit:contain;border-radius:7px;background:#f5f5f6}.adminLockerTile .adminLockerLogoBlank{width:48px;height:48px;border-radius:7px;background:#f3f3f5;display:grid;place-items:center;font-weight:1000;color:#999}.adminLockerTile strong{display:block;font-size:13px}.adminLockerTile small{display:block;font-size:8px;color:#777;margin-top:3px}.adminLockerTile .arrow{margin-left:auto;font-size:20px;color:var(--purple)}.adminLockerContext{border:2px solid var(--purple);border-radius:10px;padding:12px;margin-bottom:13px;background:#fff}.adminLockerContext strong{display:block;font-size:15px}.adminLockerContext small{font-size:8px;color:#777}
 
 .approvalStamp{margin-top:10px;padding:10px;border:1px solid #d9d9dd;border-radius:8px;background:#f8f8f9}.approvalStamp .stampTitle{font-size:9px;font-weight:1000;color:var(--teal);letter-spacing:.06em}.approvalStamp strong{display:block;font-size:10px;margin-top:4px}.approvalStamp small{display:block;font-size:8px;color:#777;margin-top:2px}
+
+.adminQuoteQueue{margin-top:18px}.quoteNeededCard{border:2px solid var(--orange);border-radius:10px;background:#fff;overflow:hidden}.quoteNeededCard+.quoteNeededCard{margin-top:9px}.quoteNeededCard .qbody{padding:12px}.quoteNeededCard img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#f5f5f6}.quoteFlag{display:inline-block;background:var(--orange);color:#fff;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:1000}.quoteMeta{font-size:8px;color:#777;margin-top:4px}.quoteDone{border:0;background:#111;color:#fff;border-radius:7px;padding:9px 11px;font-size:8px;font-weight:1000;margin-top:9px}
 </style>
 </head>
 <body>
@@ -201,7 +203,7 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
  <div id="lockerSubView" class="lockerSubView"></div>
  <div id="lockerHubTools" class="lockerHub">
  <div class="eyebrow" style="margin:22px 0 8px">LOCKER TOOLS</div>
- <div class="toolGrid"><button onclick="openLockerSection('designs')"><b>01</b><strong>MY DESIGNS</strong><small>All designs, revisions and approved artwork</small></button><button onclick="openLockerSection('approvals')"><b>02</b><strong>ARTWORK & APPROVALS</strong><small>Items awaiting approval or changes</small></button><button><b>03</b><strong>ROSTERS & SIZES</strong><small>Team roster and sizing</small></button><button><b>04</b><strong>QUOTES</strong><small>Pricing and active quotes</small></button><button><b>05</b><strong>REORDERS</strong><small>Repeat previous orders</small></button><button><b>06</b><strong>DOCUMENTS</strong><small>Team files and documents</small></button></div></div></div>
+ <div class="toolGrid"><button onclick="openLockerSection('designs')"><b>01</b><strong>MY DESIGNS</strong><small>Approved artwork and production-ready designs</small></button><button onclick="openLockerSection('approvals')"><b>02</b><strong>ARTWORK & APPROVALS</strong><small>New designs, approvals and requested changes</small></button><button><b>03</b><strong>ROSTERS & SIZES</strong><small>Team roster and sizing</small></button><button><b>04</b><strong>QUOTES</strong><small>Pricing and active quotes</small></button><button><b>05</b><strong>REORDERS</strong><small>Repeat previous orders</small></button><button><b>06</b><strong>DOCUMENTS</strong><small>Team files and documents</small></button></div></div></div>
 </section>
 
 <section id="orders" class="screen plain">
@@ -211,7 +213,7 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 <section id="account" class="screen plain">
 <div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h1>ACCOUNT</h1>
 <div id="accountContent"><p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button></div>
-<div id="accountAdminLockers" class="adminLockerDirectory"></div>
+<div id="accountAdminLockers" class="adminLockerDirectory"></div><div id="accountQuoteNeeded" class="adminQuoteQueue"></div>
 </section>
 
 <div id="teamHQModal" class="modalShade" onclick="if(event.target===this)closeFanTeamHQ()">
@@ -464,7 +466,24 @@ async function renderAccountAdminLockers(){
   const d=await lockerApi('list'),teams=d.teams||[];
   el.innerHTML=`<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">MASTER ADMIN</div><h2>ALL GOAT LOCKERS</h2><small style="font-size:8px;color:#777">Select an organization to enter and manage its Locker.</small></div></div>
   <div class="adminLockerGrid">${teams.map(t=>`<button class="adminLockerTile" onclick="enterAdminLockerFromAccount(${t.id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span class="adminLockerLogoBlank">G</span>'}<span><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${escapeHtml(t.sport||'GOAT Sports')} ${t.city||t.state?'• '+escapeHtml([t.city,t.state].filter(Boolean).join(', ')):''}</small></span><span class="arrow">›</span></button>`).join('')}</div>`;
+  await renderAdminQuoteNeeded();
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+async function renderAdminQuoteNeeded(){
+ const el=document.getElementById('accountQuoteNeeded');if(!el)return;
+ if(!lockerSession.adminRole){el.innerHTML='';return}
+ try{
+  const d=await workspaceApi('admin_feed');
+  const designs=(d.designs||[]).filter(x=>x.status==='approved'&&x.quote_status==='quote_needed');
+  let html='<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">ADMIN WORK QUEUE</div><h2>QUOTE NEEDED</h2><small style="font-size:8px;color:#777">Approved artwork waiting for pricing.</small></div></div>';
+  if(!designs.length)html+='<div class="workspaceEmpty">No approved designs currently need a quote.</div>';
+  else html+=designs.map(x=>{const team=x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team';return `<article class="quoteNeededCard">${x.asset_url?`<img src="${escapeHtml(x.asset_url)}" alt="">`:''}<div class="qbody"><span class="quoteFlag">QUOTE NEEDED</span><h3>${escapeHtml(x.title)}</h3><strong style="font-size:10px">${escapeHtml(team)}</strong><div class="quoteMeta">Design # ${escapeHtml(x.approval_number||'—')} • Approved by ${escapeHtml(x.approved_by_email||'—')} • ${x.approved_at?new Date(x.approved_at).toLocaleString():''}</div><button class="quoteDone" onclick="markDesignQuoted(${x.id})">MARK QUOTED</button></div></article>`}).join('');
+  el.innerHTML=html;
+ }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+async function markDesignQuoted(id){
+ if(!confirm('Mark this approved design as quoted and remove it from Quote Needed?'))return;
+ try{await workspaceApi('mark_quoted',{designId:id});toast('Design marked quoted');await renderAdminQuoteNeeded()}catch(e){alert(e.message)}
 }
 async function enterAdminLockerFromAccount(teamId){
  const d=await lockerApi('list');
@@ -503,7 +522,7 @@ async function openLockerSection(section){
  if(hub)hub.style.display='none';
  if(!sub)return;
  sub.innerHTML='<div class="workspaceEmpty">Loading…</div>';
- if(section==='designs')return renderDesignSection('all');
+ if(section==='designs')return renderDesignSection();
  if(section==='approvals')return renderApprovalSection();
 }
 async function getLockerDesignData(){
@@ -518,19 +537,15 @@ async function getLockerDesignData(){
 function lockerSubHeader(eyebrow,title,extra=''){
  return `<div class="lockerSubHead"><div><button class="lockerBack" onclick="showLockerHub()">‹ GOAT LOCKER</button><div class="eyebrow" style="margin-top:8px;color:var(--purple)">${eyebrow}</div><h2>${title}</h2></div>${extra}</div>`;
 }
-async function renderDesignSection(filter='all'){
+async function renderDesignSection(){
  const el=document.getElementById('lockerSubView');if(!el)return;
  try{
   const d=await getLockerDesignData();
-  let designs=d.designs||[];
-  if(filter==='approved')designs=designs.filter(x=>x.status==='approved');
-  if(filter==='active')designs=designs.filter(x=>x.status!=='approved');
-  const add=lockerSession.adminRole?'<button class="cta" onclick="openDesignAdmin()">ADD DESIGN</button>':'';
-  let html=lockerSubHeader('MY DESIGNS','DESIGN LIBRARY',add);
-  html+=`<div class="designTabs"><button class="${filter==='all'?'active':''}" onclick="renderDesignSection('all')">ALL</button><button class="${filter==='approved'?'active':''}" onclick="renderDesignSection('approved')">APPROVED</button><button class="${filter==='active'?'active':''}" onclick="renderDesignSection('active')">IN PROGRESS</button></div>`;
-  html+=designs.length?'<div class="designGrid">'+designs.map(designCardHtml).join('')+'</div>':'<div class="workspaceEmpty">No designs in this section yet.</div>';
+  const designs=(d.designs||[]).filter(x=>x.status==='approved');
+  let html=lockerSubHeader('MY DESIGNS','APPROVED DESIGNS');
+  html+=designs.length?'<div class="designGrid">'+designs.map(designCardHtml).join('')+'</div>':'<div class="workspaceEmpty">No approved designs yet. Designs will appear here after team approval.</div>';
   el.innerHTML=html;
- }catch(e){el.innerHTML=lockerSubHeader('MY DESIGNS','DESIGN LIBRARY')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+ }catch(e){el.innerHTML=lockerSubHeader('MY DESIGNS','APPROVED DESIGNS')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
 async function renderApprovalSection(){
  const el=document.getElementById('lockerSubView');if(!el)return;
@@ -539,6 +554,7 @@ async function renderApprovalSection(){
   const designs=(d.designs||[]).filter(x=>x.status==='pending'||x.status==='changes_requested');
   const add=lockerSession.adminRole?'<button class="cta" onclick="openDesignAdmin()">ADD DESIGN</button>':'';
   let html=lockerSubHeader('ARTWORK & APPROVALS','ACTIVE APPROVALS',add);
+  html+='<div class="dashboardNotice"><strong>APPROVAL WORKFLOW</strong><p>New designs begin here. Once approved by the team, they automatically move to My Designs.</p></div>';
   if(!designs.length)html+='<div class="dashboardNotice"><strong>ALL CAUGHT UP</strong><p>There are no designs currently waiting for approval or revision.</p></div>';
   else html+='<div class="designGrid">'+designs.map(designCardHtml).join('')+'</div>';
   el.innerHTML=html;
@@ -608,7 +624,7 @@ async function createLockerDesign(e){
  try{await workspaceApi('create',{teamId:Number(f.get('teamId')),title:String(f.get('title')),assetUrl:String(f.get('assetUrl')||''),description:String(f.get('description')||'')});form.reset();hide('designAdminModal');toast('Design added to Locker');await renderApprovalSection()}
  catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='ADD TO LOCKER FOR APPROVAL'}
 }
-async function deleteLockerDesign(id){if(!confirm('Delete this design and its approval history?'))return;try{await workspaceApi('delete',{designId:id});toast('Design deleted');await renderDesignSection('all')}catch(e){alert(e.message)}}
+async function deleteLockerDesign(id){if(!confirm('Delete this design and its approval history?'))return;try{await workspaceApi('delete',{designId:id});toast('Design deleted');await renderApprovalSection()}catch(e){alert(e.message)}}
 function lockerTeamHtml(x){const t=x.goat_teams||{};return `<div class="lockerTeamCard"><div class="eyebrow" style="color:var(--teal)">AUTHORIZED LOCKER</div><h3>${escapeHtml(t.organization_name||t.team_name||'GOAT Sports Team')}</h3><p>${escapeHtml(x.role||'Team Rep')}${t.sport?' • '+escapeHtml(t.sport):''}</p></div>`}
 async function openLockerAdmin(){
  try{
