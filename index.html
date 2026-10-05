@@ -440,10 +440,10 @@ async function renderLockerDesigns(){
  const el=document.getElementById('lockerDesignWorkspace');if(!el)return;
  const access=lockerSession.lockerAccess||[];
  const teamId=access[0]?.team_id;
- if(!teamId){el.innerHTML=lockerSession.adminRole?`<div class="lockerWorkspaceHeader"><div><div class="eyebrow">MY DESIGNS + APPROVALS</div><h2>DESIGN WORKSPACE</h2></div><button class="cta" onclick="openDesignAdmin()">ADD DESIGN</button></div><div class="workspaceEmpty">Assign yourself to a Locker or use ADD DESIGN to select an organization.</div>`:'';return}
  try{
-  const d=await workspaceApi('list',{teamId});
-  let html=`<div class="lockerWorkspaceHeader"><div><div class="eyebrow" style="color:var(--purple)">MY DESIGNS + APPROVALS</div><h2>DESIGN WORKSPACE</h2></div>${lockerSession.adminRole?'<button class="cta" onclick="openDesignAdmin()">ADD DESIGN</button>':''}</div>`;
+  const d=lockerSession.adminRole?await workspaceApi('admin_feed'):await workspaceApi('list',{teamId});
+  if(!lockerSession.adminRole&&!teamId){el.innerHTML='';return}
+  let html=`<div class="lockerWorkspaceHeader"><div><div class="eyebrow" style="color:var(--purple)">${lockerSession.adminRole?'ALL TEAM ACTIVITY':'MY DESIGNS + APPROVALS'}</div><h2>${lockerSession.adminRole?'APPROVALS & CHANGE REQUESTS':'DESIGN WORKSPACE'}</h2></div>${lockerSession.adminRole?'<button class="cta" onclick="openDesignAdmin()">ADD DESIGN</button>':''}</div>`;
   if(!d.designs.length){html+='<div class="workspaceEmpty">No designs have been added to this Locker yet.</div>';el.innerHTML=html;return}
   html+='<div class="designGrid">'+d.designs.map(designCardHtml).join('')+'</div>';el.innerHTML=html;
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
@@ -451,8 +451,9 @@ async function renderLockerDesigns(){
 function designCardHtml(d){
  const status=String(d.status||'pending'), label=status==='approved'?'APPROVED':status==='changes_requested'?'CHANGES REQUESTED':'AWAITING APPROVAL';
  const asset=d.asset_url?`<img src="${escapeHtml(d.asset_url)}" alt="${escapeHtml(d.title)}">`:'<span>DESIGN PREVIEW</span>';
+ const team=d.goat_teams?.organization_name||d.goat_teams?.team_name||'';
  const hist=(d.goat_locker_approvals||[]).slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(a=>`<small><b>${a.decision==='approved'?'APPROVED':'CHANGES REQUESTED'}</b> by ${escapeHtml(a.customer_email)}${a.comment?' — '+escapeHtml(a.comment):''}</small>`).join('');
- return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span><h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${lockerSession.adminRole?`<button style="margin-top:8px;border:0;background:none;font-size:8px;font-weight:900" onclick="deleteLockerDesign(${d.id})">DELETE DESIGN</button>`:''}${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}</div></article>`;
+ return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${lockerSession.adminRole?`<button style="margin-top:8px;border:0;background:none;font-size:8px;font-weight:900" onclick="deleteLockerDesign(${d.id})">DELETE DESIGN</button>`:''}${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}</div></article>`;
 }
 async function decideDesign(id,decision){
  const promptText=decision==='approved'?'Optional approval note:':'What changes are needed?';
