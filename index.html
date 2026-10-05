@@ -564,9 +564,13 @@ function designCardHtml(d){
    }
    actions+=`<button style="margin-top:8px;border:0;background:none;font-size:8px;font-weight:900" onclick="deleteLockerDesign(${d.id})">DELETE DESIGN</button>`;
  }else{
-   actions=`<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}`;
+   if(status==='approved'){
+     actions=hist?`<div class="approvalHistory"><div class="eyebrow">APPROVAL HISTORY</div>${hist}</div>`:'';
+   }else{
+     actions=`<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}`;
+   }
  }
- return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span><span class="statusPill status-pending" style="margin-left:5px">${revision}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}${status==='approved'?`<div class="approvalStamp"><div class="stampTitle">✓ APPROVED FOR PRODUCTION</div><strong>Approved by ${escapeHtml(d.approved_by_email||latest?.customer_email||'Authorized Team Account')}</strong><small>${d.approved_at?new Date(d.approved_at).toLocaleString():latest?.created_at?new Date(latest.created_at).toLocaleString():''}</small></div>`:''}${actions}</div></article>`;
+ return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span><span class="statusPill status-pending" style="margin-left:5px">${revision}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}${status==='approved'?`<div class="approvalStamp"><div class="stampTitle">✓ APPROVED FOR PRODUCTION</div>${d.approval_number?`<strong>DESIGN # ${escapeHtml(d.approval_number)}</strong>`:''}<strong>Approved by ${escapeHtml(d.approved_by_email||latest?.customer_email||'Authorized Team Account')}</strong><small>${d.approved_at?new Date(d.approved_at).toLocaleString():latest?.created_at?new Date(latest.created_at).toLocaleString():''}</small></div>`:''}${actions}</div></article>`;
 }
 
 function openRevisionModal(id){
