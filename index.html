@@ -428,9 +428,21 @@ function renderAdminAccess(rows){
  el.innerHTML='<div class="eyebrow" style="margin-top:8px">CURRENT LOCKER ACCESS</div>'+((rows||[]).length?rows.map(x=>`<div class="adminAccessRow"><strong>${escapeHtml(x.customer_email)}</strong><small>${escapeHtml(x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team')} • ${escapeHtml(x.role)} • ${x.active?'ACTIVE':'REVOKED'}</small>${x.active?`<button onclick="revokeLockerAccess(${x.id})">REMOVE ACCESS</button>`:`<button onclick="reactivateLockerAccess(${x.id})">RESTORE ACCESS</button>`}</div>`).join(''):'<p style="font-size:9px;color:#777">No team reps have been linked yet.</p>');
 }
 async function grantLockerAccess(e){
- e.preventDefault();const f=new FormData(e.currentTarget),btn=e.currentTarget.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='LINKING…';
- try{await lockerApi('grant',{email:String(f.get('email')).trim(),teamId:Number(f.get('teamId')),role:String(f.get('role')||'Team Rep').trim()});e.currentTarget.reset();toast('Locker access linked');await openLockerAdmin();}
- catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='LINK TO LOCKER'}
+ e.preventDefault();
+ const form=e.currentTarget;
+ const f=new FormData(form);
+ const btn=form.querySelector('button[type=submit]');
+ btn.disabled=true;btn.textContent='LINKING…';
+ try{
+  await lockerApi('grant',{email:String(f.get('email')).trim(),teamId:Number(f.get('teamId')),role:String(f.get('role')||'Team Rep').trim()});
+  form.reset();
+  toast('Locker access linked');
+  await openLockerAdmin();
+ }catch(err){
+  alert(err.message);
+ }finally{
+  btn.disabled=false;btn.textContent='LINK TO LOCKER';
+ }
 }
 async function revokeLockerAccess(id){if(!confirm('Remove this person’s GOAT Locker access? Their Shopify account will remain active.'))return;try{await lockerApi('revoke',{id});toast('Locker access removed');await openLockerAdmin()}catch(e){alert(e.message)}}
 async function reactivateLockerAccess(id){try{await lockerApi('reactivate',{id});toast('Locker access restored');await openLockerAdmin()}catch(e){alert(e.message)}}
