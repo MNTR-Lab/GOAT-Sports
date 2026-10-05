@@ -758,12 +758,15 @@ async function simulateSpecificLockerPaidTest(quoteId){
 
 async function openTestPaidPdf(quoteId){
  try{
-  const r=await workspaceApi('test_paid_pdf',{quoteId:Number(quoteId)});
-  if(!r?.ok||!r.pdfBase64)throw new Error(r?.error||'Could not create test PDF.');
-  const bytes=Uint8Array.from(atob(r.pdfBase64),c=>c.charCodeAt(0));
-  const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+  const token=await getCustomerAccessToken();
+  if(!token)throw new Error('Sign in required.');
+  const res=await fetch(WORKSPACE_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'test_paid_pdf',quoteId:Number(quoteId)})});
+  if(!res.ok){const msg=await res.text();throw new Error(msg||'Could not create test PDF.')}
+  const blob=await res.blob();
+  if(blob.type!=='application/pdf')throw new Error('The test document was not returned as a PDF.');
+  const url=URL.createObjectURL(blob);
   const w=window.open(url,'_blank');if(!w)window.location.assign(url);
-  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  setTimeout(()=>URL.revokeObjectURL(url),120000);
  }catch(e){alert(e.message||'Could not create test PDF.')}
 }
 async function resetSpecificLockerPaidTest(quoteId){
