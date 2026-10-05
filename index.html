@@ -807,12 +807,27 @@ async function renderAccountLockerAccess(){
   await renderAdminStandaloneMailbox();
   await renderAccountAdminLockers();
  }else if(lockerSession.lockerAccess.length){
-  el.innerHTML=`<div class="customerLockerSection"><div class="eyebrow" style="color:var(--purple)">GOAT SPORTS CUSTOM CLIENTS</div><h2>TEAM LOCKER</h2><div>${lockerSession.lockerAccess.map(x=>{const t=x.goat_teams||{};const name=t.organization_name||t.team_name||'GOAT Sports Team';const meta=[t.sport,[t.city,t.state].filter(Boolean).join(', ')].filter(Boolean).join(' • ');return `<button type="button" class="customerLockerTile" onclick="openCustomerLocker(${x.team_id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span></span>'}<span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(meta||'Authorized Team Locker')}</small></span><span class="arrow">›</span></button>`}).join('')}</div></div>`;
+  el.innerHTML=`<div class="customerLockerSection"><div class="eyebrow" style="color:var(--purple)">GOAT SPORTS CUSTOM CLIENTS</div><h2>TEAM LOCKER</h2><div>${lockerSession.lockerAccess.map(x=>{const t=x.goat_teams||{};const name=t.organization_name||t.team_name||'GOAT Sports Team';const meta=[t.sport,[t.city,t.state].filter(Boolean).join(', ')].filter(Boolean).join(' • ');return `<button type="button" class="customerLockerTile" onclick="openCustomerLocker(${x.team_id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span></span>'}<span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(meta||'Authorized Team Locker')}</small></span><span class="arrow">›</span></button>`}).join('')}</div></div><div id="customerAccountWorkMailbox"></div>`;
+  await renderCustomerAccountMailbox();
  }else{
   el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private workspace for designs, artwork approvals, rosters, sizing, quotes, documents and reorders.</p><span class="lockerState">TEAM REP ACCESS REQUIRED</span><p style="font-size:9px;color:#aaa">Ask your GOAT Sports administrator to link this customer account to your organization's Locker.</p>`;
  }
 }
 
+async function renderCustomerAccountMailbox(){
+ const el=document.getElementById('customerAccountWorkMailbox');if(!el)return;
+ const access=lockerSession.lockerAccess||[];let all=[];
+ try{
+  for(const x of access){const d=await workspaceApi('inbox',{teamId:x.team_id});for(const item of (d.items||[]))all.push({...item,team_id:x.team_id,team_name:x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team Locker'})}
+  all.sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));
+  el.innerHTML=`<div class="lockerInbox open" style="margin-top:10px"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>WORK MAILBOX</strong><small>${all.length?(all.length+' item'+(all.length===1?'':'s')+' need your review'):"You're all caught up"}</small></span>${all.length?`<span class="lockerInboxCount">${all.length}</span>`:''}</div><div class="lockerInboxItems">${all.length?all.map(x=>`<button type="button" class="lockerInboxItem" onclick="openCustomerAccountInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${x.type==='art'?'ARTWORK TO REVIEW':x.type==='invoice'?'INVOICE READY':'UPDATED QUOTE TO REVIEW'}</strong><small>${escapeHtml(x.team_name)} • ${escapeHtml(x.title||'GOAT Sports')}</small></span><span class="arrow">›</span></button>`).join(''):'<div class="lockerInboxEmpty">No artwork, quotes or invoices currently need your attention.</div>'}</div></div>`;
+ }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message||'Could not load mailbox.')}</div>`}
+}
+async function openCustomerAccountInboxItem(teamId,type,itemId){
+ const access=(lockerSession.lockerAccess||[]).find(x=>Number(x.team_id)===Number(teamId));if(!access)return;
+ adminSelectedLocker=null;go('locker');await new Promise(r=>setTimeout(r,120));
+ if(type==='art')await openLockerSection('approvals');else{await renderLockerQuotes();const h=document.getElementById('lockerHubTools');if(h)h.style.display='none';}
+}
 function openCustomerLocker(teamId){
  const access=(lockerSession.lockerAccess||[]).find(x=>Number(x.team_id)===Number(teamId));
  if(!access)return;
