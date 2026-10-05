@@ -141,6 +141,8 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .lockerHub .toolGrid button{cursor:pointer}.lockerSubView{margin-top:14px}.lockerSubHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.lockerSubHead h2{margin:2px 0;font-size:25px}.lockerBack{border:0;background:none;padding:0;color:var(--purple);font-size:9px;font-weight:1000}.designTabs{display:flex;gap:6px;margin:10px 0 14px}.designTabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:8px;font-weight:900}.designTabs button.active{background:#111;color:#fff;border-color:#111}.dashboardNotice{border:1px solid var(--line);border-radius:9px;padding:13px;background:#fff;margin-bottom:12px}.dashboardNotice strong{font-size:12px}.dashboardNotice p{font-size:9px;color:#777;margin:4px 0 0}
 
 .adminLockerDirectory{margin:14px 0 18px}.adminLockerDirectoryHead{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}.adminLockerDirectoryHead h2{font-size:24px;margin:2px 0}.adminLockerGrid{display:grid;grid-template-columns:1fr;gap:9px}.adminLockerTile{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:13px;text-align:left;display:flex;align-items:center;gap:11px}.adminLockerTile img{width:48px;height:48px;object-fit:contain;border-radius:7px;background:#f5f5f6}.adminLockerTile .adminLockerLogoBlank{width:48px;height:48px;border-radius:7px;background:#f3f3f5;display:grid;place-items:center;font-weight:1000;color:#999}.adminLockerTile strong{display:block;font-size:13px}.adminLockerTile small{display:block;font-size:8px;color:#777;margin-top:3px}.adminLockerTile .arrow{margin-left:auto;font-size:20px;color:var(--purple)}.adminLockerContext{border:2px solid var(--purple);border-radius:10px;padding:12px;margin-bottom:13px;background:#fff}.adminLockerContext strong{display:block;font-size:15px}.adminLockerContext small{font-size:8px;color:#777}
+
+.approvalStamp{margin-top:10px;padding:10px;border:1px solid #d9d9dd;border-radius:8px;background:#f8f8f9}.approvalStamp .stampTitle{font-size:9px;font-weight:1000;color:var(--teal);letter-spacing:.06em}.approvalStamp strong{display:block;font-size:10px;margin-top:4px}.approvalStamp small{display:block;font-size:8px;color:#777;margin-top:2px}
 </style>
 </head>
 <body>
@@ -209,6 +211,7 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 <section id="account" class="screen plain">
 <div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h1>ACCOUNT</h1>
 <div id="accountContent"><p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button></div>
+<div id="accountAdminLockers" class="adminLockerDirectory"></div>
 </section>
 
 <div id="teamHQModal" class="modalShade" onclick="if(event.target===this)closeFanTeamHQ()">
@@ -454,16 +457,29 @@ async function workspaceApi(action,payload={}){
  const r=await fetch(`${SUPABASE_URL}/functions/v1/goat-locker-workspace`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({action,...payload})});
  const j=await r.json();if(!r.ok)throw new Error(j.error||'Locker workspace request failed');return j;
 }
-async function renderAdminLockerDirectory(){
- const el=document.getElementById('adminLockerDirectory');if(!el)return;
+async function renderAccountAdminLockers(){
+ const el=document.getElementById('accountAdminLockers');if(!el)return;
  if(!lockerSession.adminRole){el.innerHTML='';return}
  try{
-  const d=await lockerApi('list');
-  const teams=d.teams||[];
-  el.innerHTML=`<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">MASTER ADMIN</div><h2>ALL GOAT LOCKERS</h2></div><button class="cta" onclick="openLockerAdmin()">MANAGE ACCESS</button></div>
-  <div class="adminLockerGrid">${teams.map(t=>`<button class="adminLockerTile" onclick="enterAdminLocker(${t.id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span class="adminLockerLogoBlank">G</span>'}<span><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${escapeHtml(t.sport||'GOAT Sports')} ${t.city||t.state?'• '+escapeHtml([t.city,t.state].filter(Boolean).join(', ')):''}</small></span><span class="arrow">›</span></button>`).join('')}</div>`;
+  const d=await lockerApi('list'),teams=d.teams||[];
+  el.innerHTML=`<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">MASTER ADMIN</div><h2>ALL GOAT LOCKERS</h2><small style="font-size:8px;color:#777">Select an organization to enter and manage its Locker.</small></div></div>
+  <div class="adminLockerGrid">${teams.map(t=>`<button class="adminLockerTile" onclick="enterAdminLockerFromAccount(${t.id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span class="adminLockerLogoBlank">G</span>'}<span><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${escapeHtml(t.sport||'GOAT Sports')} ${t.city||t.state?'• '+escapeHtml([t.city,t.state].filter(Boolean).join(', ')):''}</small></span><span class="arrow">›</span></button>`).join('')}</div>`;
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
+async function enterAdminLockerFromAccount(teamId){
+ const d=await lockerApi('list');
+ const team=(d.teams||[]).find(t=>Number(t.id)===Number(teamId));if(!team){alert('Locker not found');return}
+ adminSelectedLocker=team;
+ go('locker');
+}
+async function renderAdminLockerDirectory(){
+ const el=document.getElementById('adminLockerDirectory');if(!el)return;
+ if(!lockerSession.adminRole||!adminSelectedLocker){el.innerHTML='';return}
+ const t=adminSelectedLocker;
+ el.innerHTML=`<div class="adminLockerContext"><button class="lockerBack" onclick="returnToAdminAccount()">‹ ADMIN ACCOUNT</button><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${escapeHtml(t.sport||'')} ${t.city||t.state?'• '+escapeHtml([t.city,t.state].filter(Boolean).join(', ')):''}</small></div>`;
+}
+function returnToAdminAccount(){adminSelectedLocker=null;go('account')}
+
 async function enterAdminLocker(teamId){
  try{
   const d=await lockerApi('list');
@@ -550,7 +566,7 @@ function designCardHtml(d){
  }else{
    actions=`<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}`;
  }
- return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span><span class="statusPill status-pending" style="margin-left:5px">${revision}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}${actions}</div></article>`;
+ return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span><span class="statusPill status-pending" style="margin-left:5px">${revision}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}${status==='approved'?`<div class="approvalStamp"><div class="stampTitle">✓ APPROVED FOR PRODUCTION</div><strong>Approved by ${escapeHtml(d.approved_by_email||latest?.customer_email||'Authorized Team Account')}</strong><small>${d.approved_at?new Date(d.approved_at).toLocaleString():latest?.created_at?new Date(latest.created_at).toLocaleString():''}</small></div>`:''}${actions}</div></article>`;
 }
 
 function openRevisionModal(id){
@@ -643,7 +659,8 @@ async function renderAccountLockerAccess(){
  const el=document.getElementById('accountLockerAccess');if(!el)return;
  await loadLockerSession();
  if(lockerSession.adminRole){
-  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER</h2><p>Manage organization Locker access and enter GOAT Locker.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button><button class="cta alt" onclick="openLocker()">ENTER GOAT LOCKER</button>`;
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER ADMIN</h2><p>Manage team-rep access here. Your organization Lockers are listed directly below.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button>`;
+  await renderAccountAdminLockers();
  }else if(lockerSession.lockerAccess.length){
   const names=lockerSession.lockerAccess.map(x=>x.goat_teams?.organization_name||x.goat_teams?.team_name).filter(Boolean).join(', ');
   el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>MY GOAT LOCKER</h2><p>${escapeHtml(names)}</p><span class="lockerState">AUTHORIZED TEAM REP</span><button class="cta" onclick="openLocker()">ENTER GOAT LOCKER</button>`;
