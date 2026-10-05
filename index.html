@@ -166,6 +166,8 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .accountTimelineBtn{width:100%;margin-top:8px;border:0;border-radius:5px;background:#111;color:#fff;padding:10px;font-size:8px;font-weight:900;letter-spacing:.08em}
 
 .lockerTimelineDrop{margin-top:8px;background:#fff;border:1px solid #e4e5e8;border-radius:10px;overflow:hidden}.lockerTimelineDropHead{width:100%;border:0;background:#fff;display:flex;align-items:center;gap:10px;padding:12px 13px;text-align:left}.lockerTimelineDropHead .ico{width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900}.lockerTimelineDropHead .copy{display:flex;flex:1;flex-direction:column}.lockerTimelineDropHead strong{font-size:9px;letter-spacing:.06em}.lockerTimelineDropHead small{font-size:8px;color:#777;margin-top:2px}.lockerTimelineDropHead .chev{font-size:15px;transition:.2s}.lockerTimelineDrop.open .lockerTimelineDropHead .chev{transform:rotate(180deg)}.lockerTimelineDropBody{display:none;border-top:1px solid #eee;padding:8px 13px 12px}.lockerTimelineDrop.open .lockerTimelineDropBody{display:block}
+
+.paymentTestBox{margin:12px 0;padding:12px;border:1px dashed #BE5927;border-radius:10px;background:#fff8f3}.paymentTestBox strong{display:block;font-size:10px;letter-spacing:.06em;margin-bottom:4px}.paymentTestBox p{font-size:9px;line-height:1.4;color:#666;margin:0 0 9px}.paymentTestActions{display:flex;gap:7px;flex-wrap:wrap}.paymentTestActions button{border:0;border-radius:7px;padding:9px 11px;font-size:9px;font-weight:900;letter-spacing:.04em}.simPaidBtn{background:#109488;color:#fff}.resetPaidBtn{background:#111;color:#fff}
 </style>
 </head>
 <body>
@@ -735,6 +737,25 @@ async function renderLockerTimeline(){
   sub.innerHTML=html;
  }catch(e){sub.innerHTML=lockerSubHeader('TIMELINE','PROJECT TIMELINE')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
+
+async function getLockerTestQuote(){
+ const teamId=adminSelectedLocker?.id||(lockerSession.lockerAccess||[])[0]?.team_id;if(!teamId)throw new Error('Select a Team Locker first.');
+ const d=await workspaceApi('list_quotes',{teamId:Number(teamId)}),quotes=d.quotes||[];
+ return quotes.find(q=>q.shopify_order_name==='SIMULATED PAID TEST')||quotes.find(q=>q.status==='invoiced'&&q.shopify_draft_order_id)||quotes.find(q=>q.quote_number==='GQ-7C5A5588')||null;
+}
+async function simulateLockerPaidTest(){
+ try{const q=await getLockerTestQuote();if(!q)throw new Error('No invoiced quote is available to simulate.');
+ if(q.status==='paid'&&q.shopify_order_name==='SIMULATED PAID TEST'){alert('This invoice is already simulated as PAID.');return}
+ if(!confirm(`Simulate payment for ${q.quote_number||'this invoice'}? No Shopify charge will occur.`))return;
+ const r=await workspaceApi('simulate_paid_test',{quoteId:Number(q.id)});if(!r?.ok)throw new Error(r?.error||'Could not simulate payment.');
+ alert('SIMULATED PAYMENT COMPLETE.');await renderLockerInvoices();if(typeof renderLockerTimelineDropdown==='function')await renderLockerTimelineDropdown();if(typeof renderLockerInbox==='function')await renderLockerInbox();
+ }catch(e){alert(e.message||'Could not simulate payment.')}}
+async function resetLockerPaidTest(){
+ try{const q=await getLockerTestQuote();if(!q)throw new Error('No test quote was found.');if(q.shopify_order_name!=='SIMULATED PAID TEST')throw new Error('This invoice is not currently simulated as PAID.');
+ if(!confirm(`Reset ${q.quote_number||'this invoice'} back to INVOICED?`))return;
+ const r=await workspaceApi('reset_paid_test',{quoteId:Number(q.id)});if(!r?.ok)throw new Error(r?.error||'Could not reset payment test.');
+ alert('PAYMENT TEST RESET. The real Shopify invoice remains unpaid.');await renderLockerInvoices();if(typeof renderLockerTimelineDropdown==='function')await renderLockerTimelineDropdown();if(typeof renderLockerInbox==='function')await renderLockerInbox();
+ }catch(e){alert(e.message||'Could not reset payment test.')}}
 async function renderLockerInvoices(){
  const sub=document.getElementById('lockerSubView'),hub=document.getElementById('lockerHubTools');if(hub)hub.style.display='none';if(!sub)return;
  const teamId=adminSelectedLocker?.id||(lockerSession.lockerAccess||[])[0]?.team_id;
@@ -743,6 +764,8 @@ async function renderLockerInvoices(){
  try{
   let d=await workspaceApi('list_quotes',{teamId}); for(const q of (d.quotes||[]).filter(x=>x.status==='invoiced')){try{await workspaceApi('sync_shopify_payment',{quoteId:q.id})}catch(e){}} d=await workspaceApi('list_quotes',{teamId}); const quotes=(d.quotes||[]).filter(q=>['invoiced','paid'].includes(q.status)||q.shopify_invoice_url||q.shopify_order_id);
   let html=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS');
+  if(lockerSession.adminRole)html+=`<div class="paymentTestBox"><strong>MASTER ADMIN • PAYMENT WORKFLOW TEST</strong><p>Simulates or resets payment status inside GOAT Locker only. This does not charge the Shopify invoice.</p><div class="paymentTestActions"><button class="simPaidBtn" type="button" onclick="simulateLockerPaidTest()">SIMULATE PAID</button><button class="resetPaidBtn" type="button" onclick="resetLockerPaidTest()">RESET PAYMENT TEST</button></div></div>`;
+
   if(!quotes.length){html+='<div class="dashboardNotice"><strong>INVOICES / RECEIPTS</strong><p>Shopify invoices and completed payment receipts will appear here.</p></div><div class="workspaceEmpty">No invoices or receipts yet.</div>';sub.innerHTML=html;return}
   html+=quotes.map(q=>`<article class="dashboardNotice"><strong>${q.status==='paid'?'PAID • RECEIPT':'INVOICE READY'} • ${escapeHtml(q.quote_number||'')}</strong><p>$${Number(q.amount||0).toFixed(2)}${q.status==='paid'&&q.paid_at?` • Paid ${escapeHtml(goatFormatStamp(q.paid_at))}`:''}${q.shopify_order_name?` • ${escapeHtml(q.shopify_order_name)}`:''}</p>${(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)?`<button class="primaryBtn" type="button" onclick="window.open('${escapeHtml(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)}','_blank')">${q.status==='paid'?'VIEW RECEIPT / ORDER DETAILS':'VIEW & PAY INVOICE'}</button>`:''}</article>`).join('');
   sub.innerHTML=html;
