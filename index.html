@@ -755,6 +755,17 @@ async function simulateSpecificLockerPaidTest(quoteId){
   if(typeof renderLockerInbox==='function')await renderLockerInbox();
  }catch(e){alert(e.message||'Could not simulate payment.')}
 }
+
+async function openTestPaidPdf(quoteId){
+ try{
+  const r=await workspaceApi('test_paid_pdf',{quoteId:Number(quoteId)});
+  if(!r?.ok||!r.pdfBase64)throw new Error(r?.error||'Could not create test PDF.');
+  const bytes=Uint8Array.from(atob(r.pdfBase64),c=>c.charCodeAt(0));
+  const url=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+  const w=window.open(url,'_blank');if(!w)window.location.assign(url);
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }catch(e){alert(e.message||'Could not create test PDF.')}
+}
 async function resetSpecificLockerPaidTest(quoteId){
  try{
   if(!confirm('Reset this simulated payment back to INVOICED?'))return;
@@ -790,7 +801,7 @@ async function renderLockerInvoices(){
   if(lockerSession.adminRole)html+=`<div class="paymentTestBox"><strong>MASTER ADMIN • PAYMENT WORKFLOW TEST</strong><p>Simulates or resets payment status inside GOAT Locker only. This does not charge the Shopify invoice.</p><div class="paymentTestActions"><button class="simPaidBtn" type="button" onclick="simulateLockerPaidTest()">SIMULATE PAID</button><button class="resetPaidBtn" type="button" onclick="resetLockerPaidTest()">RESET PAYMENT TEST</button></div></div>`;
 
   if(!quotes.length){html+='<div class="dashboardNotice"><strong>INVOICES / RECEIPTS</strong><p>Shopify invoices and completed payment receipts will appear here.</p></div><div class="workspaceEmpty">No invoices or receipts yet.</div>';sub.innerHTML=html;return}
-  html+=quotes.map(q=>`<article class="dashboardNotice"><strong>${q.status==='paid'?'PAID • RECEIPT':'INVOICE READY'} • ${escapeHtml(q.quote_number||'')}</strong><p>$${Number(q.amount||0).toFixed(2)}${q.status==='paid'&&q.paid_at?` • Paid ${escapeHtml(goatFormatStamp(q.paid_at))}`:''}${q.shopify_order_name?` • ${escapeHtml(q.shopify_order_name)}`:''}</p>${(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)?`<button class="primaryBtn" type="button" onclick="window.open('${escapeHtml(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)}','_blank')">${q.status==='paid'?'VIEW RECEIPT / ORDER DETAILS':'VIEW & PAY INVOICE'}</button>`:''}${lockerSession.adminRole&&q.status==='invoiced'?`<button class="simPaidBtn" style="margin-top:7px;width:100%" type="button" onclick="simulateSpecificLockerPaidTest(${Number(q.id)})">ADMIN TEST — SIMULATE PAYMENT RECEIVED</button>`:''}${lockerSession.adminRole&&q.status==='paid'&&q.shopify_order_name==='SIMULATED PAID TEST'?`<button class="resetPaidBtn" style="margin-top:7px;width:100%" type="button" onclick="resetSpecificLockerPaidTest(${Number(q.id)})">ADMIN TEST — RESET PAYMENT</button>`:''}${q.status==='paid'&&q.order_printer_pdf_url?`<button class="secondaryBtn" style="margin-top:7px" type="button" onclick="window.open('${escapeHtml(q.order_printer_pdf_url)}','_blank')">DOWNLOAD PDF INVOICE / RECEIPT</button>`:''}</article>`).join('');
+  html+=quotes.map(q=>`<article class="dashboardNotice"><strong>${q.status==='paid'?'PAID • RECEIPT':'INVOICE READY'} • ${escapeHtml(q.quote_number||'')}</strong><p>$${Number(q.amount||0).toFixed(2)}${q.status==='paid'&&q.paid_at?` • Paid ${escapeHtml(goatFormatStamp(q.paid_at))}`:''}${q.shopify_order_name?` • ${escapeHtml(q.shopify_order_name)}`:''}</p>${(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)?`<button class="primaryBtn" type="button" onclick="window.open('${escapeHtml(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)}','_blank')">${q.status==='paid'?'VIEW RECEIPT / ORDER DETAILS':'VIEW & PAY INVOICE'}</button>`:''}${lockerSession.adminRole&&q.status==='invoiced'?`<button class="simPaidBtn" style="margin-top:7px;width:100%" type="button" onclick="simulateSpecificLockerPaidTest(${Number(q.id)})">ADMIN TEST — SIMULATE PAYMENT RECEIVED</button>`:''}${lockerSession.adminRole&&q.status==='paid'&&q.shopify_order_name==='SIMULATED PAID TEST'?`<button class="simPaidBtn" style="margin-top:7px;width:100%" type="button" onclick="openTestPaidPdf(${Number(q.id)})">VIEW TEST PDF INVOICE / RECEIPT</button><button class="resetPaidBtn" style="margin-top:7px;width:100%" type="button" onclick="resetSpecificLockerPaidTest(${Number(q.id)})">ADMIN TEST — RESET PAYMENT</button>`:''}${q.status==='paid'&&q.order_printer_pdf_url?`<button class="secondaryBtn" style="margin-top:7px" type="button" onclick="window.open('${escapeHtml(q.order_printer_pdf_url)}','_blank')">DOWNLOAD PDF INVOICE / RECEIPT</button>`:''}</article>`).join('');
   sub.innerHTML=html;
  }catch(e){sub.innerHTML=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
