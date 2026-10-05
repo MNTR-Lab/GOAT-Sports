@@ -145,6 +145,8 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .approvalStamp{margin-top:10px;padding:10px;border:1px solid #d9d9dd;border-radius:8px;background:#f8f8f9}.approvalStamp .stampTitle{font-size:9px;font-weight:1000;color:var(--teal);letter-spacing:.06em}.approvalStamp strong{display:block;font-size:10px;margin-top:4px}.approvalStamp small{display:block;font-size:8px;color:#777;margin-top:2px}
 
 .adminQuoteQueue{margin-top:18px}.quoteNeededCard{border:2px solid var(--orange);border-radius:10px;background:#fff;overflow:hidden}.quoteNeededCard+.quoteNeededCard{margin-top:9px}.quoteNeededCard .qbody{padding:12px}.quoteNeededCard img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#f5f5f6}.quoteFlag{display:inline-block;background:var(--orange);color:#fff;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:1000}.quoteMeta{font-size:8px;color:#777;margin-top:4px}.quoteDone{border:0;background:#111;color:#fff;border-radius:7px;padding:9px 11px;font-size:8px;font-weight:1000;margin-top:9px}
+
+.quoteCard{border:1px solid var(--line);border-radius:10px;background:#fff;padding:13px;margin-bottom:9px}.quoteCard h3{margin:5px 0}.quoteAmount{font-size:25px;font-weight:1000}.quoteStatus{display:inline-block;border-radius:999px;background:#111;color:#fff;padding:5px 8px;font-size:8px;font-weight:1000}.quoteForm label{display:block;font-size:8px;font-weight:900;margin:10px 0}.quoteForm input,.quoteForm textarea{width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid var(--line);border-radius:7px;font:inherit}.quoteForm textarea{min-height:80px}
 </style>
 </head>
 <body>
@@ -232,6 +234,20 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
   </div>
 </div>
 
+<div id="quoteModal" class="modalShade" onclick="if(event.target===this)hide('quoteModal')">
+ <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('quoteModal')">‹ BACK</button>
+ <div class="eyebrow" style="color:var(--orange)">GOAT SPORTS ADMIN</div><h2>ADD QUOTE</h2>
+ <div id="quoteDesignSummary"></div>
+ <form class="quoteForm" onsubmit="submitLockerQuote(event)">
+  <input type="hidden" name="designId" id="quoteDesignId">
+  <label>QUOTE AMOUNT ($)<input required type="number" min="0" step="0.01" name="amount" placeholder="0.00"></label>
+  <label>QUOTE DESCRIPTION<textarea name="description" placeholder="What is included in this quote?"></textarea></label>
+  <label>NOTES FOR CUSTOMER<textarea name="notes" placeholder="Production, shipping, minimums, or other notes."></textarea></label>
+  <label>QUOTE EXPIRATION<input type="date" name="expiresAt"></label>
+  <button class="cta" type="submit">SEND QUOTE TO LOCKER</button>
+ </form>
+ </div>
+</div>
 <div id="designRevisionModal" class="modalShade" onclick="if(event.target===this)hide('designRevisionModal')">
  <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('designRevisionModal')">‹ BACK TO LOCKER</button>
  <div class="eyebrow" style="color:var(--orange)">RESPOND TO CHANGE REQUEST</div><h2>UPLOAD REVISION</h2>
@@ -477,9 +493,32 @@ async function renderAdminQuoteNeeded(){
   const designs=(d.designs||[]).filter(x=>x.status==='approved'&&x.quote_status==='quote_needed');
   let html='<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">ADMIN WORK QUEUE</div><h2>QUOTE NEEDED</h2><small style="font-size:8px;color:#777">Approved artwork waiting for pricing.</small></div></div>';
   if(!designs.length)html+='<div class="workspaceEmpty">No approved designs currently need a quote.</div>';
-  else html+=designs.map(x=>{const team=x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team';return `<article class="quoteNeededCard">${x.asset_url?`<img src="${escapeHtml(x.asset_url)}" alt="">`:''}<div class="qbody"><span class="quoteFlag">QUOTE NEEDED</span><h3>${escapeHtml(x.title)}</h3><strong style="font-size:10px">${escapeHtml(team)}</strong><div class="quoteMeta">Design # ${escapeHtml(x.approval_number||'—')} • Approved by ${escapeHtml(x.approved_by_email||'—')} • ${x.approved_at?new Date(x.approved_at).toLocaleString():''}</div><button class="quoteDone" onclick="markDesignQuoted(${x.id})">MARK QUOTED</button></div></article>`}).join('');
+  else html+=designs.map(x=>{const team=x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team';return `<article class="quoteNeededCard">${x.asset_url?`<img src="${escapeHtml(x.asset_url)}" alt="">`:''}<div class="qbody"><span class="quoteFlag">QUOTE NEEDED</span><h3>${escapeHtml(x.title)}</h3><strong style="font-size:10px">${escapeHtml(team)}</strong><div class="quoteMeta">Design # ${escapeHtml(x.approval_number||'—')} • Approved by ${escapeHtml(x.approved_by_email||'—')} • ${x.approved_at?new Date(x.approved_at).toLocaleString():''}</div><button class="quoteDone" onclick="openQuoteModal(${x.id},'${escapeHtml(x.title).replace("'","&#39;")}','${escapeHtml(team).replace("'","&#39;")}')">ADD QUOTE</button></div></article>`}).join('');
   el.innerHTML=html;
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+function openQuoteModal(id,title,team){
+ document.getElementById('quoteDesignId').value=id;
+ document.getElementById('quoteDesignSummary').innerHTML=`<div class="dashboardNotice"><strong>${title}</strong><p>${team}</p></div>`;
+ const m=document.getElementById('quoteModal');m.style.display='flex';m.classList.add('show');
+}
+async function submitLockerQuote(e){
+ e.preventDefault();const form=e.currentTarget,f=new FormData(form),btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='SENDING…';
+ try{
+  const d=await workspaceApi('create_quote',{designId:Number(f.get('designId')),amount:Number(f.get('amount')),description:String(f.get('description')||''),notes:String(f.get('notes')||''),expiresAt:String(f.get('expiresAt')||'')});
+  form.reset();hide('quoteModal');toast(`Quote ${d.quote.quote_number} sent to customer Locker`);await renderAdminQuoteNeeded();
+ }catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='SEND QUOTE TO LOCKER'}
+}
+async function renderLockerQuotes(){
+ const el=document.getElementById('lockerSubView');if(!el)return;
+ const teamId=adminSelectedLocker?.id||(lockerSession.lockerAccess||[])[0]?.team_id;
+ if(!teamId){el.innerHTML=lockerSubHeader('QUOTES','MY QUOTES')+'<div class="workspaceEmpty">No Locker selected.</div>';return}
+ try{
+  const d=await workspaceApi('list_quotes',{teamId}),quotes=d.quotes||[];
+  let html=lockerSubHeader('QUOTES','MY QUOTES');
+  html+=quotes.length?quotes.map(q=>`<article class="quoteCard"><span class="quoteStatus">${escapeHtml(String(q.status||'sent').toUpperCase())}</span><h3>${escapeHtml(q.goat_locker_designs?.title||'GOAT Sports Quote')}</h3><div class="quoteAmount">$${Number(q.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div><strong style="font-size:9px">QUOTE # ${escapeHtml(q.quote_number)}</strong>${q.goat_locker_designs?.approval_number?`<div class="quoteMeta">Design # ${escapeHtml(q.goat_locker_designs.approval_number)}</div>`:''}${q.description?`<p>${escapeHtml(q.description)}</p>`:''}${q.notes?`<div class="dashboardNotice"><strong>NOTES</strong><p>${escapeHtml(q.notes)}</p></div>`:''}<div class="quoteMeta">Sent ${new Date(q.created_at).toLocaleString()}${q.expires_at?' • Expires '+new Date(q.expires_at+'T12:00:00').toLocaleDateString():''}</div></article>`).join(''):'<div class="workspaceEmpty">No quotes have been sent to this Locker yet.</div>';
+  el.innerHTML=html;
+ }catch(e){el.innerHTML=lockerSubHeader('QUOTES','MY QUOTES')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
 async function markDesignQuoted(id){
  if(!confirm('Mark this approved design as quoted and remove it from Quote Needed?'))return;
