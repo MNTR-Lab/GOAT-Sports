@@ -758,12 +758,12 @@ async function simulateSpecificLockerPaidTest(quoteId){
 
 async function openTestPaidPdf(quoteId){
  try{
-  const token=await getCustomerAccessToken();
-  if(!token)throw new Error('Sign in required.');
+  let token=(lockerSession&&lockerSession.accessToken)||sessionStorage.getItem('customer_access_token')||localStorage.getItem('customer_access_token')||localStorage.getItem('goat_customer_access_token')||'';
+  if(!token)throw new Error('Your customer session token is unavailable. Sign out and back in, then try again.');
   const res=await fetch(WORKSPACE_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'test_paid_pdf',quoteId:Number(quoteId)})});
   if(!res.ok){const msg=await res.text();throw new Error(msg||'Could not create test PDF.')}
   const blob=await res.blob();
-  if(blob.type!=='application/pdf')throw new Error('The test document was not returned as a PDF.');
+  if(!String(blob.type).includes('pdf'))throw new Error('The test document was not returned as a PDF.');
   const url=URL.createObjectURL(blob);
   const w=window.open(url,'_blank');if(!w)window.location.assign(url);
   setTimeout(()=>URL.revokeObjectURL(url),120000);
