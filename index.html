@@ -699,7 +699,7 @@ async function openInboxItem(type,itemId){
    const d=await workspaceApi('list_quotes',{teamId:Number(teamId)});
    const q=(d.quotes||[]).find(x=>Number(x.id)===Number(itemId));
    if(q?.status==='paid'){await renderLockerInvoices();return}
-   if(q?.shopify_invoice_url){window.open(q.shopify_invoice_url,'_blank','noopener');return}
+   if(q?.shopify_invoice_url){window.location.href=q.shopify_invoice_url;return}
    alert('The Shopify invoice link is not available yet.');return;
   }catch(e){alert(e.message||'Could not open the Shopify invoice.');return}
  }
@@ -986,7 +986,7 @@ async function openCustomerAccountInboxItem(teamId,type,itemId){
    if(q?.status==='paid'){
     adminSelectedLocker=null;go('locker');await new Promise(r=>setTimeout(r,120));await renderLockerInvoices();return;
    }
-   if(q?.shopify_invoice_url){window.open(q.shopify_invoice_url,'_blank','noopener');return}
+   if(q?.shopify_invoice_url){window.location.href=q.shopify_invoice_url;return}
    alert('The Shopify invoice link is not available yet.');return;
   }catch(e){alert(e.message||'Could not open the Shopify invoice.');return}
  }
