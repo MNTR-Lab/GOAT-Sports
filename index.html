@@ -318,9 +318,9 @@ function go(id,btn){
  document.getElementById(id).classList.add('active');
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===(id==='teamstore'?'fanhq':(id==='locker'?'account':id))));
  window.scrollTo({top:0,behavior:'instant'});
- if(id==='account') renderCustomerAccount();
- if(id==='orders') renderCustomerOrders();
- if(id==='locker') renderLocker();
+ if(id==='account'){try{const r=renderCustomerAccount();if(r&&typeof r.catch==='function')r.catch(e=>console.error('Account render:',e))}catch(e){console.error('Account render:',e)}}
+ if(id==='orders'){try{const r=renderCustomerOrders();if(r&&typeof r.catch==='function')r.catch(e=>console.error('Orders render:',e))}catch(e){console.error('Orders render:',e)}}
+ if(id==='locker'){try{const r=renderLocker();if(r&&typeof r.catch==='function')r.catch(e=>console.error('Locker render:',e))}catch(e){console.error('Locker render:',e)}}
 }
 function notice(){alert('Notifications are ready to connect once we build account/order data.')}
 
@@ -566,7 +566,7 @@ async function renderLockerInbox(){
  const teamId=(lockerSession.lockerAccess||[])[0]?.team_id;if(!teamId){el.innerHTML='';return}
  try{
   const d=await workspaceApi('inbox',{teamId}),items=d.items||[];
-  el.innerHTML=`<div class="lockerInbox${items.length?'':' open'}"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>REVIEW CENTER</strong><small>${items.length?`${items.length} item${items.length===1?'':'s'} waiting for your review`:'You're all caught up'}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>`<button type="button" class="lockerInboxItem" onclick="openInboxItem('${x.type}')"><span class="lockerInboxDot"></span><span><strong>${x.type==='art'?'ARTWORK TO REVIEW':x.type==='invoice'?'INVOICE READY':'QUOTE TO REVIEW'}</strong><small>${escapeHtml(x.title||'GOAT Sports')} • ${String(x.status||'').replaceAll('_',' ')}</small></span><span class="arrow">›</span></button>`).join(''):'<div class="lockerInboxEmpty">No artwork, quotes or invoices currently need your attention.</div>'}</div></div>`;
+  el.innerHTML=`<div class="lockerInbox${items.length?'':' open'}"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>REVIEW CENTER</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' waiting for your review'):"You're all caught up"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>`<button type="button" class="lockerInboxItem" onclick="openInboxItem('${x.type}')"><span class="lockerInboxDot"></span><span><strong>${x.type==='art'?'ARTWORK TO REVIEW':x.type==='invoice'?'INVOICE READY':'QUOTE TO REVIEW'}</strong><small>${escapeHtml(x.title||'GOAT Sports')} • ${String(x.status||'').replaceAll('_',' ')}</small></span><span class="arrow">›</span></button>`).join(''):'<div class="lockerInboxEmpty">No artwork, quotes or invoices currently need your attention.</div>'}</div></div>`;
  }catch(e){el.innerHTML=''}
 }
 function openInboxItem(type){
