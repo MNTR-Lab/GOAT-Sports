@@ -164,6 +164,8 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .accountTimelineText small{display:block;font-size:8px;color:#777;margin-top:2px}
 .accountTimelineCurrent{font-size:8px;font-weight:900;color:var(--purple);letter-spacing:.08em;margin-bottom:5px}
 .accountTimelineBtn{width:100%;margin-top:8px;border:0;border-radius:5px;background:#111;color:#fff;padding:10px;font-size:8px;font-weight:900;letter-spacing:.08em}
+
+.lockerTimelineDrop{margin-top:8px;background:#fff;border:1px solid #e4e5e8;border-radius:10px;overflow:hidden}.lockerTimelineDropHead{width:100%;border:0;background:#fff;display:flex;align-items:center;gap:10px;padding:12px 13px;text-align:left}.lockerTimelineDropHead .ico{width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900}.lockerTimelineDropHead .copy{display:flex;flex:1;flex-direction:column}.lockerTimelineDropHead strong{font-size:9px;letter-spacing:.06em}.lockerTimelineDropHead small{font-size:8px;color:#777;margin-top:2px}.lockerTimelineDropHead .chev{font-size:15px;transition:.2s}.lockerTimelineDrop.open .lockerTimelineDropHead .chev{transform:rotate(180deg)}.lockerTimelineDropBody{display:none;border-top:1px solid #eee;padding:8px 13px 12px}.lockerTimelineDrop.open .lockerTimelineDropBody{display:block}
 </style>
 </head>
 <body>
@@ -217,7 +219,7 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 
 <section id="locker" class="screen privateLocker">
  <div class="privateLockerHero"><button class="backMini" onclick="go('account')">‹ ACCOUNT</button><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h1>GOAT<br>LOCKER</h1><p id="lockerIdentity">Your organization's private GOAT Sports workspace.</p></div>
- <div class="section lockerTools"><div id="lockerAssignedTeams"></div><div id="lockerInbox"></div>
+ <div class="section lockerTools"><div id="lockerAssignedTeams"></div><div id="lockerInbox"></div><div id="lockerTimelineDropdown"></div>
  <div id="adminLockerDirectory" class="adminLockerDirectory"></div>
  <div id="lockerSubView" class="lockerSubView"></div>
  <div id="lockerHubTools" class="lockerHub">
@@ -660,12 +662,41 @@ async function renderLockerInbox(){
   el.innerHTML=`<div class="lockerInbox${items.length?'':' open'}"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>REVIEW CENTER</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' waiting for your review'):"You're all caught up"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>`<button type="button" class="lockerInboxItem" onclick="openInboxItem('${x.type}')"><span class="lockerInboxDot"></span><span><strong>${x.type==='art'?'ARTWORK TO REVIEW':x.type==='invoice'?'INVOICE READY':'QUOTE TO REVIEW'}</strong><small>${escapeHtml(x.title||'GOAT Sports')} • ${String(x.status||'').replaceAll('_',' ')}</small></span><span class="arrow">›</span></button>`).join(''):'<div class="lockerInboxEmpty">No artwork, quotes or invoices currently need your attention.</div>'}</div></div>`;
  }catch(e){el.innerHTML=''}
 }
+
+async function renderLockerTimelineDropdown(){
+ const el=document.getElementById('lockerTimelineDropdown');if(!el)return;
+ if(lockerSession.adminRole){el.innerHTML='';return}
+ const teamId=(lockerSession.lockerAccess||[])[0]?.team_id;if(!teamId){el.innerHTML='';return}
+ el.innerHTML=`<div class="lockerTimelineDrop"><button class="lockerTimelineDropHead" type="button" onclick="this.parentElement.classList.toggle('open')"><span class="ico">↗</span><span class="copy"><strong>PROJECT TIMELINE</strong><small>Loading current project progress…</small></span><span class="chev">⌄</span></button><div class="lockerTimelineDropBody"><div class="workspaceEmpty">Loading timeline…</div></div></div>`;
+ try{
+  const [dd,qd]=await Promise.all([workspaceApi('list',{teamId}),workspaceApi('list_quotes',{teamId})]);
+  const designs=dd.designs||[],quotes=qd.quotes||[];
+  const d=[...designs].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const rq=d?quotes.filter(q=>Number(q.design_id)===Number(d.id)):quotes;
+  const q=[...(rq.length?rq:quotes)].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const ev=[];
+  if(d?.created_at)ev.push(['Project / Artwork Started',d.created_at]);
+  if(d?.status==='approved')ev.push(['Artwork Approved',d.approved_at||d.updated_at]);
+  if(q?.created_at)ev.push([`Quote ${q.quote_number||''} Created`.trim(),q.created_at]);
+  if(q?.responded_at&&['approved','invoiced','paid'].includes(q.status))ev.push(['Quote Approved',q.responded_at]);
+  if(q?.shopify_draft_order_id)ev.push(['Shopify Invoice Created',q.updated_at||q.responded_at]);
+  if(q?.status==='paid')ev.push(['Payment Received',q.updated_at]);
+  let current='AWAITING PROJECT START';
+  if(d)current='ARTWORK';if(d?.status==='approved')current='QUOTE';
+  if(q?.status==='sent'||q?.status==='changes_requested')current='QUOTE REVIEW';
+  if(q?.status==='approved')current='INVOICE / PAYMENT';if(q?.status==='invoiced')current='AWAITING PAYMENT';if(q?.status==='paid')current='PRODUCTION';
+  const box=el.querySelector('.lockerTimelineDrop'),copy=box.querySelector('.copy'),body=box.querySelector('.lockerTimelineDropBody');
+  copy.innerHTML=`<strong>PROJECT TIMELINE</strong><small>CURRENT: ${escapeHtml(current)} • tap to view timestamps</small>`;
+  body.innerHTML=(ev.length?ev.slice(-5).map(x=>`<div class="accountTimelineRow done"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>${escapeHtml(x[0])}</strong><small>${escapeHtml(goatFormatStamp(x[1]))}</small></span></div>`).join(''):`<div class="lockerInboxEmpty">No project milestones have been recorded yet.</div>`)+`<button class="accountTimelineBtn" type="button" onclick="renderLockerTimeline()">VIEW FULL TIMELINE →</button>`;
+ }catch(e){const body=el.querySelector('.lockerTimelineDropBody');if(body)body.innerHTML='<div class="lockerInboxEmpty">Timeline is not available right now.</div>'}
+}
 function openInboxItem(type){
  if(type==='art')openLockerSection('approvals');
  else {renderLockerQuotes();document.getElementById('lockerHubTools').style.display='none'}
 }
 function showLockerHub(){
  renderLockerInbox();
+ renderLockerTimelineDropdown();
  const sub=document.getElementById('lockerSubView'),hub=document.getElementById('lockerHubTools');
  if(sub)sub.innerHTML='';if(hub)hub.style.display='';
 }
