@@ -485,22 +485,28 @@ async function renderAccountAdminLockers(){
   await renderAdminQuoteNeeded();
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
+let adminQuoteDesignMap={};
 async function renderAdminQuoteNeeded(){
  const el=document.getElementById('accountQuoteNeeded');if(!el)return;
  if(!lockerSession.adminRole){el.innerHTML='';return}
  try{
   const d=await workspaceApi('admin_feed');
   const designs=(d.designs||[]).filter(x=>x.status==='approved'&&x.quote_status==='quote_needed');
+  adminQuoteDesignMap=Object.fromEntries(designs.map(x=>[String(x.id),x]));
   let html='<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">ADMIN WORK QUEUE</div><h2>QUOTE NEEDED</h2><small style="font-size:8px;color:#777">Approved artwork waiting for pricing.</small></div></div>';
   if(!designs.length)html+='<div class="workspaceEmpty">No approved designs currently need a quote.</div>';
-  else html+=designs.map(x=>{const team=x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team';return `<article class="quoteNeededCard">${x.asset_url?`<img src="${escapeHtml(x.asset_url)}" alt="">`:''}<div class="qbody"><span class="quoteFlag">QUOTE NEEDED</span><h3>${escapeHtml(x.title)}</h3><strong style="font-size:10px">${escapeHtml(team)}</strong><div class="quoteMeta">Design # ${escapeHtml(x.approval_number||'—')} • Approved by ${escapeHtml(x.approved_by_email||'—')} • ${x.approved_at?new Date(x.approved_at).toLocaleString():''}</div><button class="quoteDone" onclick="openQuoteModal(${x.id},'${escapeHtml(x.title).replace("'","&#39;")}','${escapeHtml(team).replace("'","&#39;")}')">ADD QUOTE</button></div></article>`}).join('');
+  else html+=designs.map(x=>{const team=x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team';return `<article class="quoteNeededCard">${x.asset_url?`<img src="${escapeHtml(x.asset_url)}" alt="">`:''}<div class="qbody"><span class="quoteFlag">QUOTE NEEDED</span><h3>${escapeHtml(x.title)}</h3><strong style="font-size:10px">${escapeHtml(team)}</strong><div class="quoteMeta">Design # ${escapeHtml(x.approval_number||'—')} • Approved by ${escapeHtml(x.approved_by_email||'—')} • ${x.approved_at?new Date(x.approved_at).toLocaleString():''}</div><button type="button" class="quoteDone" onclick="openQuoteModal(${x.id})">ADD QUOTE</button></div></article>`}).join('');
   el.innerHTML=html;
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
-function openQuoteModal(id,title,team){
+function openQuoteModal(id){
+ const d=adminQuoteDesignMap[String(id)]||{};
+ const team=d.goat_teams?.organization_name||d.goat_teams?.team_name||'GOAT Sports';
  document.getElementById('quoteDesignId').value=id;
- document.getElementById('quoteDesignSummary').innerHTML=`<div class="dashboardNotice"><strong>${title}</strong><p>${team}</p></div>`;
- const m=document.getElementById('quoteModal');m.style.display='flex';m.classList.add('show');
+ document.getElementById('quoteDesignSummary').innerHTML=`<div class="dashboardNotice"><strong>${escapeHtml(d.title||'Approved Design')}</strong><p>${escapeHtml(team)}</p></div>`;
+ const m=document.getElementById('quoteModal');
+ if(!m){alert('Quote form could not be opened.');return}
+ m.style.display='flex';m.classList.add('show');
 }
 async function submitLockerQuote(e){
  e.preventDefault();const form=e.currentTarget,f=new FormData(form),btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='SENDING…';
