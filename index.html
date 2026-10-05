@@ -221,6 +221,17 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
   </div>
 </div>
 
+<div id="designRevisionModal" class="modalShade" onclick="if(event.target===this)hide('designRevisionModal')">
+ <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('designRevisionModal')">‹ BACK TO LOCKER</button>
+ <div class="eyebrow" style="color:var(--orange)">RESPOND TO CHANGE REQUEST</div><h2>UPLOAD REVISION</h2>
+ <form class="adminDesignForm" onsubmit="submitDesignRevision(event)">
+  <input type="hidden" name="designId" id="revisionDesignId">
+  <label>REVISED ARTWORK / MOCKUP URL<input required type="url" name="assetUrl" placeholder="https://..."></label>
+  <label>REVISION NOTE<textarea name="note" placeholder="Example: Updated lettering and jersey number per request."></textarea></label>
+  <button class="cta" type="submit">SEND REVISION TO TEAM</button>
+ </form></div>
+</div>
+
 <div id="designAdminModal" class="modalShade" onclick="if(event.target===this)hide('designAdminModal')">
  <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('designAdminModal')">‹ BACK TO LOCKER</button>
  <div class="eyebrow" style="color:var(--purple)">GOAT LOCKER ADMIN</div><h2>ADD DESIGN</h2>
@@ -452,8 +463,41 @@ function designCardHtml(d){
  const status=String(d.status||'pending'), label=status==='approved'?'APPROVED':status==='changes_requested'?'CHANGES REQUESTED':'AWAITING APPROVAL';
  const asset=d.asset_url?`<img src="${escapeHtml(d.asset_url)}" alt="${escapeHtml(d.title)}">`:'<span>DESIGN PREVIEW</span>';
  const team=d.goat_teams?.organization_name||d.goat_teams?.team_name||'';
- const hist=(d.goat_locker_approvals||[]).slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(a=>`<small><b>${a.decision==='approved'?'APPROVED':'CHANGES REQUESTED'}</b> by ${escapeHtml(a.customer_email)}${a.comment?' — '+escapeHtml(a.comment):''}</small>`).join('');
- return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${lockerSession.adminRole?`<button style="margin-top:8px;border:0;background:none;font-size:8px;font-weight:900" onclick="deleteLockerDesign(${d.id})">DELETE DESIGN</button>`:''}${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}</div></article>`;
+ const approvals=(d.goat_locker_approvals||[]).slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ const latest=approvals[0];
+ const hist=approvals.map(a=>`<small><b>${a.decision==='approved'?'APPROVED':'CHANGES REQUESTED'}</b> by ${escapeHtml(a.customer_email)}${a.comment?' — '+escapeHtml(a.comment):''}</small>`).join('');
+ const revision=`REVISION ${Number(d.revision_number||1)}`;
+ let actions='';
+ if(lockerSession.adminRole){
+   if(status==='changes_requested'){
+     actions=`<div class="approvalHistory"><div class="eyebrow" style="color:var(--orange)">REQUEST FROM TEAM</div>${latest?`<small><b>${escapeHtml(latest.customer_email)}</b>${latest.comment?' — '+escapeHtml(latest.comment):''}</small>`:'<small>Change request received.</small>'}</div>
+     <div class="approvalActions"><button class="approveBtn" onclick="openRevisionModal(${d.id})">UPLOAD REVISION</button><button class="changesBtn" onclick="markDesignResolved(${d.id})">MARK RESOLVED</button></div>`;
+   }else if(status==='approved'){
+     actions=`<div class="approvalHistory"><div class="eyebrow" style="color:var(--teal)">TEAM APPROVAL</div>${latest?`<small><b>${escapeHtml(latest.customer_email)}</b>${latest.comment?' — '+escapeHtml(latest.comment):''}</small>`:''}</div>`;
+   }else{
+     actions=`<p style="font-size:9px;color:#777;margin-top:10px">Waiting for the team representative to approve this revision or request changes.</p>`;
+   }
+   actions+=`<button style="margin-top:8px;border:0;background:none;font-size:8px;font-weight:900" onclick="deleteLockerDesign(${d.id})">DELETE DESIGN</button>`;
+ }else{
+   actions=`<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}`;
+ }
+ return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span><span class="statusPill status-pending" style="margin-left:5px">${revision}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}${actions}</div></article>`;
+}
+
+function openRevisionModal(id){
+ document.getElementById('revisionDesignId').value=id;
+ const m=document.getElementById('designRevisionModal');m.style.display='flex';m.classList.add('show');
+}
+async function submitDesignRevision(e){
+ e.preventDefault();const form=e.currentTarget,f=new FormData(form),btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='SENDING…';
+ try{
+  const d=await workspaceApi('revise',{designId:Number(f.get('designId')),assetUrl:String(f.get('assetUrl')||''),note:String(f.get('note')||'')});
+  form.reset();hide('designRevisionModal');toast(`Revision ${d.revisionNumber} sent to team`);await renderLockerDesigns();
+ }catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='SEND REVISION TO TEAM'}
+}
+async function markDesignResolved(id){
+ if(!confirm('Mark this change request resolved and send the current design back to the team for approval?'))return;
+ try{await workspaceApi('resolve',{designId:id});toast('Change request resolved — awaiting team approval');await renderLockerDesigns()}catch(e){alert(e.message)}
 }
 async function decideDesign(id,decision){
  const promptText=decision==='approved'?'Optional approval note:':'What changes are needed?';
