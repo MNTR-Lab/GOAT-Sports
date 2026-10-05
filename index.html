@@ -486,7 +486,7 @@ async function renderAdminReviewCenter(){
    adminQuoteDesignMap=Object.fromEntries((feed.designs||[]).map(x=>[String(x.id),x]));
   }
   const labels={art_change:'ARTWORK CHANGES REQUESTED',quote_needed:'QUOTE NEEDED',quote_change:'QUOTE CHANGES REQUESTED',quote_approved:'QUOTE APPROVED'};
-  el.innerHTML=`<div class="lockerInbox open" style="margin-top:14px"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>ADMIN WORK MAILBOX</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' need attention across all Team Lockers'):"You're all caught up across all Team Lockers"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>{const team=x.team?.organization_name||x.team?.team_name||'Team Locker';return `<button type="button" class="lockerInboxItem" onclick="openAdminInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${labels[x.type]||'ACTION NEEDED'}</strong><small>${escapeHtml(team)} • ${escapeHtml(x.title||'Customer response')}${x.approval_number?' • Design # '+escapeHtml(x.approval_number):''}</small></span><span class="arrow">›</span></button>`}).join(''):'<div class="lockerInboxEmpty">No artwork, quote, or customer responses currently need admin attention.</div>'}</div></div>`;
+  el.innerHTML=`<div class="lockerInbox open" style="margin-top:14px"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>ADMIN WORK MAILBOX</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' need attention across all Team Lockers'):"You're all caught up across all Team Lockers"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>{const team=x.team?.organization_name||x.team?.team_name||'Team Locker';return `<button type="button" class="lockerInboxItem" onclick="openAdminInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${labels[x.type]||'ACTION NEEDED'}</strong><small>${escapeHtml(team)} • ${escapeHtml(x.title||'Customer response')} • OPEN ITEM${x.approval_number?' • Design # '+escapeHtml(x.approval_number):''}</small></span><span class="arrow">›</span></button>`}).join(''):'<div class="lockerInboxEmpty">No artwork, quote, or customer responses currently need admin attention.</div>'}</div></div>`;
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message||'Could not load admin work mailbox.')}</div>`}
 }
 async function openAdminInboxItem(teamId,type,itemId){
@@ -494,9 +494,23 @@ async function openAdminInboxItem(teamId,type,itemId){
   if(type==='quote_needed'){openQuoteModal(itemId);return}
   const d=await lockerApi('list'),team=(d.teams||[]).find(t=>Number(t.id)===Number(teamId));
   if(!team)return alert('Team Locker not found.');
-  adminSelectedLocker=team;go('locker');
-  setTimeout(()=>{if(type==='art_change')openLockerSection('approvals');else{renderLockerQuotes();const h=document.getElementById('lockerHubTools');if(h)h.style.display='none'}},100);
- }catch(e){alert(e.message||'Could not open this review item.')}
+  adminSelectedLocker=team;
+  if(type==='art_change'){
+   go('locker');
+   await new Promise(r=>setTimeout(r,120));
+   await openLockerSection('approvals');
+   setTimeout(()=>{const cards=[...document.querySelectorAll('[data-design-id]')];const card=cards.find(x=>Number(x.dataset.designId)===Number(itemId));if(card)card.scrollIntoView({behavior:'smooth',block:'center'})},120);
+   return;
+  }
+  if(type==='quote_change'||type==='quote_approved'){
+   go('locker');
+   await new Promise(r=>setTimeout(r,120));
+   await renderLockerQuotes();
+   const h=document.getElementById('lockerHubTools');if(h)h.style.display='none';
+   setTimeout(()=>{const card=document.getElementById('quoteAudit-'+itemId)?.closest('article');if(card)card.scrollIntoView({behavior:'smooth',block:'center'})},120);
+   return;
+  }
+ }catch(e){alert(e.message||'Could not open this work item.')}
 }
 async function renderAdminStandaloneMailbox(){
  const el=document.getElementById('accountAdminMailboxStandalone');if(!el)return;
@@ -506,7 +520,7 @@ async function renderAdminStandaloneMailbox(){
   adminQuoteDesignMap={};
   if(items.some(x=>x.type==='quote_needed')){try{const feed=await workspaceApi('admin_feed');adminQuoteDesignMap=Object.fromEntries((feed.designs||[]).map(x=>[String(x.id),x]))}catch(e){}}
   const labels={art_change:'ARTWORK CHANGES REQUESTED',quote_needed:'QUOTE NEEDED',quote_change:'QUOTE CHANGES REQUESTED',quote_approved:'QUOTE APPROVED'};
-  el.innerHTML=`<div class="lockerInbox open adminStandaloneMailbox"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>WORK MAILBOX</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' need attention'):"You're all caught up"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>{const team=x.team?.organization_name||x.team?.team_name||'Team Locker';return `<button type="button" class="lockerInboxItem" onclick="openAdminInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${labels[x.type]||'ACTION NEEDED'}</strong><small>${escapeHtml(team)} • ${escapeHtml(x.title||'Customer response')}</small></span><span class="arrow">›</span></button>`}).join(''):'<div class="lockerInboxEmpty">No Team Locker items currently need your attention.</div>'}</div></div>`;
+  el.innerHTML=`<div class="lockerInbox open adminStandaloneMailbox"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>GOAT WORK MAILBOX</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' need attention across all Team Lockers'):"You're all caught up across all Team Lockers"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>{const team=x.team?.organization_name||x.team?.team_name||'Team Locker';return `<button type="button" class="lockerInboxItem" onclick="openAdminInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${labels[x.type]||'ACTION NEEDED'}</strong><small>${escapeHtml(team)} • ${escapeHtml(x.title||'Customer response')}</small></span><span class="arrow">›</span></button>`}).join(''):'<div class="lockerInboxEmpty">No Team Locker items currently need your attention.</div>'}</div></div>`;
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message||'Could not load work mailbox.')}</div>`}
 }
 async function renderAccountAdminLockers(){
