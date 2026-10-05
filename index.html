@@ -476,6 +476,21 @@ async function workspaceApi(action,payload={}){
  const r=await fetch(`${SUPABASE_URL}/functions/v1/goat-locker-workspace`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({action,...payload})});
  const j=await r.json();if(!r.ok)throw new Error(j.error||'Locker workspace request failed');return j;
 }
+async function renderAdminReviewCenter(){
+ const el=document.getElementById('adminReviewCenter');if(!el)return;
+ try{
+  const d=await workspaceApi('admin_inbox',{}),items=d.items||[];
+  el.innerHTML=`<div class="lockerInbox open" style="margin-top:14px"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>ADMIN REVIEW CENTER</strong><small>${items.length?(items.length+' customer response'+(items.length===1?'':'s')+' waiting'):"You're all caught up"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>{const team=x.team?.organization_name||x.team?.team_name||'Team Locker';return `<button type="button" class="lockerInboxItem" onclick="openAdminInboxItem(${Number(x.team_id)},'${x.type}')"><span class="lockerInboxDot"></span><span><strong>${x.type==='art_change'?'ARTWORK CHANGES REQUESTED':'QUOTE CHANGES REQUESTED'}</strong><small>${escapeHtml(team)} • ${escapeHtml(x.title||'Customer response')}</small></span><span class="arrow">›</span></button>`}).join(''):'<div class="lockerInboxEmpty">No customer artwork or quote responses currently need admin attention.</div>'}</div></div>`;
+ }catch(e){el.innerHTML=''}
+}
+async function openAdminInboxItem(teamId,type){
+ try{
+  const d=await lockerApi('list'),team=(d.teams||[]).find(t=>Number(t.id)===Number(teamId));
+  if(!team)return alert('Team Locker not found.');
+  adminSelectedLocker=team;go('locker');
+  setTimeout(()=>{if(type==='art_change')openLockerSection('approvals');else{renderLockerQuotes();const h=document.getElementById('lockerHubTools');if(h)h.style.display='none'}},100);
+ }catch(e){alert(e.message||'Could not open this review item.')}
+}
 async function renderAccountAdminLockers(){
  const el=document.getElementById('accountAdminLockers');if(!el)return;
  if(!lockerSession.adminRole){el.innerHTML='';return}
@@ -740,7 +755,8 @@ async function renderAccountLockerAccess(){
  const el=document.getElementById('accountLockerAccess');if(!el)return;
  await loadLockerSession();
  if(lockerSession.adminRole){
-  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER ADMIN</h2><p>Manage team-rep access here. Your organization Lockers are listed directly below.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button>`;
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER ADMIN</h2><div id="adminReviewCenter"></div><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button>`;
+  await renderAdminReviewCenter();
   await renderAccountAdminLockers();
  }else if(lockerSession.lockerAccess.length){
   el.innerHTML=`<div class="customerLockerSection"><div class="eyebrow" style="color:var(--purple)">GOAT SPORTS CUSTOM CLIENTS</div><h2>TEAM LOCKER</h2><div>${lockerSession.lockerAccess.map(x=>{const t=x.goat_teams||{};const name=t.organization_name||t.team_name||'GOAT Sports Team';const meta=[t.sport,[t.city,t.state].filter(Boolean).join(', ')].filter(Boolean).join(' • ');return `<button type="button" class="customerLockerTile" onclick="openCustomerLocker(${x.team_id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span></span>'}<span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(meta||'Authorized Team Locker')}</small></span><span class="arrow">›</span></button>`}).join('')}</div></div>`;
