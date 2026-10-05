@@ -767,7 +767,7 @@ async function grantLockerAccess(e){
 }
 async function revokeLockerAccess(id){if(!confirm('Remove this person’s GOAT Locker access? Their Shopify account will remain active.'))return;try{await lockerApi('revoke',{id});toast('Locker access removed');await openLockerAdmin()}catch(e){alert(e.message)}}
 async function reactivateLockerAccess(id){try{await lockerApi('reactivate',{id});toast('Locker access restored');await openLockerAdmin()}catch(e){alert(e.message)}}
-function renderCustomerAccount(){
+async function renderCustomerAccount(){
  const el=document.getElementById('accountContent');if(!el)return;
  if(!customerToken()){el.innerHTML=`<p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button>`;return}
  if(!customerProfile){el.innerHTML='<p>Loading your account…</p>';loadCustomerData().then(renderCustomerAccount);return}
@@ -780,9 +780,9 @@ function renderCustomerAccount(){
  <div class="editAccountGrid"><button onclick="openProfileEditor()">EDIT PROFILE</button><button onclick="openAddressEditor()">EDIT SHIPPING ADDRESS</button></div>
  ${addressHtml}
  <div id="accountLockerAccess" class="lockerAccess"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Checking your team access…</p></div>
- <div id="accountAdminMailboxStandalone"></div>
+ <div id="accountAdminMailboxStandalone"><div class="lockerInbox adminStandaloneMailbox"><div class="lockerInboxHead"><span class="lockerInboxIcon">✉</span><span><strong>WORK MAILBOX</strong><small>Checking for items that need attention…</small></span></div></div></div>
  <button class="signOutBtn" onclick="customerLogout()">SIGN OUT</button>`;
- renderAccountLockerAccess();
+ await renderAccountLockerAccess();
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function renderAccountLockerAccess(){
