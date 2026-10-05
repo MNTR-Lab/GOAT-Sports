@@ -503,8 +503,10 @@ async function renderAccountAdminLockers(){
  if(!lockerSession.adminRole){el.innerHTML='';return}
  try{
   const d=await lockerApi('list'),teams=d.teams||[];
-  el.innerHTML=`<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">MASTER ADMIN</div><h2>ALL GOAT LOCKERS</h2><small style="font-size:8px;color:#777">Select an organization to enter and manage its Locker.</small></div></div>
-  <div class="adminLockerGrid">${teams.map(t=>`<button class="adminLockerTile" onclick="enterAdminLockerFromAccount(${t.id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span class="adminLockerLogoBlank">G</span>'}<span><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${escapeHtml(t.sport||'GOAT Sports')} ${t.city||t.state?'• '+escapeHtml([t.city,t.state].filter(Boolean).join(', ')):''}</small></span><span class="arrow">›</span></button>`).join('')}</div>`;
+  let inboxItems=[];try{const ib=await workspaceApi('admin_inbox',{});inboxItems=ib.items||[]}catch(e){}
+  const inboxCounts={};inboxItems.forEach(x=>inboxCounts[x.team_id]=(inboxCounts[x.team_id]||0)+1);
+  el.innerHTML=`<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">MASTER ADMIN</div><h2>ALL GOAT LOCKERS</h2><small style="font-size:8px;color:#777">Notification badges show which Team Lockers need your attention.</small></div></div>
+  <div class="adminLockerGrid">${teams.map(t=>`<button class="adminLockerTile" onclick="enterAdminLockerFromAccount(${t.id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span class="adminLockerLogoBlank">G</span>'}<span><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${inboxCounts[t.id]?escapeHtml(inboxCounts[t.id]+' item'+(inboxCounts[t.id]===1?'':'s')+' need attention'):escapeHtml((t.sport||'GOAT Sports')+(t.city||t.state?' • '+[t.city,t.state].filter(Boolean).join(', '):''))}</small></span>${inboxCounts[t.id]?`<span class="lockerInboxCount">${inboxCounts[t.id]}</span>`:''}<span class="arrow">›</span></button>`).join('')}</div>`;
  }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
 let adminQuoteDesignMap={};
