@@ -680,7 +680,7 @@ async function renderLockerTimelineDropdown(){
   if(q?.created_at)ev.push([`Quote ${q.quote_number||''} Created`.trim(),q.created_at]);
   if(q?.responded_at&&['approved','invoiced','paid'].includes(q.status))ev.push(['Quote Approved',q.responded_at]);
   if(q?.shopify_draft_order_id)ev.push(['Shopify Invoice Created',q.updated_at||q.responded_at]);
-  if(q?.status==='paid')ev.push(['Payment Received',q.updated_at]);
+  if(q?.status==='paid')ev.push(['Payment Received',q.paid_at||q.updated_at]);
   let current='AWAITING PROJECT START';
   if(d)current='ARTWORK';if(d?.status==='approved')current='QUOTE';
   if(q?.status==='sent'||q?.status==='changes_requested')current='QUOTE REVIEW';
@@ -717,7 +717,7 @@ async function renderLockerTimeline(){
   if(q?.created_at)rows.push([`QUOTE ${q.quote_number||''} CREATED`,q.created_at,true]);
   if(q?.responded_at&&['approved','invoiced','paid'].includes(q.status))rows.push(['QUOTE APPROVED',q.responded_at,true]);
   if(q?.shopify_draft_order_id)rows.push(['SHOPIFY INVOICE CREATED',q.updated_at||q.responded_at,true]);
-  if(q?.status==='paid')rows.push(['PAYMENT RECEIVED',q.updated_at,true]);
+  if(q?.status==='paid')rows.push(['PAYMENT RECEIVED',q.paid_at||q.updated_at,true]);
   const future=['PRODUCTION','QUALITY CHECK','SHIPPED','COMPLETED'];
   let html=lockerSubHeader('TIMELINE','PROJECT TIMELINE')+`<div class="dashboardNotice"><strong>LIVE PROJECT HISTORY</strong><p>Completed milestones retain their recorded date and time. Production, quality check, shipping and completion will populate as those stages are recorded.</p></div><div class="accountProjectTimeline"><div class="accountTimelineBody">`;
   html+=(rows.length?rows.map(r=>`<div class="accountTimelineRow done"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>${escapeHtml(r[0])}</strong><small>${escapeHtml(goatFormatStamp(r[1]))}</small></span></div>`).join(''):`<div class="accountTimelineRow current"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>PROJECT NOT STARTED</strong><small>No project milestones have been recorded yet.</small></span></div>`);
@@ -731,10 +731,10 @@ async function renderLockerInvoices(){
  sub.innerHTML=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS')+'<div class="workspaceEmpty">Loading invoices…</div>';
  if(!teamId){sub.innerHTML=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS')+'<div class="workspaceEmpty">No Locker selected.</div>';return}
  try{
-  const d=await workspaceApi('list_quotes',{teamId}),quotes=(d.quotes||[]).filter(q=>['invoiced','paid'].includes(q.status)||q.shopify_invoice_url||q.shopify_order_id);
+  let d=await workspaceApi('list_quotes',{teamId}); for(const q of (d.quotes||[]).filter(x=>x.status==='invoiced')){try{await workspaceApi('sync_shopify_payment',{quoteId:q.id})}catch(e){}} d=await workspaceApi('list_quotes',{teamId}); const quotes=(d.quotes||[]).filter(q=>['invoiced','paid'].includes(q.status)||q.shopify_invoice_url||q.shopify_order_id);
   let html=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS');
   if(!quotes.length){html+='<div class="dashboardNotice"><strong>INVOICES / RECEIPTS</strong><p>Shopify invoices and completed payment receipts will appear here.</p></div><div class="workspaceEmpty">No invoices or receipts yet.</div>';sub.innerHTML=html;return}
-  html+=quotes.map(q=>`<article class="dashboardNotice"><strong>${q.status==='paid'?'RECEIPT':'INVOICE'} • ${escapeHtml(q.quote_number||'')}</strong><p>$${Number(q.amount||0).toFixed(2)} • ${escapeHtml(String(q.status||'').replaceAll('_',' ').toUpperCase())}</p>${q.shopify_invoice_url?`<button class="primaryBtn" type="button" onclick="window.open('${escapeHtml(q.shopify_invoice_url)}','_blank')">${q.status==='paid'?'VIEW RECEIPT':'OPEN SHOPIFY INVOICE'}</button>`:''}</article>`).join('');
+  html+=quotes.map(q=>`<article class="dashboardNotice"><strong>${q.status==='paid'?'PAID • RECEIPT':'INVOICE READY'} • ${escapeHtml(q.quote_number||'')}</strong><p>$${Number(q.amount||0).toFixed(2)}${q.status==='paid'&&q.paid_at?` • Paid ${escapeHtml(goatFormatStamp(q.paid_at))}`:''}${q.shopify_order_name?` • ${escapeHtml(q.shopify_order_name)}`:''}</p>${(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)?`<button class="primaryBtn" type="button" onclick="window.open('${escapeHtml(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)}','_blank')">${q.status==='paid'?'VIEW RECEIPT / ORDER DETAILS':'VIEW & PAY INVOICE'}</button>`:''}</article>`).join('');
   sub.innerHTML=html;
  }catch(e){sub.innerHTML=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
 }
@@ -948,7 +948,7 @@ async function renderCustomerAccountTimeline(){
   if(q?.created_at)events.push({label:`Quote ${q.quote_number||''} Created`.trim(),at:q.created_at,done:true});
   if(q?.responded_at && ['approved','invoiced','paid'].includes(q.status))events.push({label:'Quote Approved',at:q.responded_at,done:true});
   if(q?.shopify_draft_order_id && (q.updated_at||q.responded_at))events.push({label:'Shopify Invoice Created',at:q.updated_at||q.responded_at,done:true});
-  if(q?.status==='paid')events.push({label:'Payment Received',at:q.updated_at,done:true});
+  if(q?.status==='paid')events.push({label:'Payment Received',at:q.paid_at||q.updated_at,done:true});
   let current='AWAITING PROJECT START';
   if(latestDesign)current='ARTWORK';
   if(latestDesign?.status==='approved')current='QUOTE';
