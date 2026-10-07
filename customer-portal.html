@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GOAT Sports | Customer Portal</title>
+<style>
+:root{--purple:#683695;--teal:#109488;--orange:#be5927;--silver:#868e92;--ink:#111216;--soft:#f3f4f6;--line:#e1e3e6}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef0f2;color:var(--ink)}
+.portal{max-width:820px;margin:auto;min-height:100vh;background:#fff;box-shadow:0 0 40px #00000010}
+header{height:82px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:#fff}
+.brand{font-weight:1000;color:var(--purple);font-size:23px;letter-spacing:-1px}.brand small{display:block;color:var(--teal);font-size:8px;letter-spacing:2.3px;margin-top:3px}
+.portalTag{font-size:9px;font-weight:1000;letter-spacing:1.5px;color:#777}
+.hero{padding:40px 28px;background:linear-gradient(135deg,#21102e,#683695 54%,#0b6d66 145%);color:#fff;position:relative;overflow:hidden}
+.hero:after{content:"GOAT";position:absolute;right:-18px;top:-32px;font-size:145px;font-weight:1000;letter-spacing:-12px;color:#ffffff0d}
+.hero>*{position:relative;z-index:1}.hero small{font-weight:1000;letter-spacing:2px;color:#dbcbe8}.hero h1{font-size:45px;line-height:.92;margin:10px 0 12px;letter-spacing:-2px}.hero p{max-width:560px;font-size:13px;line-height:1.55;color:#eee;margin:0}
+.progressWrap{padding:20px 28px 0}.progressText{display:flex;justify-content:space-between;font-size:9px;font-weight:900;color:#777;margin-bottom:8px}.track{height:6px;background:#e7e8ea;border-radius:10px;overflow:hidden}.bar{height:100%;width:14.28%;background:var(--teal);transition:.25s}
+main{padding:22px 28px 40px}.step{display:none}.step.active{display:block}
+.stepHead{margin-bottom:20px}.stepHead small{font-size:9px;font-weight:1000;color:var(--purple);letter-spacing:1.5px}.stepHead h2{font-size:29px;margin:6px 0 7px}.stepHead p{font-size:11px;color:#6c7076;line-height:1.5;margin:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field.full{grid-column:1/-1}.field label{display:block;font-size:9px;font-weight:1000;letter-spacing:.5px;margin-bottom:6px;color:#4c5055}
+input,select,textarea{width:100%;border:1px solid #d8dade;border-radius:8px;background:#fff;padding:13px;font:inherit;font-size:12px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px #68369512}textarea{min-height:95px;resize:vertical}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:9px}.check{border:1px solid var(--line);border-radius:9px;padding:13px;display:flex;gap:9px;align-items:center;font-size:11px;font-weight:900}.check input{width:auto}
+.same{margin-top:13px;font-size:10px;font-weight:900;display:flex;align-items:center;gap:8px}.same input{width:auto}
+.upload{border:2px dashed #d3d5d9;border-radius:10px;padding:18px;background:#fafafa}.upload input{border:0;padding:5px 0;background:transparent}
+.accessRows{display:grid;gap:9px}.accessRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.addBtn{margin-top:9px;border:1px solid var(--purple);background:#fff;color:var(--purple);border-radius:7px;padding:10px 12px;font-size:9px;font-weight:1000}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}.btn{border:0;border-radius:7px;padding:13px 18px;font-size:10px;font-weight:1000}.back{background:#eceef0;color:#555}.next{margin-left:auto;background:var(--purple);color:#fff}.submit{background:var(--teal);color:#fff}
+.review{display:grid;gap:9px}.reviewCard{padding:15px;border:1px solid var(--line);border-radius:9px;background:#fafafa}.reviewCard strong{display:block;font-size:11px}.reviewCard span{font-size:10px;color:#666;line-height:1.45}
+.success{display:none;text-align:center;padding:55px 25px}.success .mark{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;margin:auto;background:#e5f6f3;color:var(--teal);font-size:28px;font-weight:1000}.success h2{font-size:31px;margin:17px 0 8px}.success p{font-size:12px;color:#666;line-height:1.5}.clientId{display:inline-block;margin:14px 0;padding:12px 20px;border-radius:8px;background:#111;color:#fff;font-size:20px;font-weight:1000;letter-spacing:1px}
+.note{margin-top:20px;border-left:4px solid var(--teal);background:#edf8f6;padding:12px;font-size:9px;color:#555;line-height:1.5}
+@media(max-width:620px){header{padding:0 16px}.hero{padding:31px 18px}.hero h1{font-size:38px}.progressWrap,main{padding-left:16px;padding-right:16px}.grid,.checks{grid-template-columns:1fr}.field.full{grid-column:auto}.accessRow{grid-template-columns:1fr}.portalTag{font-size:8px}}
+</style>
+</head>
+<body>
+<div class="portal">
+<header><div class="brand">GOAT SPORTS<small>LEGENDS NEVER QUIT</small></div><div class="portalTag">CUSTOMER PORTAL</div></header>
+<section class="hero"><small>GOAT SPORTS CUSTOMER PORTAL</small><h1>NEW CLIENT<br>SETUP</h1><p>Welcome to GOAT Sports. Complete your organization profile so our team has the information needed to manage your account, projects, artwork, orders and GOAT Locker.</p></section>
+<div id="formArea">
+<div class="progressWrap"><div class="progressText"><span id="stepLabel">STEP 1 OF 7</span><span id="stepName">ORGANIZATION</span></div><div class="track"><div class="bar" id="bar"></div></div></div>
+<main><form id="clientForm">
+<section class="step active" data-name="ORGANIZATION"><div class="stepHead"><small>01 / ORGANIZATION</small><h2>Tell us about your organization.</h2><p>This information creates your permanent GOAT Sports client profile.</p></div><div class="grid">
+<div class="field full"><label>OFFICIAL ORGANIZATION / TEAM NAME *</label><input name="organization" required></div>
+<div class="field"><label>ORGANIZATION TYPE *</label><select name="organization_type" required><option value="">Select</option><option>School / Athletic Program</option><option>Club / Travel Team</option><option>Professional / Semi-Pro Team</option><option>League / Association</option><option>Business / Organization</option><option>Other</option></select></div>
+<div class="field"><label>SPORT / INDUSTRY</label><input name="sport"></div>
+<div class="field"><label>LEVEL</label><select name="level"><option value="">Select</option><option>Youth</option><option>Middle School</option><option>High School</option><option>Prep / College</option><option>Semi-Pro</option><option>Professional</option><option>Business / Corporate</option><option>Other</option></select></div>
+<div class="field"><label>WEBSITE</label><input name="website" placeholder="https://"></div>
+<div class="field full"><label>SOCIAL MEDIA</label><textarea name="social" placeholder="Facebook, Instagram, X, TikTok or other account links/handles"></textarea></div>
+<div class="field"><label>PRIMARY COLOR</label><input name="primary_color" placeholder="Color name or hex"></div><div class="field"><label>SECONDARY COLOR</label><input name="secondary_color" placeholder="Color name or hex"></div>
+</div></section>
+
+<section class="step" data-name="PRIMARY CONTACT"><div class="stepHead"><small>02 / PRIMARY CONTACT</small><h2>Who should we work with?</h2><p>Your primary contact will be our main point of communication for the account.</p></div><div class="grid">
+<div class="field full"><label>PRIMARY CONTACT NAME *</label><input name="contact_name" required></div><div class="field"><label>TITLE / ROLE</label><input name="contact_role"></div>
+<div class="field"><label>EMAIL *</label><input type="email" name="contact_email" required></div><div class="field"><label>PHONE *</label><input type="tel" name="contact_phone" required></div>
+<div class="field"><label>PREFERRED CONTACT METHOD</label><select name="contact_method"><option>Email</option><option>Phone</option><option>Text</option></select></div>
+</div></section>
+
+<section class="step" data-name="BILLING"><div class="stepHead"><small>03 / BILLING</small><h2>Billing information.</h2><p>Provide the contact and address GOAT Sports should use for billing.</p></div><div class="grid">
+<div class="field"><label>BILLING CONTACT NAME</label><input name="billing_name"></div><div class="field"><label>BILLING EMAIL</label><input type="email" name="billing_email"></div>
+<div class="field"><label>BILLING PHONE</label><input type="tel" name="billing_phone"></div><div class="field"><label>PAYMENT TERMS</label><select name="payment_terms"><option>Due on Receipt</option><option>Net 15</option><option>Net 30</option><option>Other</option></select></div>
+<div class="field full"><label>BILLING ADDRESS</label><textarea name="billing_address" placeholder="Street, City, State, ZIP"></textarea></div>
+<div class="field full"><label class="same"><input type="checkbox" name="tax_exempt"> This organization is tax exempt</label></div>
+<div class="field full upload"><label>TAX-EXEMPT CERTIFICATE</label><input type="file" name="tax_certificate" accept=".pdf,.png,.jpg,.jpeg"></div>
+</div></section>
+
+<section class="step" data-name="SHIPPING"><div class="stepHead"><small>04 / SHIPPING</small><h2>Where should orders go?</h2><p>Give us the primary delivery information for your organization.</p></div><label class="same"><input type="checkbox" id="sameBilling"> Shipping information is the same as billing</label><div class="grid" style="margin-top:14px">
+<div class="field"><label>SHIPPING CONTACT NAME</label><input name="shipping_name"></div><div class="field"><label>SHIPPING PHONE</label><input type="tel" name="shipping_phone"></div>
+<div class="field full"><label>SHIPPING ADDRESS</label><textarea name="shipping_address" placeholder="Street, City, State, ZIP"></textarea></div>
+<div class="field full"><label>SHIPPING INSTRUCTIONS</label><textarea name="shipping_instructions" placeholder="Receiving hours, building/department, attention line or other instructions"></textarea></div>
+</div></section>
+
+<section class="step" data-name="PROGRAMS"><div class="stepHead"><small>05 / PROGRAMS</small><h2>How are we working together?</h2><p>Select every GOAT Sports program your organization will use.</p></div><div class="checks">
+<label class="check"><input type="checkbox" name="programs" value="Custom Gear"> Custom Gear</label><label class="check"><input type="checkbox" name="programs" value="Team Store"> Team Store / FanHQ</label>
+<label class="check"><input type="checkbox" name="programs" value="GOAT Locker"> GOAT Locker</label><label class="check"><input type="checkbox" name="programs" value="Fundraising"> Fundraising</label>
+</div></section>
+
+<section class="step" data-name="BRAND & ACCESS"><div class="stepHead"><small>06 / BRAND & ACCESS</small><h2>Brand assets & GOAT Locker.</h2><p>Give our team the files and access information needed to work with your organization.</p></div><div class="grid">
+<div class="field full upload"><label>LOGOS / BRAND ASSETS</label><input type="file" name="brand_assets" multiple accept=".pdf,.png,.jpg,.jpeg,.svg,.ai,.eps"></div>
+<div class="field full"><label>BRAND GUIDELINES / NOTES</label><textarea name="brand_notes" placeholder="Logo usage, colors, fonts, restrictions or other brand information"></textarea></div>
+</div><div class="field full" style="margin-top:18px"><label>GOAT LOCKER ACCESS USERS</label><div class="accessRows" id="accessRows"><div class="accessRow"><input placeholder="Name" data-access="name"><input type="email" placeholder="Email" data-access="email"><input placeholder="Role" data-access="role"></div></div><button class="addBtn" type="button" id="addAccess">+ ADD ANOTHER USER</button></div></section>
+
+<section class="step" data-name="REVIEW"><div class="stepHead"><small>07 / REVIEW</small><h2>Review your profile.</h2><p>Once submitted, GOAT Sports will create your permanent client profile and assign your organization a G-number.</p></div><div class="review" id="review"></div><div class="note">Your GOAT Sports Client ID is created by our secure backend after submission. You do not need to create or remember a number before completing this form.</div></section>
+
+<div class="actions"><button class="btn back" type="button" id="backBtn" style="visibility:hidden">← BACK</button><button class="btn next" type="button" id="nextBtn">CONTINUE →</button><button class="btn submit" type="submit" id="submitBtn" style="display:none">COMPLETE MY GOAT SPORTS PROFILE →</button></div>
+<div id="message" style="font-size:10px;margin-top:12px;color:#a33"></div>
+</form></main></div>
+<section class="success" id="success"><div class="mark">✓</div><h2>Your profile is complete.</h2><p>Your organization has been added to the GOAT Sports Customer Portal.</p><div class="clientId" id="clientId">G-######</div><p>Keep this as your GOAT Sports Client ID. We'll use it to connect your projects, artwork, quotes and orders.</p></section>
+</div>
+<script>
+const API='https://goat-sports-api.bikard.workers.dev/api/client-setup';
+const form=document.getElementById('clientForm'),steps=[...document.querySelectorAll('.step')];let current=0;
+function showStep(n){current=n;steps.forEach((s,i)=>s.classList.toggle('active',i===n));document.getElementById('stepLabel').textContent=`STEP ${n+1} OF ${steps.length}`;document.getElementById('stepName').textContent=steps[n].dataset.name;document.getElementById('bar').style.width=`${((n+1)/steps.length)*100}%`;document.getElementById('backBtn').style.visibility=n?'visible':'hidden';document.getElementById('nextBtn').style.display=n===steps.length-1?'none':'block';document.getElementById('submitBtn').style.display=n===steps.length-1?'block':'none';if(n===steps.length-1)buildReview();scrollTo({top:0,behavior:'smooth'})}
+function validStep(){for(const el of steps[current].querySelectorAll('[required]'))if(!el.reportValidity())return false;return true}
+document.getElementById('nextBtn').onclick=()=>{if(validStep())showStep(Math.min(current+1,steps.length-1))};
+document.getElementById('backBtn').onclick=()=>showStep(Math.max(current-1,0));
+document.getElementById('addAccess').onclick=()=>{const r=document.createElement('div');r.className='accessRow';r.innerHTML='<input placeholder="Name" data-access="name"><input type="email" placeholder="Email" data-access="email"><input placeholder="Role" data-access="role">';document.getElementById('accessRows').appendChild(r)};
+document.getElementById('sameBilling').onchange=e=>{if(e.target.checked){form.shipping_name.value=form.billing_name.value;form.shipping_phone.value=form.billing_phone.value;form.shipping_address.value=form.billing_address.value}};
+function accessUsers(){return [...document.querySelectorAll('.accessRow')].map(r=>({name:r.querySelector('[data-access=name]').value.trim(),email:r.querySelector('[data-access=email]').value.trim(),role:r.querySelector('[data-access=role]').value.trim()})).filter(x=>x.name||x.email||x.role)}
+function data(){const fd=new FormData(form);return {organization:fd.get('organization'),organization_type:fd.get('organization_type'),sport:fd.get('sport'),level:fd.get('level'),website:fd.get('website'),social:fd.get('social'),primary_color:fd.get('primary_color'),secondary_color:fd.get('secondary_color'),contact_name:fd.get('contact_name'),contact_role:fd.get('contact_role'),contact_email:fd.get('contact_email'),contact_phone:fd.get('contact_phone'),contact_method:fd.get('contact_method'),billing_name:fd.get('billing_name'),billing_email:fd.get('billing_email'),billing_phone:fd.get('billing_phone'),billing_address:fd.get('billing_address'),payment_terms:fd.get('payment_terms'),tax_exempt:fd.get('tax_exempt')==='on',shipping_name:fd.get('shipping_name'),shipping_phone:fd.get('shipping_phone'),shipping_address:fd.get('shipping_address'),shipping_instructions:fd.get('shipping_instructions'),programs:fd.getAll('programs'),brand_notes:fd.get('brand_notes'),locker_users:accessUsers()}}
+function buildReview(){const d=data(), cards=[['Organization',d.organization],['Primary Contact',`${d.contact_name} • ${d.contact_email} • ${d.contact_phone}`],['Programs',d.programs.join(', ')||'None selected'],['Billing',d.billing_address||'Not provided'],['Shipping',d.shipping_address||'Not provided'],['GOAT Locker Users',d.locker_users.length?d.locker_users.map(x=>x.name||x.email).join(', '):'None listed']];document.getElementById('review').innerHTML=cards.map(x=>`<div class="reviewCard"><strong>${x[0]}</strong><span>${x[1]}</span></div>`).join('')}
+form.onsubmit=async e=>{e.preventDefault();const btn=document.getElementById('submitBtn'),msg=document.getElementById('message');btn.disabled=true;btn.textContent='CREATING YOUR PROFILE...';msg.textContent='';try{const fd=new FormData();fd.append('data',JSON.stringify(data()));const tax=form.elements.tax_certificate.files[0];if(tax)fd.append('tax_certificate',tax);[...form.elements.brand_assets.files].forEach(f=>fd.append('brand_assets',f));const res=await fetch(API,{method:'POST',body:fd});const result=await res.json();if(!res.ok||!result.success)throw new Error(result.error||'Unable to create profile.');document.getElementById('formArea').style.display='none';document.getElementById('clientId').textContent=result.clientId;document.getElementById('success').style.display='block';scrollTo({top:0,behavior:'smooth'})}catch(err){msg.textContent=err.message;btn.disabled=false;btn.textContent='COMPLETE MY GOAT SPORTS PROFILE →'}};
+</script>
+</body></html>
