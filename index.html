@@ -692,7 +692,7 @@ async function submitTeamProgram(e){
   if(btn){btn.disabled=true;btn.textContent='SENDING…';}
   if(msg){msg.style.display='block';msg.style.color='#666';msg.textContent='Sending your information to GOAT Sports…';}
   try{
-    const res=await fetch('https://goat-sports.bikard.workers.dev/api/team-program-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lead)});
+    const res=await fetch('https://goat-sports-api.bikard.workers.dev/api/team-program-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lead)});
     const data=await res.json().catch(()=>({}));
     if(!res.ok||!data.success) throw new Error(data.error||'Unable to submit right now.');
     e.target.reset();
