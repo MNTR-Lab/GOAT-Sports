@@ -271,6 +271,26 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .programFeature>*{position:relative;z-index:1}.programFeature small{font-size:8px;font-weight:1000;letter-spacing:1.6px;color:#e9ddf3}.programFeature strong{display:block;font-size:30px;line-height:.9;letter-spacing:-1px;margin:10px 0}.programFeature span{display:block;max-width:310px;font-size:9px;line-height:1.45;color:#eee}.programFeature em{display:inline-block;font-style:normal;margin-top:14px;font-size:9px;font-weight:1000;background:#fff;color:#683695;border-radius:5px;padding:9px 11px}
 .homeProof{display:flex;gap:7px;overflow:auto;padding:12px 16px 20px;scrollbar-width:none}.homeProof::-webkit-scrollbar{display:none}.homeProof div{min-width:112px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px}.homeProof b{display:block;font-size:9px;color:var(--purple);margin-bottom:5px}.homeProof span{font-size:8px;line-height:1.35;color:#666}
 
+
+/* Visibility pass: larger homepage labels, workflow, Why GOAT and bottom navigation */
+.homeBand{padding:17px 12px !important;gap:10px !important}
+.homeBand b{font-size:22px !important;line-height:1 !important}
+.homeBand span{font-size:9px !important;line-height:1.25 !important;margin-top:6px !important;letter-spacing:.15px !important}
+
+.homeSectionTitle{padding-top:27px !important;padding-bottom:13px !important}
+.homeSectionTitle h3{font-size:24px !important;line-height:1 !important}
+.homeSectionTitle button{font-size:10px !important}
+
+.homeProof{gap:9px !important;padding-bottom:24px !important}
+.homeProof div{min-width:132px !important;padding:15px 13px !important;border-radius:11px !important}
+.homeProof b{font-size:10px !important;line-height:1.15 !important;margin-bottom:9px !important}
+.homeProof span{font-size:9.5px !important;line-height:1.55 !important}
+
+.bottomNav{min-height:88px !important;padding-top:9px !important}
+.bottomNav button{min-height:68px !important;font-size:11px !important;gap:6px !important}
+.bottomNav button svg{width:31px !important;height:31px !important;stroke-width:2.4 !important}
+.bottomNav button.active svg{transform:scale(1.12) !important}
+
 </style>
 </head>
 <body>
@@ -564,9 +584,9 @@ function openHQ(name,sport,loc,mark){document.getElementById('hqName').textConte
 function teamStore(){hide('hqModal');go('shop');toast('Opening this team’s Shopify store')}
 function toast(msg){const e=document.getElementById('appToast');e.textContent=msg;e.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.style.display='none',1500)}
 
-async function openTeamPrograms(){ go('teamPrograms'); }
+function openTeamPrograms(){ go('teamPrograms'); }
 function openNILAthletes(){ go('nilAthletes'); }
-function openLocker(){
+async function openLocker(){
  if(!customerToken()){await customerLogin();return}
  await loadLockerSession();
  if(lockerSession.adminRole||lockerSession.lockerAccess.length){go('locker');return}
