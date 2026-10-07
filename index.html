@@ -291,6 +291,30 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .bottomNav button svg{width:31px !important;height:31px !important;stroke-width:2.4 !important}
 .bottomNav button.active svg{transform:scale(1.12) !important}
 
+
+/* Mobile navigation readability pass */
+.bottomNav{
+  min-height:102px !important;
+  padding:10px 7px calc(10px + env(safe-area-inset-bottom)) !important;
+}
+.bottomNav button{
+  min-height:80px !important;
+  padding:5px 2px !important;
+  gap:7px !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  font-weight:1000 !important;
+  letter-spacing:0 !important;
+}
+.bottomNav button svg{
+  width:36px !important;
+  height:36px !important;
+  stroke-width:2.45 !important;
+}
+.bottomNav button.active svg{
+  transform:scale(1.08) !important;
+}
+
 </style>
 </head>
 <body>
