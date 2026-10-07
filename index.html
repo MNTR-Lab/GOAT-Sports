@@ -243,6 +243,34 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
   transform:scale(1.10);
 }
 
+
+/* Visual-first GOAT Sports homepage */
+.homeVisualGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:15px 16px 5px}
+.visualTile{position:relative;min-height:190px;border:0;border-radius:14px;overflow:hidden;text-align:left;padding:0;background:#111;box-shadow:0 10px 25px rgba(0,0,0,.14)}
+.visualTile .visualBg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02)}
+.visualTile:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.04) 22%,rgba(0,0,0,.82) 100%)}
+.visualTile .visualCopy{position:absolute;z-index:2;left:14px;right:12px;bottom:14px;color:#fff}
+.visualTile .visualCopy small{display:block;font-size:7px;letter-spacing:1.35px;font-weight:1000;opacity:.86;margin-bottom:5px}
+.visualTile .visualCopy strong{display:block;font-size:23px;line-height:.9;letter-spacing:-.8px}
+.visualTile .visualCopy span{display:block;font-size:8px;line-height:1.35;margin-top:7px;opacity:.84}
+.visualTile.merch .visualBg{background:
+ radial-gradient(circle at 70% 25%,rgba(16,148,136,.75),transparent 28%),
+ linear-gradient(145deg,#121316 0%,#292b30 48%,#08090a 100%)}
+.visualTile.fanhq .visualBg{background:
+ radial-gradient(circle at 76% 18%,rgba(190,89,39,.55),transparent 25%),
+ linear-gradient(145deg,#683695 0%,#2c153f 60%,#100817 100%)}
+.visualTile.nil .visualBg{background:
+ linear-gradient(125deg,rgba(16,148,136,.35),transparent 45%),
+ linear-gradient(145deg,#0b0c0d,#272a2c)}
+.visualTile.custom .visualBg{background:
+ radial-gradient(circle at 78% 22%,rgba(104,54,149,.8),transparent 28%),
+ linear-gradient(145deg,#151518,#050506)}
+.visualTile .visualMark{position:absolute;z-index:1;right:10px;top:8px;font-size:64px;line-height:1;font-weight:1000;color:rgba(255,255,255,.10);letter-spacing:-5px}
+.programFeature{margin:15px 16px 4px;border:0;border-radius:15px;overflow:hidden;position:relative;min-height:180px;width:calc(100% - 32px);padding:20px;text-align:left;color:#fff;background:linear-gradient(125deg,#683695 0%,#3c2054 45%,#109488 140%);box-shadow:0 12px 28px rgba(0,0,0,.16)}
+.programFeature:before{content:"GOAT";position:absolute;right:-8px;top:-15px;font-size:96px;font-weight:1000;color:rgba(255,255,255,.06);letter-spacing:-8px}
+.programFeature>*{position:relative;z-index:1}.programFeature small{font-size:8px;font-weight:1000;letter-spacing:1.6px;color:#e9ddf3}.programFeature strong{display:block;font-size:30px;line-height:.9;letter-spacing:-1px;margin:10px 0}.programFeature span{display:block;max-width:310px;font-size:9px;line-height:1.45;color:#eee}.programFeature em{display:inline-block;font-style:normal;margin-top:14px;font-size:9px;font-weight:1000;background:#fff;color:#683695;border-radius:5px;padding:9px 11px}
+.homeProof{display:flex;gap:7px;overflow:auto;padding:12px 16px 20px;scrollbar-width:none}.homeProof::-webkit-scrollbar{display:none}.homeProof div{min-width:112px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px}.homeProof b{display:block;font-size:9px;color:var(--purple);margin-bottom:5px}.homeProof span{font-size:8px;line-height:1.35;color:#666}
+
 </style>
 </head>
 <body>
@@ -261,27 +289,23 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 
 <div class="homeIntro">
   <div class="kicker">GOAT SPORTS • BUILT FOR TEAMS</div>
-  <h2>ONE PLACE.<br>EVERY SIDE OF THE GAME.</h2>
-  <p>Shop GOAT Sports, find your team store, or enter your private GOAT Locker to manage custom projects from design through delivery.</p>
+  <h2>GEAR. STORES.<br>OPPORTUNITY.</h2>
+  <p>Everything GOAT Sports in one place — merchandise, team stores, NIL athletes, custom gear and organization programs.</p>
 </div>
 
-<div class="homeActionGrid">
-  <button class="homeAction shop" onclick="go('shop')">
-    <small>GOAT SPORTS STORE</small><strong>SHOP<br>GOAT</strong><span>Apparel, gear and products.</span>
-  </button>
-  <button class="homeAction fanhq" onclick="go('fanhq')">
-    <small>OFFICIAL TEAM STORES</small><strong>FAN<br>HQ</strong><span>Find your team. Rep your team.</span>
-  </button>
-  <button class="homeAction locker" onclick="openLocker()">
-    <small>TEAM & ORGANIZATION PORTAL</small><strong>GOAT<br>LOCKER</strong><span>Quotes, invoices, orders and approvals.</span>
-  </button>
-  <button class="homeAction custom" onclick="openLocker()">
-    <small>CUSTOM TEAM PROJECTS</small><strong>BUILD<br>WITH GOAT</strong><span>Uniforms, apparel and team programs.</span>
-  </button>
-  <button class="homeAction wide" onclick="openLocker()">
-    <small>FROM IDEA TO DELIVERY</small><strong>YOUR TEAM. YOUR LOOK. YOUR LOCKER.</strong><span>Keep every custom project organized in one private workspace →</span>
-  </button>
+<div class="homeVisualGrid">
+  <button class="visualTile merch" onclick="go('shop')"><span class="visualBg"></span><span class="visualMark">G</span><span class="visualCopy"><small>SHOP THE BRAND</small><strong>GOAT<br>MERCH</strong><span>Apparel, gear and GOAT Sports products →</span></span></button>
+  <button class="visualTile fanhq" onclick="go('fanhq')"><span class="visualBg"></span><span class="visualMark">F</span><span class="visualCopy"><small>OFFICIAL TEAM STORES</small><strong>FAN<br>HQ</strong><span>Find your team. Rep your team →</span></span></button>
+  <button class="visualTile nil" onclick="openNILAthletes()"><span class="visualBg"></span><span class="visualMark">N</span><span class="visualCopy"><small>ATHLETE OPPORTUNITIES</small><strong>NIL<br>ATHLETES</strong><span>Build your brand with GOAT Sports →</span></span></button>
+  <button class="visualTile custom" onclick="openLocker()"><span class="visualBg"></span><span class="visualMark">C</span><span class="visualCopy"><small>UNIFORMS + APPAREL</small><strong>CUSTOM<br>GEAR</strong><span>Start and manage custom team projects →</span></span></button>
 </div>
+
+<button class="programFeature" onclick="openTeamPrograms()">
+  <small>TEAM & ORGANIZATION PROGRAMS</small>
+  <strong>YOUR TEAM.<br>YOUR LOOK.<br>YOUR LOCKER.</strong>
+  <span>Discover team stores, private GOAT Lockers, custom gear and fundraising opportunities built around your organization.</span>
+  <em>EXPLORE TEAM PROGRAMS →</em>
+</button>
 
 <div class="homeBand">
   <div><b>01</b><span>DESIGN & APPROVE</span></div>
@@ -289,19 +313,12 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
   <div><b>03</b><span>TRACK & REORDER</span></div>
 </div>
 
-<div class="homeSectionTitle"><h3>SHOP BY SPORT</h3><button onclick="go('shop')">VIEW ALL →</button></div>
-<div class="sportRail">
-  <button onclick="go('shop')"><b>F</b>FOOTBALL</button>
-  <button onclick="go('shop')"><b>B</b>BASKETBALL</button>
-  <button onclick="go('shop')"><b>S</b>SOFTBALL</button>
-  <button onclick="go('shop')"><b>T</b>TRAINING</button>
-</div>
-
-<div class="homeCloser">
-  <small>EXISTING GOAT SPORTS CLIENT?</small>
-  <h3>YOUR TEAM HAS A LOCKER.</h3>
-  <p>Access designs and proofs, approve quotes, view invoices, follow orders and keep your organization’s GOAT Sports projects together.</p>
-  <button onclick="openLocker()">ENTER GOAT LOCKER →</button>
+<div class="homeSectionTitle"><h3>WHY GOAT?</h3><button onclick="openTeamPrograms()">LEARN MORE →</button></div>
+<div class="homeProof">
+  <div><b>ONE PLATFORM</b><span>Keep team projects and customer tools together.</span></div>
+  <div><b>PRIVATE LOCKER</b><span>Quotes, designs, invoices and order progress.</span></div>
+  <div><b>TEAM STORES</b><span>Give supporters a dedicated place to shop.</span></div>
+  <div><b>FUNDRAISING</b><span>Create revenue opportunities around your program.</span></div>
 </div>
 </section>
 
@@ -383,6 +400,38 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 <div class="eyebrow" style="color:var(--teal)">SHOPIFY CUSTOMER ACCOUNT</div><h1>MY ORDERS</h1>
 <div id="ordersContent"><p>Sign in to view your Shopify order history.</p><button class="cta" onclick="customerLogin()">SIGN IN TO VIEW ORDERS</button></div>
 </section>
+
+<section id="teamPrograms" class="screen">
+  <div class="privateLockerHero">
+    <button class="backMini" onclick="go('home')">‹ HOME</button>
+    <div class="eyebrow">GOAT SPORTS TEAM PROGRAMS</div>
+    <h1>YOUR TEAM.<br>YOUR LOOK.<br>YOUR LOCKER.</h1>
+    <p>One connected GOAT Sports program for custom gear, private project management, team stores and fundraising.</p>
+  </div>
+  <div class="lockerHub">
+    <div class="portalWelcome"><div class="eyebrow">BUILD YOUR GOAT PROGRAM</div><h2>MORE THAN CUSTOM GEAR.</h2><p>Organizations can work with GOAT Sports to build the combination that fits their program.</p></div>
+    <div class="portalQuickGrid">
+      <div class="portalQuickCard"><b>01</b><span><strong>TEAM STORE</strong><small>Create a branded shopping destination for athletes, families and supporters.</small></span></div>
+      <div class="portalQuickCard"><b>02</b><span><strong>GOAT LOCKER</strong><small>Give authorized organization contacts a private portal for designs, quotes, invoices, orders and approvals.</small></span></div>
+      <div class="portalQuickCard"><b>03</b><span><strong>CUSTOM GEAR</strong><small>Build uniforms, apparel and other custom team projects with GOAT Sports.</small></span></div>
+      <div class="portalQuickCard"><b>04</b><span><strong>FUNDRAISING</strong><small>Build a team-store program that can support fundraising and revenue opportunities for your organization.</small></span></div>
+    </div>
+    <div class="portalFooterNote"><strong>READY TO BUILD YOUR PROGRAM?</strong><br>GOAT Sports can help determine the right combination of custom gear, team-store access, private Locker tools and fundraising opportunities for your organization.</div>
+  </div>
+</section>
+
+<section id="nilAthletes" class="screen">
+  <div class="privateLockerHero">
+    <button class="backMini" onclick="go('home')">‹ HOME</button>
+    <div class="eyebrow">GOAT SPORTS</div>
+    <h1>NIL<br>ATHLETES</h1>
+    <p>A dedicated home for athlete opportunities with GOAT Sports.</p>
+  </div>
+  <div class="lockerHub">
+    <div class="portalWelcome"><div class="eyebrow">ATHLETE PROGRAM</div><h2>BUILD YOUR BRAND WITH GOAT.</h2><p>This area is ready for the NIL athlete program details, opportunities, eligibility information and athlete application process.</p></div>
+  </div>
+</section>
+
 <section id="account" class="screen plain">
 <div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h1>ACCOUNT</h1>
 <div id="accountContent"><p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button></div>
@@ -515,7 +564,9 @@ function openHQ(name,sport,loc,mark){document.getElementById('hqName').textConte
 function teamStore(){hide('hqModal');go('shop');toast('Opening this team’s Shopify store')}
 function toast(msg){const e=document.getElementById('appToast');e.textContent=msg;e.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.style.display='none',1500)}
 
-async function openLocker(){
+async function openTeamPrograms(){ go('teamPrograms'); }
+function openNILAthletes(){ go('nilAthletes'); }
+function openLocker(){
  if(!customerToken()){await customerLogin();return}
  await loadLockerSession();
  if(lockerSession.adminRole||lockerSession.lockerAccess.length){go('locker');return}
