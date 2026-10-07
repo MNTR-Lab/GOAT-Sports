@@ -17,6 +17,31 @@ button,a{font:inherit}.app{width:100%;max-width:520px;min-height:100vh;margin:au
 .hero img{display:block;width:100%;height:auto}
 .hero:after{display:none}
 .eyebrow{font-size:10px;letter-spacing:2.4px;font-weight:900;color:#d0d2d6}.hero h1{font-size:48px;line-height:.89;letter-spacing:-2.4px;margin:10px 0 13px}.hero p{font-size:14px;line-height:1.45;color:#d6d7da;max-width:320px;margin:0 0 18px}
+
+/* 2026 GOAT Sports home refresh */
+.homeIntro{padding:18px 16px 7px;background:#fff}
+.homeIntro .kicker{font-size:9px;font-weight:1000;letter-spacing:2px;color:var(--teal)}
+.homeIntro h2{font-size:28px;line-height:.95;letter-spacing:-1.2px;margin:7px 0 8px}
+.homeIntro p{font-size:11px;line-height:1.5;color:#6d7177;margin:0;max-width:430px}
+.homeActionGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:14px 16px 4px}
+.homeAction{position:relative;min-height:152px;border:0;border-radius:13px;padding:16px;text-align:left;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 9px 24px #00000012}
+.homeAction:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 12%,#ffffff22 0 12%,transparent 13%),linear-gradient(150deg,transparent 25%,#ffffff0d)}
+.homeAction>*{position:relative;z-index:1}.homeAction small{font-size:8px;letter-spacing:1.4px;font-weight:1000;opacity:.78}.homeAction strong{font-size:22px;line-height:.92;margin-top:7px;letter-spacing:-.7px}.homeAction span{font-size:9px;margin-top:8px;opacity:.78;line-height:1.35}
+.homeAction.shop{background:linear-gradient(145deg,#09090b,#292a2e)}
+.homeAction.fanhq{background:linear-gradient(145deg,var(--purple),#2d153f)}
+.homeAction.locker{background:linear-gradient(145deg,var(--teal),#063d39)}
+.homeAction.custom{background:linear-gradient(145deg,#35373a,#101113)}
+.homeAction.wide{grid-column:1/-1;min-height:118px;background:linear-gradient(110deg,#0c0d0f 0 63%,var(--orange) 140%)}
+.homeAction.wide strong{font-size:25px}
+.homeBand{margin:18px 16px 0;border-radius:12px;background:#f2f3f4;border:1px solid var(--line);padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;text-align:center}
+.homeBand b{display:block;color:var(--purple);font-size:16px}.homeBand span{display:block;font-size:7px;line-height:1.3;color:#666;font-weight:900;margin-top:3px}
+.homeSectionTitle{padding:25px 16px 10px;display:flex;align-items:end;justify-content:space-between}.homeSectionTitle h3{margin:0;font-size:20px;letter-spacing:-.5px}.homeSectionTitle button{border:0;background:transparent;color:var(--purple);font-size:9px;font-weight:1000}
+.sportRail{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 16px 22px}
+.sportRail button{height:78px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:8px;font-weight:1000;color:#222;box-shadow:0 5px 14px #00000008}
+.sportRail b{display:block;font-size:19px;color:var(--teal);margin-bottom:7px}
+.homeCloser{margin:0 16px 26px;border-radius:13px;padding:20px;background:linear-gradient(145deg,#683695,#351a4b);color:#fff}
+.homeCloser small{font-size:8px;letter-spacing:1.5px;font-weight:1000;color:#d8c8e8}.homeCloser h3{font-size:27px;line-height:.94;margin:8px 0}.homeCloser p{font-size:10px;line-height:1.45;color:#e5ddeb;margin:0 0 13px}.homeCloser button{border:0;background:#fff;color:var(--purple);padding:11px 13px;border-radius:6px;font-size:9px;font-weight:1000}
+
 .cta{border:0;background:var(--purple);color:#fff;padding:13px 17px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.6px}.cta.alt{background:#fff;color:#111;margin-left:6px}
 .section{padding:24px 16px}.sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:13px}.sectionhead h2{font-size:20px;margin:0;letter-spacing:-.5px}.sectionhead button{border:0;background:none;color:var(--purple);font-size:11px;font-weight:900}
 .categorygrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.category{height:130px;border:0;border-radius:7px;padding:14px;text-align:left;color:#fff;font-weight:900;font-size:17px;display:flex;align-items:flex-end;background:linear-gradient(145deg,#222,#080808)}
@@ -203,8 +228,51 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 <div class="hero">
   <img src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/GOAT_App_-_Hero.png?v=1791367112" alt="GOAT Sports">
 </div>
-<div class="section"><div class="sectionhead"><h2>Shop by Sport</h2><button onclick="go('shop')">VIEW ALL</button></div><div class="categorygrid"><button class="category" onclick="go('shop')">FOOTBALL</button><button class="category" onclick="go('shop')">BASKETBALL</button><button class="category" onclick="go('shop')">SOFTBALL</button><button class="category" onclick="go('shop')">TRAINING</button></div></div>
-<div class="section" style="padding-top:0"><div class="splitcards"><button class="promo" onclick="go('shop')"><small>BUILT FOR YOUR TEAM</small><strong>CUSTOM<br>UNIFORMS</strong></button><button class="promo" onclick="go('shop')"><small>YOUR ORGANIZATION</small><strong>TEAM<br>STORES</strong></button></div></div>
+
+<div class="homeIntro">
+  <div class="kicker">GOAT SPORTS • BUILT FOR TEAMS</div>
+  <h2>ONE PLACE.<br>EVERY SIDE OF THE GAME.</h2>
+  <p>Shop GOAT Sports, find your team store, or enter your private GOAT Locker to manage custom projects from design through delivery.</p>
+</div>
+
+<div class="homeActionGrid">
+  <button class="homeAction shop" onclick="go('shop')">
+    <small>GOAT SPORTS STORE</small><strong>SHOP<br>GOAT</strong><span>Apparel, gear and products.</span>
+  </button>
+  <button class="homeAction fanhq" onclick="go('fanhq')">
+    <small>OFFICIAL TEAM STORES</small><strong>FAN<br>HQ</strong><span>Find your team. Rep your team.</span>
+  </button>
+  <button class="homeAction locker" onclick="openLocker()">
+    <small>TEAM & ORGANIZATION PORTAL</small><strong>GOAT<br>LOCKER</strong><span>Quotes, invoices, orders and approvals.</span>
+  </button>
+  <button class="homeAction custom" onclick="openLocker()">
+    <small>CUSTOM TEAM PROJECTS</small><strong>BUILD<br>WITH GOAT</strong><span>Uniforms, apparel and team programs.</span>
+  </button>
+  <button class="homeAction wide" onclick="openLocker()">
+    <small>FROM IDEA TO DELIVERY</small><strong>YOUR TEAM. YOUR LOOK. YOUR LOCKER.</strong><span>Keep every custom project organized in one private workspace →</span>
+  </button>
+</div>
+
+<div class="homeBand">
+  <div><b>01</b><span>DESIGN & APPROVE</span></div>
+  <div><b>02</b><span>QUOTE & ORDER</span></div>
+  <div><b>03</b><span>TRACK & REORDER</span></div>
+</div>
+
+<div class="homeSectionTitle"><h3>SHOP BY SPORT</h3><button onclick="go('shop')">VIEW ALL →</button></div>
+<div class="sportRail">
+  <button onclick="go('shop')"><b>F</b>FOOTBALL</button>
+  <button onclick="go('shop')"><b>B</b>BASKETBALL</button>
+  <button onclick="go('shop')"><b>S</b>SOFTBALL</button>
+  <button onclick="go('shop')"><b>T</b>TRAINING</button>
+</div>
+
+<div class="homeCloser">
+  <small>EXISTING GOAT SPORTS CLIENT?</small>
+  <h3>YOUR TEAM HAS A LOCKER.</h3>
+  <p>Access designs and proofs, approve quotes, view invoices, follow orders and keep your organization’s GOAT Sports projects together.</p>
+  <button onclick="openLocker()">ENTER GOAT LOCKER →</button>
+</div>
 </section>
 
 <section id="shop" class="screen">
