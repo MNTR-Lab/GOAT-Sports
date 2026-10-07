@@ -494,27 +494,22 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 
     <form class="tpForm" onsubmit="submitTeamProgram(event)">
       <h3>GET STARTED WITH GOAT SPORTS</h3>
-      <p>Tell us about your organization and what you're interested in. This starts the conversation — it does not commit your team to a program.</p>
-      <div class="tpField"><label>ORGANIZATION / TEAM NAME</label><input id="tpOrg" required placeholder="Organization name"></div>
-      <div class="tpField"><label>YOUR NAME</label><input id="tpName" required placeholder="First and last name"></div>
-      <div class="tpField"><label>EMAIL</label><input id="tpEmail" type="email" required placeholder="you@example.com"></div>
+      <p>Tell us how we can help your organization. This is just the first step — a GOAT Sports representative will follow up with you.</p>
+      <div class="tpField"><label>ORGANIZATION / TEAM NAME *</label><input id="tpOrg" required placeholder="Organization or team name"></div>
+      <div class="tpField"><label>YOUR NAME *</label><input id="tpName" required placeholder="First and last name"></div>
+      <div class="tpField"><label>EMAIL *</label><input id="tpEmail" type="email" required placeholder="you@example.com"></div>
       <div class="tpField"><label>PHONE</label><input id="tpPhone" type="tel" placeholder="Phone number"></div>
-      <div class="tpField"><label>ORGANIZATION TYPE</label><select id="tpType"><option>School / Athletic Program</option><option>Club / Travel Team</option><option>Professional / Semi-Pro Team</option><option>League / Association</option><option>Business / Organization</option><option>Other</option></select></div>
-      <div class="tpField"><label>YOUR ROLE / TITLE</label><input id="tpRole" placeholder="Coach, athletic director, owner, team manager, etc."></div>
-      <div class="tpField"><label>SPORT</label><input id="tpSport" placeholder="Football, basketball, baseball, softball, etc."></div>
-      <div class="tpField"><label>LEVEL</label><select id="tpLevel"><option value="">Select level</option><option>Youth</option><option>Middle School</option><option>High School</option><option>Prep / College</option><option>Semi-Pro</option><option>Professional</option><option>Other</option></select></div>
-      <div class="tpField"><label>I'M INTERESTED IN</label></div>
+      <div class="tpField"><label>WHAT ARE YOU INTERESTED IN? *</label></div>
       <div class="tpChecks">
         <label><input type="checkbox" name="tpInterest" value="Custom Gear"> Custom Gear</label>
         <label><input type="checkbox" name="tpInterest" value="Team Store"> Team Store</label>
         <label><input type="checkbox" name="tpInterest" value="GOAT Locker"> GOAT Locker</label>
         <label><input type="checkbox" name="tpInterest" value="Fundraising"> Fundraising</label>
       </div>
-      <div class="tpField"><label>WHAT PRODUCTS / SERVICES DO YOU NEED?</label><textarea id="tpNeeds" placeholder="Uniforms, apparel, team store, fan gear, custom products, design help, etc."></textarea></div>
-      <div class="tpField"><label>APPROXIMATE QUANTITY</label><input id="tpQuantity" type="number" min="1" inputmode="numeric" placeholder="Estimated pieces / sets"></div>
-      <div class="tpField"><label>DESIRED IN-HAND DATE</label><input id="tpInHand" type="date"></div>
-      <div class="tpField"><label>ANYTHING ELSE WE SHOULD KNOW?</label><textarea id="tpNotes" placeholder="Timeline, colors, special requests, or other details."></textarea></div>
-      <button class="tpSubmit" id="tpSubmit" type="submit">START MY GOAT SPORTS PROGRAM →</button>
+      <div class="tpField"><label>TELL US WHAT YOU'RE LOOKING FOR</label><textarea id="tpNeeds" placeholder="Uniforms, apparel, fan gear, a team store, fundraising, design help, or anything else you have in mind."></textarea></div>
+      <div class="tpField"><label>APPROXIMATE QUANTITY <span style="font-weight:700;color:#999">(OPTIONAL)</span></label><input id="tpQuantity" type="number" min="1" inputmode="numeric" placeholder="Estimated pieces / sets"></div>
+      <div class="tpField"><label>DESIRED IN-HAND DATE <span style="font-weight:700;color:#999">(OPTIONAL)</span></label><input id="tpInHand" type="date"></div>
+      <button class="tpSubmit" id="tpSubmit" type="submit">SEND MY REQUEST →</button>
       <button class="tpExisting" type="button" onclick="openLocker()">ALREADY A GOAT CLIENT? ENTER YOUR LOCKER →</button>
       <div id="tpMessage" style="display:none;margin-top:10px;font-size:10px;line-height:1.4"></div>
     </form>
@@ -679,15 +674,10 @@ async function submitTeamProgram(e){
     name:(document.getElementById('tpName')||{}).value||'',
     email:(document.getElementById('tpEmail')||{}).value||'',
     phone:(document.getElementById('tpPhone')||{}).value||'',
-    organization_type:(document.getElementById('tpType')||{}).value||'',
-    role:(document.getElementById('tpRole')||{}).value||'',
-    sport:(document.getElementById('tpSport')||{}).value||'',
-    level:(document.getElementById('tpLevel')||{}).value||'',
     interests,
     products:(document.getElementById('tpNeeds')||{}).value||'',
     quantity:(document.getElementById('tpQuantity')||{}).value||'',
-    in_hand_date:(document.getElementById('tpInHand')||{}).value||'',
-    notes:(document.getElementById('tpNotes')||{}).value||''
+    in_hand_date:(document.getElementById('tpInHand')||{}).value||''
   };
   if(btn){btn.disabled=true;btn.textContent='SENDING…';}
   if(msg){msg.style.display='block';msg.style.color='#666';msg.textContent='Sending your information to GOAT Sports…';}
@@ -700,7 +690,7 @@ async function submitTeamProgram(e){
   }catch(err){
     if(msg){msg.style.color='#be5927';msg.innerHTML='<b>WE COULD NOT SEND YOUR REQUEST.</b> '+String(err.message||err)+' Please try again.';}
   }finally{
-    if(btn){btn.disabled=false;btn.textContent='START MY GOAT SPORTS PROGRAM →';}
+    if(btn){btn.disabled=false;btn.textContent='SEND MY REQUEST →';}
   }
 }
 function openTeamPrograms(){ go('teamPrograms'); }
