@@ -684,7 +684,7 @@ async function submitTeamProgram(e){
     sport:(document.getElementById('tpSport')||{}).value||'',
     level:(document.getElementById('tpLevel')||{}).value||'',
     interests,
-    needs:(document.getElementById('tpNeeds')||{}).value||'',
+    products:(document.getElementById('tpNeeds')||{}).value||'',
     quantity:(document.getElementById('tpQuantity')||{}).value||'',
     in_hand_date:(document.getElementById('tpInHand')||{}).value||'',
     notes:(document.getElementById('tpNotes')||{}).value||''
@@ -692,9 +692,9 @@ async function submitTeamProgram(e){
   if(btn){btn.disabled=true;btn.textContent='SENDING…';}
   if(msg){msg.style.display='block';msg.style.color='#666';msg.textContent='Sending your information to GOAT Sports…';}
   try{
-    const res=await fetch('/api/team-program-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lead)});
+    const res=await fetch('https://goat-sports.bikard.workers.dev/api/team-program-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lead)});
     const data=await res.json().catch(()=>({}));
-    if(!res.ok||!data.ok) throw new Error(data.error||'Unable to submit right now.');
+    if(!res.ok||!data.success) throw new Error(data.error||'Unable to submit right now.');
     e.target.reset();
     if(msg){msg.style.color='#109488';msg.innerHTML='<b>THANK YOU.</b> Your request has been received by GOAT Sports. We’ll follow up using the contact information you provided.';}
   }catch(err){
