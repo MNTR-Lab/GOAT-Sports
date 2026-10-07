@@ -213,6 +213,36 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 
 .lockerTimelineDrop{margin-top:8px;background:#fff;border:1px solid #e4e5e8;border-radius:10px;overflow:hidden}.lockerTimelineDropHead{width:100%;border:0;background:#fff;display:flex;align-items:center;gap:10px;padding:12px 13px;text-align:left}.lockerTimelineDropHead .ico{width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900}.lockerTimelineDropHead .copy{display:flex;flex:1;flex-direction:column}.lockerTimelineDropHead strong{font-size:9px;letter-spacing:.06em}.lockerTimelineDropHead small{font-size:8px;color:#777;margin-top:2px}.lockerTimelineDropHead .chev{font-size:15px;transition:.2s}.lockerTimelineDrop.open .lockerTimelineDropHead .chev{transform:rotate(180deg)}.lockerTimelineDropBody{display:none;border-top:1px solid #eee;padding:8px 13px 12px}.lockerTimelineDrop.open .lockerTimelineDropBody{display:block}
 
+
+/* Larger, higher-visibility bottom navigation */
+.bottomNav{
+  min-height:76px !important;
+  padding:8px 5px calc(8px + env(safe-area-inset-bottom)) !important;
+  background:#fff !important;
+  border-top:1px solid #d9dadd !important;
+  box-shadow:0 -8px 24px rgba(0,0,0,.10) !important;
+}
+.bottomNav button{
+  min-height:58px !important;
+  padding:4px 2px !important;
+  gap:4px !important;
+  font-size:10px !important;
+  font-weight:1000 !important;
+  letter-spacing:.2px !important;
+  color:#34363a !important;
+}
+.bottomNav button svg{
+  width:27px !important;
+  height:27px !important;
+  stroke-width:2.3 !important;
+}
+.bottomNav button.active{
+  color:var(--purple) !important;
+}
+.bottomNav button.active svg{
+  transform:scale(1.10);
+}
+
 </style>
 </head>
 <body>
