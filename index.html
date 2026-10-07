@@ -13,8 +13,9 @@ button,a{font:inherit}.app{width:100%;max-width:520px;min-height:100vh;margin:au
 .iconbtn svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2}.badge{position:absolute;right:4px;top:3px;background:var(--orange);color:#fff;font-size:9px;font-weight:900;min-width:17px;height:17px;border-radius:20px;display:grid;place-items:center;border:2px solid #fff}
 .brand{text-align:center;color:var(--purple);font-weight:1000;letter-spacing:-1px;font-size:21px}.brand span{display:block;font-size:8px;letter-spacing:3px;margin-top:1px}
 .screen{display:none}.screen.active{display:block}
-.hero{min-height:390px;background:linear-gradient(145deg,#050506,#16171a);color:#fff;display:flex;align-items:flex-end;padding:35px 22px;position:relative;overflow:hidden}
-.hero:after{content:"";position:absolute;width:270px;height:270px;border:55px solid #ffffff08;border-radius:50%;right:-120px;top:25px}
+.hero{width:100%;background:#080808;overflow:hidden;line-height:0;min-height:0;padding:0;display:block;position:relative}
+.hero img{display:block;width:100%;height:auto}
+.hero:after{display:none}
 .eyebrow{font-size:10px;letter-spacing:2.4px;font-weight:900;color:#d0d2d6}.hero h1{font-size:48px;line-height:.89;letter-spacing:-2.4px;margin:10px 0 13px}.hero p{font-size:14px;line-height:1.45;color:#d6d7da;max-width:320px;margin:0 0 18px}
 .cta{border:0;background:var(--purple);color:#fff;padding:13px 17px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.6px}.cta.alt{background:#fff;color:#111;margin-left:6px}
 .section{padding:24px 16px}.sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:13px}.sectionhead h2{font-size:20px;margin:0;letter-spacing:-.5px}.sectionhead button{border:0;background:none;color:var(--purple);font-size:11px;font-weight:900}
@@ -179,7 +180,9 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 </header>
 
 <section id="home" class="screen active">
-<div class="hero"><div><div class="eyebrow">GOAT SPORTS • BUILT FOR THE GAME</div><h1>GEAR.<br>TEAMS.<br>MINDSET.</h1><p>Custom team gear, GOATIVATED apparel and everything your organization needs—connected in one place.</p><button class="cta" onclick="go('shop')">SHOP GOAT SPORTS</button><button class="cta alt" onclick="go('fanhq')">GOAT FANHQ</button></div></div>
+<div class="hero">
+  <img src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/GOAT_App_-_Hero.png?v=1791367112" alt="GOAT Sports">
+</div>
 <div class="section"><div class="sectionhead"><h2>Shop by Sport</h2><button onclick="go('shop')">VIEW ALL</button></div><div class="categorygrid"><button class="category" onclick="go('shop')">FOOTBALL</button><button class="category" onclick="go('shop')">BASKETBALL</button><button class="category" onclick="go('shop')">SOFTBALL</button><button class="category" onclick="go('shop')">TRAINING</button></div></div>
 <div class="section" style="padding-top:0"><div class="splitcards"><button class="promo" onclick="go('shop')"><small>BUILT FOR YOUR TEAM</small><strong>CUSTOM<br>UNIFORMS</strong></button><button class="promo" onclick="go('shop')"><small>YOUR ORGANIZATION</small><strong>TEAM<br>STORES</strong></button></div></div>
 </section>
