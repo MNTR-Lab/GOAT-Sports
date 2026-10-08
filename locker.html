@@ -25,7 +25,7 @@
 </div><nav class="mobile-nav" id="mobile" aria-label="Mobile Locker navigation"></nav>
 <script>
 'use strict';
-// Shopify Customer Account API: public client ID and PKCE; no client secret in browser.
+// Customer authentication uses the existing GOAT Sports account configuration (PKCE).
 const CUSTOMER_CLIENT_ID='0ce1ce65-71f0-40f5-840c-b30f69e3e924';
 const CUSTOMER_REDIRECT_URI='https://locker.begoativated.com/';
 const CUSTOMER_SCOPE='openid email customer-account-api:full';
@@ -40,7 +40,7 @@ function randomUrlSafe(n=32){const a=new Uint8Array(n);crypto.getRandomValues(a)
 async function sha256url(s){return b64url(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))));}
 async function customerDiscovery(){
  const [oidc,api]=await Promise.all([fetch('https://www.begoativated.com/.well-known/openid-configuration'),fetch('https://www.begoativated.com/.well-known/customer-account-api')]);
- if(!oidc.ok||!api.ok)throw new Error('Could not connect to Shopify customer accounts');
+ if(!oidc.ok||!api.ok)throw new Error('Could not connect to GOAT Sports accounts');
  return {...await oidc.json(),...await api.json()};
 }
 function customerToken(){
@@ -101,7 +101,7 @@ function show(id){if(!tabs.some(t=>t[0]===id))id='dashboard';active=id;render();
 function renderNav(){for(const target of ['side','mobile'])document.getElementById(target).innerHTML=tabs.map(([id,label])=>`<button type="button" class="${id===active?'active':''}" onclick="show('${id}')" aria-current="${id===active?'page':'false'}">${label}</button>`).join('');}
 function authMessage(){
  if(lockerError)return `<div class="notice error"><strong>Account connection issue</strong><p class="muted">${safe(lockerError)}</p><button class="secondary" onclick="customerLogin()">Try signing in again</button></div>`;
- if(!customerToken())return `<div class="notice"><strong>Sign in to GOAT Locker</strong><p class="muted">Use your existing GOAT Sports Shopify customer account.</p><button class="primary" onclick="customerLogin()">Sign in with Shopify</button></div>`;
+ if(!customerToken())return `<div class="notice"><strong>Sign in to GOAT Locker</strong><p class="muted">Use your existing GOAT Sports account.</p><button class="primary" onclick="customerLogin()">SIGN IN TO GOAT LOCKER</button></div>`;
  if(checking||!lockerIdentity)return `<div class="notice"><strong>Verifying organization access…</strong><p class="muted">Your account permissions are being checked securely.</p>${checking?'':'<button class="secondary" onclick="loadLockerIdentity()">Retry verification</button>'}</div>`;
  const a=lockerIdentity,admin=a.adminRole?safe(a.adminRole.replace(/_/g,' ').toUpperCase()):'';
  return `<div class="notice"><strong>Signed in${admin?' · '+admin:''}</strong><p class="muted">${a.adminRole?'Administrator access verified.':a.lockerAccess.length?'Organization access verified.':'No Locker organization has been assigned to this account yet.'} Assigned Lockers: ${a.lockerAccess.length}.</p><p class="muted">Your private project records are not connected to this standalone page yet.</p><button class="secondary" onclick="lockerSignOut()">Sign out of this website</button></div>`;
@@ -110,7 +110,7 @@ function section(id){const [title,desc]=descriptions[id];return `<div class="pan
 function render(){
  renderNav();const el=document.getElementById('content');
  if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div><div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
- else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing Shopify customer login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
+ else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
  else el.innerHTML=section(active);
 }
 async function initializeLocker(){
