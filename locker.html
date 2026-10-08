@@ -1,1 +1,1654 @@
 
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GOAT Locker | GOAT Sports</title>
+<style>
+:root{--purple:#683695;--teal:#109488;--orange:#BE5927;--silver:#868e92;--ink:#0a0b0d;--paper:#fff;--soft:#f4f5f6;--line:#e6e7e9}
+*{box-sizing:border-box}html,body{margin:0;background:#e9eaec;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+button,a{font:inherit}.app{width:100%;max-width:520px;min-height:100vh;margin:auto;background:#fff;position:relative;padding-bottom:74px;box-shadow:0 0 30px #00000010}
+.header{height:72px;position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--line);display:grid;grid-template-columns:56px 1fr 56px;align-items:center;padding:0 10px}
+.iconbtn{border:0;background:transparent;color:var(--teal);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative}
+.iconbtn svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:2}.badge{position:absolute;right:4px;top:3px;background:var(--orange);color:#fff;font-size:9px;font-weight:900;min-width:17px;height:17px;border-radius:20px;display:grid;place-items:center;border:2px solid #fff}
+.brand{text-align:center;color:var(--purple);font-weight:1000;letter-spacing:-1px;font-size:21px}.brand span{display:block;font-size:8px;letter-spacing:3px;margin-top:1px}
+.screen{display:none}.screen.active{display:block}
+.hero{width:100%;background:#080808;overflow:hidden;line-height:0;min-height:0;padding:0;display:block;position:relative}
+.hero img{display:block;width:100%;height:auto}
+.hero:after{display:none}
+.eyebrow{font-size:10px;letter-spacing:2.4px;font-weight:900;color:#d0d2d6}.hero h1{font-size:48px;line-height:.89;letter-spacing:-2.4px;margin:10px 0 13px}.hero p{font-size:14px;line-height:1.45;color:#d6d7da;max-width:320px;margin:0 0 18px}
+
+/* 2026 GOAT Sports home refresh */
+.homeIntro{padding:18px 16px 7px;background:#fff}
+.homeIntro .kicker{font-size:9px;font-weight:1000;letter-spacing:2px;color:var(--teal)}
+.homeIntro h2{font-size:28px;line-height:.95;letter-spacing:-1.2px;margin:7px 0 8px}
+.homeIntro p{font-size:11px;line-height:1.5;color:#6d7177;margin:0;max-width:430px}
+.homeActionGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:14px 16px 4px}
+.homeAction{position:relative;min-height:152px;border:0;border-radius:13px;padding:16px;text-align:left;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 9px 24px #00000012}
+.homeAction:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 12%,#ffffff22 0 12%,transparent 13%),linear-gradient(150deg,transparent 25%,#ffffff0d)}
+.homeAction>*{position:relative;z-index:1}.homeAction small{font-size:8px;letter-spacing:1.4px;font-weight:1000;opacity:.78}.homeAction strong{font-size:22px;line-height:.92;margin-top:7px;letter-spacing:-.7px}.homeAction span{font-size:9px;margin-top:8px;opacity:.78;line-height:1.35}
+.homeAction.shop{background:linear-gradient(145deg,#09090b,#292a2e)}
+.homeAction.fanhq{background:linear-gradient(145deg,var(--purple),#2d153f)}
+.homeAction.locker{background:linear-gradient(145deg,var(--teal),#063d39)}
+.homeAction.custom{background:linear-gradient(145deg,#35373a,#101113)}
+.homeAction.wide{grid-column:1/-1;min-height:118px;background:linear-gradient(110deg,#0c0d0f 0 63%,var(--orange) 140%)}
+.homeAction.wide strong{font-size:25px}
+.homeBand{margin:18px 16px 0;border-radius:12px;background:#f2f3f4;border:1px solid var(--line);padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:7px;text-align:center}
+.homeBand b{display:block;color:var(--purple);font-size:16px}.homeBand span{display:block;font-size:7px;line-height:1.3;color:#666;font-weight:900;margin-top:3px}
+.homeSectionTitle{padding:25px 16px 10px;display:flex;align-items:end;justify-content:space-between}.homeSectionTitle h3{margin:0;font-size:20px;letter-spacing:-.5px}.homeSectionTitle button{border:0;background:transparent;color:var(--purple);font-size:9px;font-weight:1000}
+.sportRail{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:0 16px 22px}
+.sportRail button{height:78px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:8px;font-weight:1000;color:#222;box-shadow:0 5px 14px #00000008}
+.sportRail b{display:block;font-size:19px;color:var(--teal);margin-bottom:7px}
+.homeCloser{margin:0 16px 26px;border-radius:13px;padding:20px;background:linear-gradient(145deg,#683695,#351a4b);color:#fff}
+.homeCloser small{font-size:8px;letter-spacing:1.5px;font-weight:1000;color:#d8c8e8}.homeCloser h3{font-size:27px;line-height:.94;margin:8px 0}.homeCloser p{font-size:10px;line-height:1.45;color:#e5ddeb;margin:0 0 13px}.homeCloser button{border:0;background:#fff;color:var(--purple);padding:11px 13px;border-radius:6px;font-size:9px;font-weight:1000}
+
+.cta{border:0;background:var(--purple);color:#fff;padding:13px 17px;border-radius:4px;font-size:11px;font-weight:900;letter-spacing:.6px}.cta.alt{background:#fff;color:#111;margin-left:6px}
+.section{padding:24px 16px}.sectionhead{display:flex;justify-content:space-between;align-items:end;margin-bottom:13px}.sectionhead h2{font-size:20px;margin:0;letter-spacing:-.5px}.sectionhead button{border:0;background:none;color:var(--purple);font-size:11px;font-weight:900}
+.categorygrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.category{height:130px;border:0;border-radius:7px;padding:14px;text-align:left;color:#fff;font-weight:900;font-size:17px;display:flex;align-items:flex-end;background:linear-gradient(145deg,#222,#080808)}
+.category:nth-child(2){background:linear-gradient(145deg,#683695,#261238)}.category:nth-child(3){background:linear-gradient(145deg,#109488,#063f3a)}.category:nth-child(4){background:linear-gradient(145deg,#555,#151515)}
+.splitcards{display:grid;grid-template-columns:1fr 1fr;gap:9px}.promo{min-height:180px;border-radius:8px;padding:17px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;background:#111}.promo:nth-child(2){background:var(--purple)}.promo small{font-size:9px;letter-spacing:1.4px;font-weight:900}.promo strong{font-size:22px;line-height:.95;margin-top:6px}
+.storehero{padding:29px 20px;background:#0b0c0e;color:#fff}.storehero h1,.plain h1{font-size:38px;line-height:.95;margin:7px 0 10px}.storehero p,.plain p{color:#aeb2b8;line-height:1.5;font-size:13px}
+.shopbar{padding:12px 16px;display:flex;gap:8px;overflow:auto;border-bottom:1px solid var(--line)}.chip{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:30px;padding:9px 12px;font-size:10px;font-weight:900}.chip.active{background:#111;color:#fff;border-color:#111}
+.products{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px}.product{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}.productimg{height:155px;background:linear-gradient(145deg,#f2f2f2,#d9dadd);display:grid;place-items:center;color:#999;font-size:11px;font-weight:900}.productinfo{padding:11px}.productinfo strong{font-size:12px;display:block}.productinfo span{font-size:11px;color:#666;display:block;margin-top:5px}.productinfo button{margin-top:9px;width:100%;border:0;background:#111;color:#fff;padding:9px;font-size:9px;font-weight:900}
+.shopnote{margin:0 16px 18px;background:#eef8f7;border-left:4px solid var(--teal);padding:12px;font-size:11px;line-height:1.4}
+.plain{padding:32px 18px 110px;background:var(--soft);min-height:calc(100vh - 72px)}.placeholdercard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;margin-top:18px}.placeholdercard h3{margin:0 0 7px;font-size:16px}.placeholdercard p{margin:0;color:#6e7278}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:60;width:100%;max-width:520px;height:72px;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.nav button{border:0;background:#fff;color:#777;font-size:8px;font-weight:900;padding:8px 2px 5px}.nav svg{width:20px;height:20px;display:block;margin:0 auto 4px;fill:none;stroke:currentColor;stroke-width:2}.nav button.active{color:var(--purple)}
+@media(min-width:700px){.app{margin:18px auto;min-height:calc(100vh - 36px);border-radius:14px;overflow:hidden}.nav{bottom:18px;border-radius:0 0 14px 14px}}
+
+/* GOAT Locker */
+.lockerHero{background:linear-gradient(145deg,#09090a 0%,#17181b 72%,#683695 160%);color:#fff;padding:38px 22px 32px;min-height:285px;display:flex;flex-direction:column;justify-content:flex-end}.lockerHero h1{font-size:47px;line-height:.86;letter-spacing:-2.3px;margin:9px 0 13px}.lockerHero p{font-size:13px;color:#c8cacf;line-height:1.5;margin:0 0 18px;max-width:360px}.lockerHero .cta{align-self:flex-start}
+.lockerSection{background:#f5f5f6}.teamStack{display:grid;gap:9px}.teamCard{display:grid;grid-template-columns:52px 1fr auto;gap:11px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}.teamMark,.resultMark{width:48px;height:48px;border-radius:9px;background:#111;color:#fff;display:grid;place-items:center;font-size:22px;font-weight:1000}.teamMeta{min-width:0}.teamMeta small,.teamMeta span{display:block;font-size:8px;color:#7b7f85}.teamMeta strong{display:block;font-size:14px;margin:3px 0}.enterHQ{border:0;background:var(--purple);color:#fff;border-radius:5px;padding:10px 9px;font-size:8px;font-weight:900}
+.nearCard{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:15px;display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center;text-align:left}.nearIcon{width:40px;height:40px;border-radius:50%;background:#eaf7f5;color:var(--teal);display:grid;place-items:center;font-size:21px}.nearCard strong,.nearCard small{display:block}.nearCard strong{font-size:13px}.nearCard small{font-size:9px;color:#777;margin-top:3px}.nearCard b{font-size:25px;color:#aaa}
+.miniTeams{display:grid;grid-template-columns:1fr 1fr;gap:9px}.miniTeams button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:15px;text-align:left}.miniTeams span{width:38px;height:38px;background:#111;color:#fff;border-radius:8px;display:grid;place-items:center;font-weight:900;margin-bottom:11px}.miniTeams strong,.miniTeams small{display:block}.miniTeams strong{font-size:12px}.miniTeams small{font-size:9px;color:#777;margin-top:3px}
+.modalShade{display:none;position:fixed;z-index:100;inset:0;background:#0009;align-items:flex-end;justify-content:center}.modalShade.show{display:flex}.modalSheet{width:100%;max-width:520px;max-height:88vh;overflow:auto;background:#fff;border-radius:18px 18px 0 0;padding:10px 16px 28px}.sheetHandle{width:42px;height:4px;border-radius:10px;background:#d4d5d7;margin:0 auto 18px}.sheetIntro{font-size:11px;color:#777;margin:-3px 0 14px}.searchbox{height:46px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;padding:0 12px;gap:8px}.searchbox input{border:0;outline:0;width:100%;font-size:12px}.filterRow{display:flex;gap:6px;overflow:auto;padding:12px 0}.resultList{display:grid;gap:8px}.resultList article{display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:10px}.resultList strong,.resultList small{display:block}.resultList strong{font-size:12px}.resultList small{font-size:9px;color:#777;margin-top:3px}.resultList button{border:0;background:#111;color:#fff;border-radius:5px;padding:9px 11px;font-size:8px;font-weight:900}
+.backMini{border:0;background:none;color:var(--purple);font-size:9px;font-weight:900;padding:0 0 15px}.hqIdentity{display:flex;gap:13px;align-items:center}.hqMark{width:64px;height:64px;border-radius:12px;background:#111;color:#fff;display:grid;place-items:center;font-size:28px;font-weight:1000}.hqIdentity small,.hqIdentity span{font-size:8px;color:#777}.hqIdentity h2{margin:3px 0;font-size:22px}.teamStoreBtn{width:100%;border:0;background:var(--purple);color:#fff;border-radius:6px;padding:14px;margin:18px 0 10px;font-size:10px;font-weight:900}.hqGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.hqGrid button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:14px;text-align:left}.hqGrid b{display:block;font-size:20px;color:var(--teal);margin-bottom:10px}.hqGrid strong,.hqGrid small{display:block}.hqGrid strong{font-size:12px}.hqGrid small{font-size:9px;color:#777;margin-top:3px}.hqFeatured{margin-top:15px;background:#101114;color:#fff;border-radius:10px;padding:18px}.hqFeatured small{font-size:8px;letter-spacing:1.3px;color:#aaa}.hqFeatured strong{display:block;font-size:25px;margin-top:5px}.hqFeatured p{font-size:10px;color:#aaa;line-height:1.4}.hqFeatured button{border:0;background:var(--teal);color:#fff;padding:10px 13px;font-size:9px;font-weight:900;border-radius:4px}.appToast{display:none;position:fixed;z-index:150;bottom:84px;left:50%;transform:translateX(-50%);background:#111;color:#fff;border-radius:7px;padding:11px 15px;font-size:10px;font-weight:800;white-space:nowrap}
+
+/* FanHQ + private GOAT Locker architecture */
+.accountGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:18px}.accountGrid button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:16px;text-align:left}.accountGrid b{display:block;color:var(--teal);font-size:21px;margin-bottom:10px}.accountGrid strong,.accountGrid small{display:block}.accountGrid strong{font-size:13px}.accountGrid small{font-size:9px;color:#777;margin-top:4px}
+.lockerAccess{margin-top:14px;background:linear-gradient(145deg,#0a0a0b,#1a1b1e);color:#fff;border-radius:11px;padding:22px}.lockerAccess .eyebrow{color:#aaa}.lockerAccess h2{font-size:31px;line-height:.95;margin:7px 0 8px}.lockerAccess p{font-size:11px;color:#c5c7ca;line-height:1.5}.lockerAccess small{display:block;color:#8f9298;font-size:8px;line-height:1.4;margin-top:11px}
+.privateLocker{background:#f5f5f6;min-height:calc(100vh - 72px);padding-bottom:100px}.privateLockerHero{background:linear-gradient(145deg,#080809,#18191c 75%,#683695 170%);color:#fff;padding:25px 22px 30px}.privateLockerHero .backMini{color:#cdb7df}.privateLockerHero h1{font-size:47px;line-height:.86;letter-spacing:-2.2px;margin:9px 0 12px}.privateLockerHero p{font-size:12px;color:#c8cacf;line-height:1.45;max-width:340px}.lockerTools{background:#f5f5f6}.toolGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.toolGrid button{min-height:132px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:15px;text-align:left}.toolGrid b{display:block;font-size:23px;color:var(--purple);margin-bottom:15px}.toolGrid strong,.toolGrid small{display:block}.toolGrid strong{font-size:12px}.toolGrid small{font-size:9px;color:#777;line-height:1.35;margin-top:4px}
+
+/* FanHQ public team-store directory */
+.fanHero{background:linear-gradient(145deg,#070708 0%,#17181a 72%,#109488 180%);color:#fff;padding:38px 22px 30px}.fanHero h1{font-size:49px;line-height:.85;letter-spacing:-2.5px;margin:10px 0 14px}.fanHero p{font-size:13px;color:#c8cacf;line-height:1.5;max-width:350px;margin:0 0 20px}.fanSearch{height:49px;background:#fff;color:#777;border-radius:7px;display:flex;align-items:center;gap:10px;padding:0 14px;cursor:pointer}.fanSearch span{font-size:21px;color:var(--teal)}.fanSearch b{font-size:10px;font-weight:700}.fanBody{background:#f5f5f6}
+.featuredStores{display:grid;gap:9px}.featuredStores>button{border:1px solid var(--line);background:#fff;border-radius:11px;padding:14px;display:grid;grid-template-columns:56px 1fr;gap:13px;align-items:center;text-align:left}.storeBadge{width:54px;height:54px;border-radius:10px;background:#111;color:#fff;display:grid;place-items:center;font-size:24px;font-weight:1000}.featuredStores small,.featuredStores strong,.featuredStores em{display:block}.featuredStores small{font-size:8px;color:#777}.featuredStores strong{font-size:15px;margin:4px 0 7px}.featuredStores em{font-size:8px;color:var(--purple);font-style:normal;font-weight:900}
+.sportBrowse{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sportBrowse button{height:118px;border:0;border-radius:9px;background:#111;color:#fff;padding:14px;text-align:left;display:flex;flex-direction:column;justify-content:flex-end}.sportBrowse button:nth-child(2){background:var(--purple)}.sportBrowse button:nth-child(3){background:var(--teal)}.sportBrowse button:nth-child(4){background:#555}.sportBrowse b{font-size:15px}.sportBrowse span{font-size:8px;margin-top:5px;color:#ddd;font-weight:900}
+.locationDiscovery{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:15px;display:grid;grid-template-columns:42px 1fr auto;gap:11px;align-items:center;text-align:left}.locationDiscovery>span{width:40px;height:40px;border-radius:50%;background:#eaf7f5;color:var(--teal);display:grid;place-items:center;font-size:21px}.locationDiscovery strong,.locationDiscovery small{display:block}.locationDiscovery strong{font-size:13px}.locationDiscovery small{font-size:9px;color:#777;margin-top:3px}.locationDiscovery>b{font-size:25px;color:#aaa}
+.clientEntry{background:linear-gradient(145deg,#151518,#070708);color:#fff;border-radius:11px;padding:22px}.clientEntry .eyebrow{color:#a9abb0}.clientEntry h2{font-size:27px;line-height:.95;margin:8px 0 10px}.clientEntry p{font-size:10px;color:#bbb;line-height:1.5;margin:0 0 15px}.clientEntry button{border:0;background:var(--purple);color:#fff;border-radius:5px;padding:12px 14px;font-size:9px;font-weight:900}
+
+/* Exact uploaded GOAT Sports header artwork */
+header .brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(100% - 116px);height:70px;display:flex;align-items:center;justify-content:center;overflow:visible}
+header .brand img{display:block;width:100%;height:auto;max-height:none;max-width:none;object-fit:contain;object-position:center center;transform:translateX(-2.545%)}
+
+/* Keep header controls pinned while the centered brand stays independent */
+.header{position:sticky}
+.header>.iconbtn:first-child{position:absolute;left:14px;top:50%;transform:translateY(-50%);z-index:3}
+.header>.iconbtn:last-child{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:3}
+
+/* Live Shopify Shop */
+.shopLiveHero{background:#0a0a0b;color:#fff;padding:38px 22px 30px}.shopLiveHero h1{font-size:43px;line-height:.88;letter-spacing:-2px;margin:9px 0 11px}.shopLiveHero p{font-size:11px;color:#aaa}.shopLiveBody{background:#f5f5f6}.shopControls{display:flex;gap:6px;overflow:auto;margin-bottom:14px}.shopControls #shopCollectionChips{display:flex;gap:6px}.shopStatus{font-size:10px;color:#777;padding:8px 0 15px}.liveProductGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.liveProduct{border:0;background:#fff;border-radius:9px;overflow:hidden;text-align:left;padding:0}.liveProduct .productImg{aspect-ratio:1/1;background:#ececee;display:grid;place-items:center;overflow:hidden}.liveProduct img{width:100%;height:100%;object-fit:cover}.liveProduct .noImg{font-size:9px;color:#999}.liveProduct .productCopy{padding:10px}.liveProduct strong{display:block;font-size:11px;line-height:1.25}.liveProduct small{display:block;font-size:10px;margin-top:5px;color:#555}.liveProduct em{display:block;font-style:normal;font-size:8px;color:var(--teal);font-weight:900;margin-top:6px}.productSheet{padding-bottom:100px}.productDetailImage{aspect-ratio:1/1;background:#eee;border-radius:10px;overflow:hidden}.productDetailImage img{width:100%;height:100%;object-fit:cover}.productSheet h2{font-size:25px;margin:15px 0 6px}.productPrice{font-weight:900;font-size:15px}.productDesc{font-size:10px;color:#666;line-height:1.5}.variantSelect{width:100%;height:44px;border:1px solid var(--line);border-radius:6px;padding:0 10px;margin:12px 0;background:#fff}.shopBuy{width:100%;border:0;border-radius:5px;background:var(--purple);color:#fff;padding:14px;font-size:10px;font-weight:900}.shopBuy:disabled{background:#aaa}
+
+/* Live FanHQ */
+.fanHero{background:#0a0a0b;color:#fff;padding:36px 22px 26px}.fanHero h1{font-size:41px;line-height:.95;letter-spacing:-1.8px;margin:8px 0 10px}.fanHero p{font-size:11px;line-height:1.5;color:#b8b8ba;margin-bottom:16px}.teamSearch{width:100%;height:44px;border:1px solid #343438;border-radius:7px;background:#171719;color:#fff;padding:0 13px;font-size:11px}.fanTeamGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fanTeamCard{border:0;background:#fff;border-radius:9px;overflow:hidden;text-align:left;box-shadow:0 1px 8px rgba(0,0,0,.06);padding:0}.fanTeamLogo{aspect-ratio:1.25/1;background:#f0f0f2;display:grid;place-items:center;padding:18px}.fanTeamLogo img{width:100%;height:100%;object-fit:contain}.fanInitials{font-size:25px;font-weight:1000;color:var(--purple)}.fanTeamCopy{padding:11px}.fanTeamCopy strong{font-size:11px;display:block;line-height:1.25}.fanTeamCopy small{font-size:9px;color:#6d6d70;display:block;margin-top:4px}.fanTeamCopy em{font-size:8px;color:var(--teal);font-weight:900;font-style:normal;display:block;margin-top:7px}.lockerEntry{margin-top:18px;padding:20px;background:#111;color:#fff;border-radius:9px}.lockerEntry h2{font-size:21px;margin:5px 0 7px}.lockerEntry p{font-size:10px;color:#aaa;line-height:1.5}.teamHQHeader{text-align:center;padding:10px 0 16px}.teamHQLogo{width:120px;height:100px;object-fit:contain;margin:auto;display:block}.teamHQFallback{height:100px;display:grid;place-items:center;font-size:36px;font-weight:1000;color:var(--purple)}.teamHQHeader h2{font-size:26px;margin:8px 0 4px}.teamHQHeader p{font-size:10px;color:#777}.teamHQProducts{display:grid;grid-template-columns:1fr 1fr;gap:9px}.teamHQProduct{border:0;background:#f5f5f6;border-radius:8px;overflow:hidden;text-align:left;padding:0}.teamHQProduct img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#eee}.teamHQProduct div{padding:8px}.teamHQProduct strong{font-size:9px;line-height:1.2;display:block}.teamHQProduct small{font-size:9px;display:block;margin-top:4px}.teamEmpty{text-align:center;padding:30px 10px;color:#777;font-size:10px}
+
+/* Modal visibility normalization */
+.modalShade{display:none}
+.modalShade.show{display:flex}
+
+/* Full Team Store template */
+.teamStoreScreen{background:#fff;min-height:100vh;padding-bottom:105px}
+.teamStoreBack{position:sticky;top:75px;z-index:12;width:100%;border:0;border-bottom:1px solid #e9e9e9;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);padding:14px 18px;text-align:left;font:900 12px/1 Arial;letter-spacing:.08em;color:#111}
+.teamStoreHero{position:relative;overflow:hidden;background:transparent;line-height:0}
+.teamStoreBanner{display:block;width:100%;height:auto;margin:0;padding:0}
+.teamStoreIdentity{padding:16px 18px 17px;background:#fff;border-bottom:4px solid var(--team-secondary,#FFEF00)}
+.teamStoreIdentityInner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.teamStoreIdentity .eyebrow{color:var(--team-primary,#0080C6);margin-bottom:4px}
+.teamStoreIdentity h1{font-size:20px;line-height:1;margin:0 0 5px;text-transform:uppercase;letter-spacing:-.025em}
+.teamStoreIdentity p{margin:0;color:#666;font-size:12px;font-weight:800}
+.teamStorePowered{flex:0 0 auto;color:#555;padding:0;font-size:9px;font-weight:900;letter-spacing:.08em;background:none;border:0;border-radius:0}
+.teamStoreBody{max-width:900px;margin:0 auto;padding:30px 18px 20px}
+.teamStoreTitleRow{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.teamStoreTitleRow .eyebrow{color:var(--team-primary,#683695);margin-bottom:5px}
+.teamStoreTitleRow h2{margin:0;font-size:27px;line-height:1;letter-spacing:-.035em}
+.teamStoreCount{font-size:11px;font-weight:900;color:#777;white-space:nowrap}
+.teamStoreProducts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.teamStoreProduct{border:0;background:#f6f6f6;text-align:left;padding:0;overflow:hidden;border-radius:15px;color:#111}
+.teamStoreProduct .imageBox{aspect-ratio:1/1;background:#f1f1f1;overflow:hidden}
+.teamStoreProduct img{width:100%;height:100%;object-fit:cover;display:block}
+.teamStoreProductInfo{padding:13px 12px 15px}
+.teamStoreProductInfo strong{display:block;font-size:13px;line-height:1.25;margin-bottom:7px}
+.teamStoreProductInfo small{display:block;font-size:12px;font-weight:900;color:var(--team-primary,#683695)}
+.teamStoreLoading,.teamStoreEmpty{padding:34px 0;text-align:center;color:#666;font-weight:800}
+@media(min-width:700px){.teamStoreProducts{grid-template-columns:repeat(3,minmax(0,1fr))}.teamStoreBanner{height:auto}.teamStoreBody{padding:40px 30px}.teamStoreIdentity{padding:18px 30px}}
+
+/* Shopify Cart */
+.cartBtn{position:relative}
+.cartCount{position:absolute;right:-5px;top:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--orange);color:#fff;display:none;place-items:center;font:900 9px/17px Arial}
+.cartSheet{max-height:88vh;overflow:auto}
+.cartHead{display:flex;justify-content:space-between;align-items:end;margin-bottom:16px}.cartHead h2{margin:0;font-size:28px}.cartHead small{font-weight:900;color:#777}
+.cartLine{display:grid;grid-template-columns:72px 1fr auto;gap:11px;padding:12px 0;border-bottom:1px solid var(--line)}
+.cartLine img{width:72px;height:72px;object-fit:cover;background:#eee;border-radius:8px}
+.cartLine strong{display:block;font-size:11px;line-height:1.25}.cartLine small{display:block;color:#777;font-size:9px;margin-top:4px}
+.cartQty{display:flex;align-items:center;gap:8px;margin-top:9px}.cartQty button{width:27px;height:27px;border:1px solid #ddd;background:#fff;border-radius:5px;font-weight:900}.cartQty span{font-size:11px;font-weight:900}
+.cartRemove{border:0;background:none;padding:4px;color:#777;font-size:9px;font-weight:900}
+.cartSummary{padding:18px 0 6px}.cartTotal{display:flex;justify-content:space-between;font-size:17px;font-weight:1000;margin-bottom:12px}
+.checkoutBtn{width:100%;border:0;border-radius:6px;background:#111;color:#fff;padding:15px;font-size:11px;font-weight:1000;letter-spacing:.05em}
+.cartEmpty{text-align:center;padding:35px 10px;color:#777;font-weight:800}
+
+/* Customer Account */
+.accountWelcome{padding:18px;border:1px solid var(--line);border-radius:10px;background:#fff;margin:14px 0}
+.accountWelcome h2{font-size:24px;margin:0 0 5px}.accountWelcome p{font-size:10px;color:#666;margin:0}
+.accountActions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0 18px}.accountActions button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:16px 10px;text-align:left;font-weight:900}
+.signOutBtn{width:100%;border:1px solid #ddd;background:#fff;padding:13px;border-radius:6px;font-size:10px;font-weight:900}
+.orderCard{border:1px solid var(--line);background:#fff;border-radius:9px;padding:14px;margin:10px 0}.orderTop{display:flex;justify-content:space-between;gap:12px}.orderTop strong{font-size:13px}.orderTop span{font-size:12px;font-weight:900}.orderMeta{font-size:9px;color:#777;margin-top:5px}.orderStatus{display:inline-block;margin-top:9px;padding:5px 8px;border-radius:20px;background:#f0f0f2;font-size:8px;font-weight:900}.orderLink{display:block;margin-top:10px;font-size:9px;font-weight:900;color:var(--purple);text-decoration:none}
+
+.addressCard{padding:15px;border:1px solid var(--line);border-radius:9px;background:#fff;margin:10px 0 14px}
+.addressCard .eyebrow{margin-bottom:7px}.addressCard strong{display:block;font-size:12px;margin-bottom:4px}
+.addressCard p{font-size:10px;line-height:1.55;color:#555;margin:0}
+.lockerLocked{opacity:.98}.lockerState{display:block;margin:8px 0 12px;font-size:9px;font-weight:900;letter-spacing:.08em;color:#bbb}
+
+.editAccountGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0 14px}
+.editAccountGrid button,.editAddressBtn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:12px;font-size:9px;font-weight:900;text-align:center}
+.editAddressBtn{width:100%;margin-top:12px}
+.accountEditSheet{max-height:88vh;overflow:auto}
+.accountForm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.accountForm .full{grid-column:1/-1}.accountForm label{font-size:8px;font-weight:900;letter-spacing:.08em;color:#666}
+.accountForm input,.accountForm select{width:100%;box-sizing:border-box;margin-top:5px;border:1px solid #d8d8dc;border-radius:6px;padding:12px;background:#fff;font:inherit;font-size:12px}
+.accountForm .cta{grid-column:1/-1;margin-top:4px}.accountFormNote{grid-column:1/-1;font-size:9px;color:#777;line-height:1.45}
+
+.adminBadge{display:inline-block;background:var(--orange);color:#fff;border-radius:999px;padding:6px 9px;font-size:8px;font-weight:1000;letter-spacing:.08em;margin-top:8px}
+.adminPanel{margin-top:14px;border:2px solid var(--purple);border-radius:11px;padding:18px;background:#fff}.adminPanel h2{font-size:25px;margin:5px 0 7px}.adminPanel p{font-size:10px;color:#666;line-height:1.5}
+.adminAccessList{display:grid;gap:8px;margin-top:14px}.adminAccessRow{border:1px solid var(--line);border-radius:8px;padding:11px}.adminAccessRow strong,.adminAccessRow small{display:block}.adminAccessRow small{font-size:8px;color:#777;margin-top:3px}.adminAccessRow button{margin-top:8px;border:0;border-radius:5px;padding:8px 10px;font-size:8px;font-weight:900}
+.adminForm{display:grid;gap:9px;margin-top:12px}.adminForm input,.adminForm select{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:12px;background:#fff;font-size:11px}.adminForm label{font-size:8px;font-weight:900;letter-spacing:.06em}
+.lockerTeamCard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:15px;margin-bottom:10px}.lockerTeamCard h3{margin:4px 0;font-size:19px}.lockerTeamCard p{font-size:9px;color:#777}
+
+.lockerWorkspace{margin-top:16px}.lockerWorkspaceHeader{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}.lockerWorkspaceHeader h2{margin:2px 0;font-size:25px}.designGrid{display:grid;grid-template-columns:1fr;gap:12px}.designCard{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}.designAsset{aspect-ratio:16/10;background:#f1f1f3;display:flex;align-items:center;justify-content:center;overflow:hidden}.designAsset img{width:100%;height:100%;object-fit:contain}.designAsset span{font-size:10px;font-weight:900;color:#888}.designBody{padding:13px}.designBody h3{font-size:17px;margin:3px 0}.designBody p{font-size:9px;line-height:1.45;color:#666}.statusPill{display:inline-block;border-radius:999px;padding:5px 8px;font-size:7px;font-weight:1000;letter-spacing:.08em}.status-pending{background:#eee;color:#555}.status-approved{background:#e6f6ef;color:#08744d}.status-changes_requested{background:#fff0e8;color:#9a3e10}.approvalActions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.approvalActions button{border:0;border-radius:6px;padding:10px 6px;font-size:8px;font-weight:1000}.approveBtn{background:var(--teal);color:#fff}.changesBtn{background:#111;color:#fff}.approvalHistory{border-top:1px solid var(--line);margin-top:11px;padding-top:9px}.approvalHistory small{display:block;font-size:8px;color:#777;margin:4px 0}.adminDesignForm{display:grid;gap:8px;margin:12px 0 16px}.adminDesignForm input,.adminDesignForm textarea,.adminDesignForm select{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:11px;font:inherit;font-size:10px}.adminDesignForm textarea{min-height:70px;resize:vertical}.adminDesignForm label{font-size:8px;font-weight:900;letter-spacing:.06em}.workspaceEmpty{border:1px dashed #bbb;border-radius:9px;padding:20px;text-align:center;font-size:10px;color:#777}
+
+
+/* GOAT Locker customer portal dashboard */
+.portalWelcome{margin:4px 0 18px;padding:18px;border-radius:12px;background:#fff;border:1px solid var(--line)}
+.portalWelcome .eyebrow{color:var(--purple);margin-bottom:6px}
+.portalWelcome h2{margin:0 0 6px;font-size:25px;line-height:1}
+.portalWelcome p{margin:0;color:#70747a;font-size:10px;line-height:1.45}
+.portalQuickGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.portalQuickCard{min-height:126px;border:1px solid var(--line);border-radius:11px;background:#fff;padding:15px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;color:#111}
+.portalQuickCard b{font-size:22px;color:var(--purple);font-weight:1000}
+.portalQuickCard strong{display:block;font-size:13px;margin-top:10px}
+.portalQuickCard small{display:block;color:#777;font-size:8px;line-height:1.35;margin-top:4px}
+.portalQuickCard.attention b{color:var(--orange)}
+.portalActivityHead{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 0 9px}
+.portalActivityHead h3{margin:0;font-size:18px}
+.portalActivityHead small{font-size:8px;color:#777}
+.portalNav{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:18px}
+.portalNav button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:11px 6px;font-size:8px;font-weight:1000;color:#222}
+.portalNav button:first-child{background:#111;color:#fff;border-color:#111}
+.portalFooterNote{margin-top:16px;padding:12px;border-radius:9px;background:#f0f7f6;border-left:4px solid var(--teal);font-size:9px;line-height:1.45;color:#555}
+
+.lockerHub .toolGrid button{cursor:pointer}.lockerSubView{margin-top:14px}.lockerSubHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.lockerSubHead h2{margin:2px 0;font-size:25px}.lockerBack{border:0;background:none;padding:0;color:var(--purple);font-size:9px;font-weight:1000}.designTabs{display:flex;gap:6px;margin:10px 0 14px}.designTabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:8px;font-weight:900}.designTabs button.active{background:#111;color:#fff;border-color:#111}.dashboardNotice{border:1px solid var(--line);border-radius:9px;padding:13px;background:#fff;margin-bottom:12px}.dashboardNotice strong{font-size:12px}.dashboardNotice p{font-size:9px;color:#777;margin:4px 0 0}
+
+.adminLockerDirectory{margin:14px 0 18px}.adminLockerDirectoryHead{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:10px}.adminLockerDirectoryHead h2{font-size:24px;margin:2px 0}.adminLockerGrid{display:grid;grid-template-columns:1fr;gap:9px}.adminLockerTile{width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;padding:13px;text-align:left;display:flex;align-items:center;gap:11px}.adminLockerTile img{width:48px;height:48px;object-fit:contain;border-radius:7px;background:#f5f5f6}.adminLockerTile .adminLockerLogoBlank{width:48px;height:48px;border-radius:7px;background:#f3f3f5;display:grid;place-items:center;font-weight:1000;color:#999}.adminLockerTile strong{display:block;font-size:13px}.adminLockerTile small{display:block;font-size:8px;color:#777;margin-top:3px}.adminLockerTile .arrow{margin-left:auto;font-size:20px;color:var(--purple)}.adminLockerContext{border:2px solid var(--purple);border-radius:10px;padding:12px;margin-bottom:13px;background:#fff}.adminLockerContext strong{display:block;font-size:15px}.adminLockerContext small{font-size:8px;color:#777}
+
+.approvalStamp{margin-top:10px;padding:10px;border:1px solid #d9d9dd;border-radius:8px;background:#f8f8f9}.approvalStamp .stampTitle{font-size:9px;font-weight:1000;color:var(--teal);letter-spacing:.06em}.approvalStamp strong{display:block;font-size:10px;margin-top:4px}.approvalStamp small{display:block;font-size:8px;color:#777;margin-top:2px}
+
+.adminQuoteQueue{margin-top:18px}.quoteNeededCard{border:2px solid var(--orange);border-radius:10px;background:#fff;overflow:hidden}.quoteNeededCard+.quoteNeededCard{margin-top:9px}.quoteNeededCard .qbody{padding:12px}.quoteNeededCard img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#f5f5f6}.quoteFlag{display:inline-block;background:var(--orange);color:#fff;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:1000}.quoteMeta{font-size:8px;color:#777;margin-top:4px}.quoteDone{border:0;background:#111;color:#fff;border-radius:7px;padding:9px 11px;font-size:8px;font-weight:1000;margin-top:9px}
+
+.quoteCard{border:1px solid var(--line);border-radius:10px;background:#fff;padding:13px;margin-bottom:9px}.quoteCard h3{margin:5px 0}.quoteAmount{font-size:25px;font-weight:1000}.quoteStatus{display:inline-block;border-radius:999px;background:#111;color:#fff;padding:5px 8px;font-size:8px;font-weight:1000}.quoteForm label{display:block;font-size:8px;font-weight:900;margin:10px 0}.quoteForm input,.quoteForm textarea{width:100%;box-sizing:border-box;margin-top:5px;padding:11px;border:1px solid var(--line);border-radius:7px;font:inherit}.quoteForm textarea{min-height:80px}
+.quoteItemsHead{display:grid;grid-template-columns:1fr 55px 82px 28px;gap:5px;font-size:7px;font-weight:1000;color:#777;margin-top:12px}.quoteItemRow{display:grid;grid-template-columns:1fr 55px 82px 28px;gap:5px;margin-top:5px;align-items:center}.quoteItemRow input{min-width:0;width:100%;box-sizing:border-box;padding:9px 6px;border:1px solid var(--line);border-radius:6px}.quoteRemove{border:0;background:#eee;border-radius:6px;height:34px;font-weight:1000}.quoteAddLine{border:1px solid #111;background:#fff;border-radius:7px;padding:8px 10px;font-size:8px;font-weight:1000;margin-top:8px}.quoteBuilderTotal{font-size:22px;font-weight:1000;text-align:right;margin:12px 0}.quoteLines{margin:10px 0;border-top:1px solid var(--line)}.quoteLine{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:9px}.quoteActions{display:flex;gap:7px;margin-top:12px}.quoteApprove,.quoteChanges{flex:1;border:0;border-radius:7px;padding:10px;font-size:8px;font-weight:1000}.quoteApprove{background:var(--teal);color:#fff}.quoteChanges{background:#111;color:#fff}.quoteResponse{margin-top:10px;padding:10px;border-radius:8px;background:#f3f3f4;font-size:9px}.customerLockerSection{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}.customerLockerSection h2{margin:3px 0 10px}.customerLockerTile{width:100%;display:grid;grid-template-columns:48px 1fr auto;gap:11px;align-items:center;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px;margin-top:8px;color:#111}.customerLockerTile img{width:48px;height:48px;object-fit:contain}.customerLockerTile strong{display:block;font-size:11px}.customerLockerTile small{display:block;font-size:8px;color:#777;margin-top:3px}.customerLockerTile .arrow{font-size:24px;font-weight:500}.quoteDesignPreview{margin:10px 0 12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f6f6f7}.quoteDesignPreview img{display:block;width:100%;max-height:280px;object-fit:contain;background:#f4f4f5}.quoteDesignPreviewInfo{padding:9px 11px}.quoteDesignPreviewInfo strong{display:block;font-size:10px}.quoteDesignPreviewInfo small{font-size:8px;color:#777}.lockerInbox{margin:12px 0 18px;border:1px solid var(--line);border-radius:11px;background:#fff;overflow:hidden}.lockerInboxHead{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--line);cursor:pointer}.lockerInboxIcon{width:34px;height:34px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:16px}.lockerInboxHead strong{display:block;font-size:10px}.lockerInboxHead small{font-size:8px;color:#777}.lockerInboxCount{margin-left:auto;min-width:23px;height:23px;border-radius:999px;background:var(--orange);color:#fff;display:grid;place-items:center;font-size:9px;font-weight:1000}.lockerInboxItems{display:none}.lockerInbox.open .lockerInboxItems{display:block}.lockerInboxItem{width:100%;border:0;border-bottom:1px solid var(--line);background:#fff;padding:11px 12px;text-align:left;display:grid;grid-template-columns:8px 1fr auto;gap:9px;align-items:center}.lockerInboxItem:last-child{border-bottom:0}.lockerInboxDot{width:8px;height:8px;border-radius:50%;background:var(--orange)}.lockerInboxItem strong{display:block;font-size:9px}.lockerInboxItem small{font-size:8px;color:#777}.lockerInboxItem .arrow{font-size:18px}.lockerInboxEmpty{padding:12px;font-size:9px;color:#777}.adminTeamMailbox{margin-bottom:10px}.adminLockerNeedsAttention{border:2px solid var(--orange)!important;background:#fff7f1!important;box-shadow:0 0 0 3px rgba(190,89,39,.08)}.adminLockerNeedsAttention strong{color:#111}.adminLockerNeedsAttention small{color:var(--orange)!important;font-weight:900;letter-spacing:.04em}.teamMailboxItems{border:1px solid #ead7cb;border-top:0;border-radius:0 0 10px 10px;overflow:hidden;margin:-7px 8px 0;background:#fff;padding-top:7px}.adminLockerNeedsAttention+.teamMailboxItems .lockerInboxItem{background:#fff}.adminStandaloneMailbox{margin:10px 0 12px;background:#fff;border:1px solid var(--line);border-radius:11px}.adminStandaloneMailbox .lockerInboxHead{background:#fff;border-radius:11px 11px 0 0}.quoteAudit{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.quoteAudit h4{margin:0 0 8px;font-size:9px;letter-spacing:.12em}.quoteAuditItem{padding:8px 0;border-bottom:1px solid #eee;font-size:8px}.quoteAuditItem strong{display:block;font-size:9px}.quoteAdminActions{display:flex;gap:7px;margin-top:10px}.quoteAdminActions button{flex:1;border:1px solid #ddd;background:#fff;border-radius:8px;padding:10px;font-size:8px;font-weight:900}.quoteAdminActions .edit{background:var(--purple);color:#fff;border-color:var(--purple)}.quoteAdminActions .quoteApprove{background:var(--teal);color:#fff;border-color:var(--teal)}
+.accountProjectTimeline{margin-top:10px;background:#fff;border:1px solid #e4e5e8;border-radius:10px;overflow:hidden}
+.accountTimelineHead{display:flex;align-items:center;gap:10px;padding:13px 14px;border-bottom:1px solid #ececef}
+.accountTimelineIcon{width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
+.accountTimelineHead span:nth-child(2){display:flex;flex-direction:column;flex:1}
+.accountTimelineHead strong{font-size:10px;letter-spacing:.08em}
+.accountTimelineHead small{font-size:8px;color:#777;margin-top:2px}
+.accountTimelineBody{padding:10px 14px 13px}
+.accountTimelineRow{position:relative;display:grid;grid-template-columns:18px 1fr;gap:9px;padding:6px 0}
+.accountTimelineRow:not(:last-child):after{content:"";position:absolute;left:6px;top:22px;bottom:-6px;width:1px;background:#d9dadd}
+.accountTimelineDot{width:13px;height:13px;border-radius:50%;border:2px solid #c5c7cb;background:#fff;margin-top:1px;z-index:1}
+.accountTimelineRow.done .accountTimelineDot{background:var(--teal);border-color:var(--teal)}
+.accountTimelineRow.current .accountTimelineDot{background:var(--purple);border-color:var(--purple);box-shadow:0 0 0 3px rgba(104,54,149,.12)}
+.accountTimelineText strong{display:block;font-size:9px;letter-spacing:.035em}
+.accountTimelineText small{display:block;font-size:8px;color:#777;margin-top:2px}
+.accountTimelineCurrent{font-size:8px;font-weight:900;color:var(--purple);letter-spacing:.08em;margin-bottom:5px}
+.accountTimelineBtn{width:100%;margin-top:8px;border:0;border-radius:5px;background:#111;color:#fff;padding:10px;font-size:8px;font-weight:900;letter-spacing:.08em}
+
+.lockerTimelineDrop{margin-top:8px;background:#fff;border:1px solid #e4e5e8;border-radius:10px;overflow:hidden}.lockerTimelineDropHead{width:100%;border:0;background:#fff;display:flex;align-items:center;gap:10px;padding:12px 13px;text-align:left}.lockerTimelineDropHead .ico{width:28px;height:28px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:900}.lockerTimelineDropHead .copy{display:flex;flex:1;flex-direction:column}.lockerTimelineDropHead strong{font-size:9px;letter-spacing:.06em}.lockerTimelineDropHead small{font-size:8px;color:#777;margin-top:2px}.lockerTimelineDropHead .chev{font-size:15px;transition:.2s}.lockerTimelineDrop.open .lockerTimelineDropHead .chev{transform:rotate(180deg)}.lockerTimelineDropBody{display:none;border-top:1px solid #eee;padding:8px 13px 12px}.lockerTimelineDrop.open .lockerTimelineDropBody{display:block}
+
+
+/* Larger, higher-visibility bottom navigation */
+.bottomNav{
+  min-height:76px !important;
+  padding:8px 5px calc(8px + env(safe-area-inset-bottom)) !important;
+  background:#fff !important;
+  border-top:1px solid #d9dadd !important;
+  box-shadow:0 -8px 24px rgba(0,0,0,.10) !important;
+}
+.bottomNav button{
+  min-height:58px !important;
+  padding:4px 2px !important;
+  gap:4px !important;
+  font-size:10px !important;
+  font-weight:1000 !important;
+  letter-spacing:.2px !important;
+  color:#34363a !important;
+}
+.bottomNav button svg{
+  width:27px !important;
+  height:27px !important;
+  stroke-width:2.3 !important;
+}
+.bottomNav button.active{
+  color:var(--purple) !important;
+}
+.bottomNav button.active svg{
+  transform:scale(1.10);
+}
+
+
+/* Visual-first GOAT Sports homepage */
+.homeVisualGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:15px 16px 5px}
+.visualTile{position:relative;min-height:190px;border:0;border-radius:14px;overflow:hidden;text-align:left;padding:0;background:#111;box-shadow:0 10px 25px rgba(0,0,0,.14)}
+.visualTile .visualBg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02)}
+.visualTile:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.04) 22%,rgba(0,0,0,.82) 100%)}
+.visualTile .visualCopy{position:absolute;z-index:2;left:14px;right:12px;bottom:14px;color:#fff}
+.visualTile .visualCopy small{display:block;font-size:7px;letter-spacing:1.35px;font-weight:1000;opacity:.86;margin-bottom:5px}
+.visualTile .visualCopy strong{display:block;font-size:23px;line-height:.9;letter-spacing:-.8px}
+.visualTile .visualCopy span{display:block;font-size:8px;line-height:1.35;margin-top:7px;opacity:.84}
+.visualTile.merch .visualBg{background:
+ radial-gradient(circle at 70% 25%,rgba(16,148,136,.75),transparent 28%),
+ linear-gradient(145deg,#121316 0%,#292b30 48%,#08090a 100%)}
+.visualTile.fanhq .visualBg{background:
+ radial-gradient(circle at 76% 18%,rgba(190,89,39,.55),transparent 25%),
+ linear-gradient(145deg,#683695 0%,#2c153f 60%,#100817 100%)}
+.visualTile.nil .visualBg{background:
+ linear-gradient(125deg,rgba(16,148,136,.35),transparent 45%),
+ linear-gradient(145deg,#0b0c0d,#272a2c)}
+.visualTile.custom .visualBg{background:
+ radial-gradient(circle at 78% 22%,rgba(104,54,149,.8),transparent 28%),
+ linear-gradient(145deg,#151518,#050506)}
+.visualTile .visualMark{position:absolute;z-index:1;right:10px;top:8px;font-size:64px;line-height:1;font-weight:1000;color:rgba(255,255,255,.10);letter-spacing:-5px}
+.programFeature{margin:15px 16px 4px;border:0;border-radius:15px;overflow:hidden;position:relative;min-height:180px;width:calc(100% - 32px);padding:20px;text-align:left;color:#fff;background:linear-gradient(125deg,#683695 0%,#3c2054 45%,#109488 140%);box-shadow:0 12px 28px rgba(0,0,0,.16)}
+.programFeature:before{content:"GOAT";position:absolute;right:-8px;top:-15px;font-size:96px;font-weight:1000;color:rgba(255,255,255,.06);letter-spacing:-8px}
+.programFeature>*{position:relative;z-index:1}.programFeature small{font-size:8px;font-weight:1000;letter-spacing:1.6px;color:#e9ddf3}.programFeature strong{display:block;font-size:30px;line-height:.9;letter-spacing:-1px;margin:10px 0}.programFeature span{display:block;max-width:310px;font-size:9px;line-height:1.45;color:#eee}.programFeature em{display:inline-block;font-style:normal;margin-top:14px;font-size:9px;font-weight:1000;background:#fff;color:#683695;border-radius:5px;padding:9px 11px}
+.homeProof{display:flex;gap:7px;overflow:auto;padding:12px 16px 20px;scrollbar-width:none}.homeProof::-webkit-scrollbar{display:none}.homeProof div{min-width:112px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px}.homeProof b{display:block;font-size:9px;color:var(--purple);margin-bottom:5px}.homeProof span{font-size:8px;line-height:1.35;color:#666}
+
+
+/* Visibility pass: larger homepage labels, workflow, Why GOAT and bottom navigation */
+.homeBand{padding:17px 12px !important;gap:10px !important}
+.homeBand b{font-size:22px !important;line-height:1 !important}
+.homeBand span{font-size:9px !important;line-height:1.25 !important;margin-top:6px !important;letter-spacing:.15px !important}
+
+.homeSectionTitle{padding-top:27px !important;padding-bottom:13px !important}
+.homeSectionTitle h3{font-size:24px !important;line-height:1 !important}
+.homeSectionTitle button{font-size:10px !important}
+
+.homeProof{gap:9px !important;padding-bottom:24px !important}
+.homeProof div{min-width:132px !important;padding:15px 13px !important;border-radius:11px !important}
+.homeProof b{font-size:10px !important;line-height:1.15 !important;margin-bottom:9px !important}
+.homeProof span{font-size:9.5px !important;line-height:1.55 !important}
+
+.bottomNav{min-height:88px !important;padding-top:9px !important}
+.bottomNav button{min-height:68px !important;font-size:11px !important;gap:6px !important}
+.bottomNav button svg{width:31px !important;height:31px !important;stroke-width:2.4 !important}
+.bottomNav button.active svg{transform:scale(1.12) !important}
+
+
+/* Mobile navigation readability pass */
+.bottomNav{
+  min-height:102px !important;
+  padding:10px 7px calc(10px + env(safe-area-inset-bottom)) !important;
+}
+.bottomNav button{
+  min-height:80px !important;
+  padding:5px 2px !important;
+  gap:7px !important;
+  font-size:13px !important;
+  line-height:1 !important;
+  font-weight:1000 !important;
+  letter-spacing:0 !important;
+}
+.bottomNav button svg{
+  width:36px !important;
+  height:36px !important;
+  stroke-width:2.45 !important;
+}
+.bottomNav button.active svg{
+  transform:scale(1.08) !important;
+}
+
+
+/* Team Programs sales / onboarding page */
+.tpHero{padding:25px 18px 22px;background:linear-gradient(135deg,#321648 0%,#683695 47%,#0d6e67 120%);color:#fff;position:relative;overflow:hidden}
+.tpHero:after{content:"GOAT";position:absolute;right:-14px;top:-22px;font-size:105px;font-weight:1000;letter-spacing:-9px;color:rgba(255,255,255,.055)}
+.tpHero>*{position:relative;z-index:1}.tpHero .eyebrow{color:#d8c7e8}.tpHero h1{font-size:38px;line-height:.9;letter-spacing:-1.8px;margin:9px 0 12px}.tpHero p{font-size:12px;line-height:1.5;color:#eee;max-width:390px;margin:0}
+.tpWrap{padding:18px 16px 28px}.tpIntro h2{font-size:25px;line-height:1;margin:0 0 8px}.tpIntro p{font-size:11px;line-height:1.55;color:#666;margin:0 0 17px}
+.tpCards{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tpCard{min-height:180px;border:1px solid var(--line);border-radius:13px;padding:16px;background:#fff;position:relative;overflow:hidden}.tpCard .num{font-size:26px;font-weight:1000;color:var(--purple)}.tpCard h3{font-size:16px;line-height:1;margin:18px 0 8px}.tpCard p{font-size:10px;line-height:1.5;color:#686b70;margin:0}.tpCard.teal .num{color:var(--teal)}.tpCard.orange .num{color:var(--orange)}
+.tpFlow{margin-top:18px;border-radius:13px;background:#f2f3f4;border:1px solid var(--line);padding:17px}.tpFlow small{font-size:8px;font-weight:1000;letter-spacing:1.2px;color:var(--purple)}.tpFlow h3{font-size:21px;margin:6px 0 13px}.tpSteps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.tpSteps div{text-align:center}.tpSteps b{display:block;font-size:18px;color:var(--teal)}.tpSteps span{display:block;font-size:8px;font-weight:900;line-height:1.25;margin-top:5px;color:#555}
+.tpRevenue{margin-top:18px;border-radius:13px;padding:19px;background:#111;color:#fff}.tpRevenue small{font-size:8px;color:#bfa6d6;font-weight:1000;letter-spacing:1.2px}.tpRevenue h3{font-size:24px;line-height:1;margin:7px 0}.tpRevenue p{font-size:10px;line-height:1.55;color:#d4d4d4;margin:0}
+.tpForm{margin-top:18px;border:1px solid var(--line);border-radius:13px;padding:17px;background:#fff}.tpForm h3{font-size:23px;margin:0 0 5px}.tpForm>p{font-size:10px;line-height:1.45;color:#666;margin:0 0 15px}.tpField{margin-bottom:10px}.tpField label{display:block;font-size:8px;font-weight:1000;color:#555;margin:0 0 5px}.tpField input,.tpField select,.tpField textarea{width:100%;box-sizing:border-box;border:1px solid #d9dadd;border-radius:8px;padding:12px;font:inherit;font-size:11px;background:#fff;color:#111}.tpField textarea{min-height:86px;resize:vertical}.tpChecks{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 13px}.tpChecks label{border:1px solid var(--line);border-radius:8px;padding:10px;font-size:9px;font-weight:900;display:flex;gap:7px;align-items:center}.tpSubmit{width:100%;border:0;border-radius:8px;padding:14px;background:var(--purple);color:#fff;font-size:11px;font-weight:1000}.tpExisting{margin-top:10px;width:100%;border:1px solid var(--purple);border-radius:8px;padding:12px;background:#fff;color:var(--purple);font-size:10px;font-weight:1000}
+
+/* Standalone Locker: full-width desktop workspace while retaining the mobile app styling */
+@media(min-width:850px){.app{max-width:1180px;margin:0 auto;border-radius:0;min-height:100vh}.nav{max-width:1180px;bottom:0;border-radius:0}.privateLockerHero{padding:42px 48px}.lockerTools{padding:28px 48px}.portalQuickGrid{grid-template-columns:repeat(4,minmax(0,1fr))}.portalNav{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="header">
+<button class="iconbtn" aria-label="Notifications" onclick="notice()"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="badge">2</span></button>
+<div class="brand"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApwAAABLCAIAAABSjcBMAAAACXBIWXMAABuuAAAbrgGMXXP4AAASl0lEQVR42u2df1RTZ5rHU9AiadMskj0WN6gzGkbxJx0L8Qe4DjA4USui9QcKrTNVc8pZZrRD8TDaodrlkKU6e9iDJ6IzdhT8wbaiI03LAmUV6wBjixXrcby6Y5WJcjaYw8lITClh/sgMQ/Pjzc3Ne3Nvku/nL0muN/e+773v93ne93mf56nh4WEJAAAAAIKfCDQBAAAAAFEHAAAAAERdaOxDdvQ9AAAAiHooUF3yCdP1MCRvzWK2nii/hCcbAAAg6mFEWX59u4EJPUXfk1PXVNuNJxsAACDq4cWh4uZQ8tcdit5vGsBjDQAAEPUw9dctZisUHQAAAEQ9FKh47XwIxM1VvHYeig4AABD1cOf+rb7WuhtBfQs9TN/9W33oSgAAgKgDyfnqz4L6+huOdI3+Mz4hFn0KAAAQ9TCl3zQQvBFzFrO149th/BOnjUefAgAARD1ceC5mnNMnLaeuB+m9fHL6SzzHAAAAwlfUvztngtMnHQamhwm+Zekepu9s1R+8miwAAAAg6iGLUuVmgrp6V0twhcHbrIPvbmtgY7IAAACAqIcs/6x8zvXD+7f69ms/DJZt6/Yhe2Xhx263sbk1WQAAAEDUQ5Oo6LGZm2a7fn6jvWdPTt21tnsiv36T0VK67v0b7T2uX8UnxCpViH4HAACIejjxw/y5bj/vNw386vUP9cXNNuugOB30lpPXi7JqPG1M1/wkCY81AACEJ08NDw+H7c2f019xjTIbQa6Q/njv0jmpk0TloFf+20eEPDOJamXR4ZV0bYhHvY/p3kVU9BhZTHSAL8CnH+UVm3UwKnqsIL0wfsIzEZHYxQoARD1EsQ/Z92s/dDuJPUKKRrWldImvozAfl3qq4jK5/JpcIdUZcmldqn3I3tl451TFp3Szz8YnxBYdeYmNvlK/gOyC5GWvzBW2K8/pr0yYJFdrVD4ZAZWFH5GfUpZUNOYpJspE8vYxXQ/6HvyF7jlnLlByM91s1sGu1rvcfjRp6RQOD5XJaLl9lUJujNi4Z1VJcQJ2h58XYB+yX798f8DytZ/XP23e82yebX862hNS2dNzUidD1INJ1wV32XuYvne3NZC1LT4htujISlrOaA/T9+42+snkUzSqbWXpbJxFi9la8drv+Mh9u12X6ZOmUnzSqktaOgyMTxdAtyNEIupM14Pj71yk3rk7Di7nNraajJZ3Nn3gTyP7ZC/arIMf//aLs1WdFA3lvN1pnJXVPmQ/f/hzf66H8wVYzFb9m01UDFavrxX1ZneQqFYWVv5IcK8Pou7GfyLMwwvosrNx0P8ulj+gOLOqL27qoF1s3icxO1F+qan2Gk+tqu/cGuB+HD14sW+HdgNzqLiJ4mWIQdT5eLTkCunu2jXcbo1WI8sV0n1n1nu1qnuYvj05p/lo2BSNSqvL5DBFQWseKLsgeZV2vlCeA/m1MhktRVnHqbd5dkHyyq0viG1JCwtsEolEsko7f9+ZdXKFlHBMh4HRJh9ppz0ekR/6nRnHvU657zi4XKvLoPhg2ayDdIddx3jHXtFt1kH+FF0ikfzxijHAir4n57RP46Z9yH6i/BJdRRcD1B8th6ukM2zioOh0G7nfNMAmt2PDkc95atsOA+Prdtwepq9YU0tF0SUSydmqTvbBxS0nu/fknA5YYcn/OfYF9XOWHFu9SjtfhEEqEPW/oVTFHmjOc7vPbTSHipsrtp7ney+7Y7jxWh89RaPSGXKprwtYzE+oj7k+7bKjewGu/OnL/w/Yc8V0PShMO+rT4GUxW0vX/TevZo1QUF/OzC5ILjr8Eod5F4vZul/bQLeRW09fD7xNM5ovf++DPLcbGOqyysZctg/Z9cVNNWVtgXzw6Ha0XCGtvLiFSigDH4yBnP/DwImMyN21OG3NDPIC9o32nsK097brMnhamr3Wdu83b7WSXzZel/nNvdTCl8Q5PfXgT+bA/FDLyW5fBy+m60HVzsaAeTABpvdeP11XidvAylMjez0h39bq1Qt32QxKI+Ed1C/Aa7wbf7Ey5B+leDb2gUEQdXG57K11N8jD8aHi5rb6m9r/yKC4Uco+ZK8u+cTry8b36j6tmGTOgUtUooKFhVvwEQcjILigZU6x30MR4EY2GS3i2V8QeFklWxVM14Oy/PrA37LN+g2tU20uSU3fOFvkbxlE3b3Lnr5x1twlk8mbwm+099SWf6rVZdD63c7GO2RFlyukP69eEeCEcYJHV1GJV98y+2AgFX2/toHDUmX6xtlshgynqB+h4vmFwh9XiY8wvSCyVnna1RIOBqtcIf159cqgSNYJUfeIYqKstG4t2WXvMDCbdi2i4qzbrIOHipsJB2Rumr2haCGSh4gcR1hcqM6f0+Vo9+sB/kWtLpNDiDgBf4LnA2+tKlWx/9n6Kt0mZXkBLA1WpxNyC+kPQLND1EPZZbdZv5HFUBGDJ6Jy0EFweUIAACBB9DtLl33vB+u205tm94kUjepAcx4UXfwwXQ/gowMAIOrBgVqjShFi0mZL6RJMuYufc/orggQBAQAARN0j9iE74dsVr/FYAG38hGdcP8wueNFTlLt9yC7OOnJh+Mzoi5uop58EAACIur886n38s6W/9VRPfdwzT/PYE+7c8QmT5G4P7mH6Ste9Tz2VB/AVm3Vwv7aBEFAtV0g3l6SioQAAgQGBcs446qmz3wt+++pDKju+ehhWO0dZZoMXFnK8GB8RrYLgNdDdsZ3aZv0mtHefc8ZktPh/Ep/ePiq/OBq66XQCYIPynQBH/PTe6/f/MZDFjBNVEReIunc6DMzNzj9vKFrodfPDqYrLyVlT/V/2rt7Vwk4sG0QeikW9DIk48ZpJI1GtfEO/IiIywma14IVyC5UaGz6VCOOjqkcQ0dV6NxzeTTJnqzqpLJaJoZSzWzD9TnLZ2WR67zcN7Mw4znRxTythMlreWlNHzvHEMhu8sIRqGRK3hgtZ0R05yRHhGADu3+ory69/a81pvisysCEqOqzdpOfopdcMCuNAm3y4XbhcRhB1jjgyvZN7rt80UJZfry9u9jVyzT5kP6e/UpRVQ1Z0NuXaBCeEy5A4cU5/hWy47Di43KcalOGDat7z/Ek7myJpfCMLJ1Vz5btzJojwqmQx4/g7+aHiJrEFLGP6nWXPNbfV30z4PmmKr8PAdBgY9oVemK6HXqtK/N+13qsXvuoQnzHoci+hXIZktBFGzv8aRLkkBWHSdAWvnpOw1YPiE8K932PjnhXhVUVFj5UrpPyNTpfO3hRVQnh46k7dP4bgsp+t+gMb+X9rTR05EMNmHdQXN5fl13t9zppqu8Wv6C0nu9ncS7DjmIogKHp8Quy+M+uh6ASm8uzJPep9LODdaX7yQjh3rlwhnSpKT10ikazc9n0eXRqRFaCCqH8LWUw0OcNMolqZXfAi+ST3b/UVZdW0nLzudtd7u4HRJh9hU4qNfCVyhTRp6RTBPdeKrb8Lh9Buk9GyJ+c0YZUkUa0srXs5zGdfvQ83kRE7Di6XK6Shd2spGpXg76Owiv7jvUtFG0SyOHt6StgUPcL0uzObdi0y3n7kafhOXT1drVEteul75AJuEomkpqztfPVno3O2m4yWo7/8X6/Fu0ZqpZuMFk/a78gGL3jg5Z1rvamrZ6SunsFiAiOIo+e8BrpnFyRjEZ0lc1InH2jO51CXlg209pf6Kudrf6oWecVVXtlckrp03Uwxh4VGRY/V6jLTN8w6/s5F6mVnb3b+GaIudmd97wfr2g0MoWaao4BbZ+Mdcl21ftPAnpy6FI1q3pLJvff62czesynFJp5ybaqkOBW7JHvBK+rn9FfI8sO5bHw4++urtPOXvTLX/z3TxjuPfvX6h9z+b6JaueXtpf7fTvDKeaJaSfYxtusyp3mLbRTzjm3X8WrvB+up5CoYvTdSbCuPEHX3qDWqmQuU+jebPT30EZERjmNqyz8lz6U7Aui8/mJ8Qmzhf/2IPECgXFsg+Xuen2vE7kBYHHfnSVgxkI2PDmf3WiKRbHl7qbn3L4RZqEPFTSXHVrPMARAshHynY02d5LIXHV7pVJztcb/N6RitLsP/ZcLNJamldWudnrbb346/2FySinJtAcOR/5Wg6AiLAyGAKimuojGPMHyV5de3nOxGQ0HUQ8plr7z4aqJa6fjzfPVnrrsS56RO0hlyMzdx2dWQqFZWXnw1feMsp+l0m3XwVMXlEf2oaNzsegzgCYvZWqypJcxMIiwOhJLnuu/M+pEhzpWasrZz+ivkYlcAoh6sLnu/aeDfN9e7rspERY/N3bV435l17F12uUK64+DyosMrXbXBYrZWFn7sWKrJ3DTb1YkH/OG1LDqyxYHQG+Le0K/I3DTH0wFnqzr3axug6xD1UHPZHcklCDvWlKrYA815bKpypWhUOkPunNRJrl+1G5jCtPdG3MQ1P02BfgSSllPXCYqObHEgNJUgMiJ312LC2HWjvWdnxjEx5OIFZBAo5wN5u9NGgkpqytouvH/DNbQtIjIifeOsuUsme9q9Rgh2s5itTqF5hHrqAePoL1tl44WcZzb8+vOrF+4K3vs+hcW1nOweSUlheYRxEAQH6RtnT5qu8BQ6128a2JNzGsGhEPXQIWbCM6P/dLjsbjeYKSbKtrz9r0VZNa4n2V2b43Yu3e0mOk/11AOJ14311HFKNnn/Vh/1raW+4iiiyn4Rnbn6UPypAMWDxWytLb/E5T8Gs8EkEmvVCVVSXOXFLZ5WoBy6HjIh8aONb4g6+BtNtd2djXdcnW/FRFl2wYtOe9MT1UpXRTcZLV5T2QSSabxV3WBtPIkrg/RIEVU87Xxwre0rznvNyeag2HB6s8RgrbpFFhN9oDmfUOagLL8+2BMu2ayDlYUfUfFYCDGGgoBxigKOJDMtJ6979bNd57GZrodeq7SFG3zXr5y3ZAr7g7MLkqHoPOGoUkhL0UVoDgYvEZERb+hXZBckezrgbFXnifJLQRo6ZzJayNtbfLOBxotrFwyGKmpiU1PWxqH0atXORsIBUllU4G9TMVEmbHZuWUw0rwWvlKrxLI/crstcpZ0PRefJVdqvbaCbLFbk5cx5rQHqq7XKRtdXaedv12V6OqCp9lowhsS3G5iirOMU08CJrYo8RivfxIZcFaCr9a5PJ3zU+5jwbMkV0lkLhZnY4bWoERv4K3gVnxDLJsxHrpCWHFutDpsiEAGmh+mj6Co5SFQrRZ45ICp6LK9TtTMX0D+5WqMqObbak5UfXCHx9iH7ifJL1FNWp62ZIarbhKj7xrayH3BLMuMrKRrVvjPrhPIR0zfO3q7LFNBfdwwl1P317ILkX9TksFH0fWfWh1h2TFG5SuRMANzIyp8r/nvf+OYi/kYMnmwaVVLcvjPrPb2MjtC5HkbsC4gWs5WcI5KzKSm2vQAIlPPRCIqMyN21+If5c91GtlNhpEqbsHeq1qiSs6Z2Nt6hHqCrYheIp0qKK617mdYFxH0nZtkrc9nsD5y3ZMq2snQ/zSnCPfofzBUVPWb0jJHIo8OcXCVyOn3OehYsddKUqtjKi1tqyy9R3BwRnxCbtzuNVxtUFhNdWveyp9A58YfEM10PqnY20rUj5QrphqJFyVlTxXazTw0PD0OqOXBOf8W16tp2XcboCVvXXWopGpV2VDJ5k9Hiahw4nQSAkKGH6ethHtE957R5z7OX8/ZRUhob96yAImQyWm7T2EwllT09a2E8SxvU6UeTlk7xNQ3GtbavBixfe/p25gIKKyDU+8g+ZO9svEO3+3xqdnjqwcHKrS+0nv6Sj6J7UHQQqihVscLOVYrn5VJMlAV+asH/Hw1AlWHqfeSoqBk+bxnW1Lk/KNOT/wXtAAAAAKIOAAAAAIg6AAAAACDqdDHe9hLyM3OB0mlXWNx3/gntBgAAgCcQKMcdr7ldZTHROkOuxfzE8WdU9BiRJ8cAAAAAUQdusFkHLeYnUdFjRsJNbdZBk9ESFLtpAQAAQNTBPxS9WHOi3zQgV0gPNOc5tjM6PpFIJBWNmyHtAAAAqIM1dV74+sk3Dv3uNw086n3skHk+NrUDAAAAEHV+GV1n7IsLX1nM1qOlF0Z9Ow5NBAAAAKIuIsj1TpasTXT8o6asrTDtvZFUz9kFL/qamhEAAACAqPPLhqKFhG/nLnGfT3HZK6RaUrzWEQcAAABRB+5JzppKcNYVE2XbdRlOB2wuSSW46XKFdFt5OhoWAAAANxD97odBFBlxoDnvVMXlptputweMVC81/Lpr7c/UsxYqCVV9EtXKwsplmJkHAAAAURdM13N3LU5bM+PdbQ1ug9sdBYK81ghCuVUAAAAUVAlN4D9KVazOkJvCSZUT1crKi69C0QEAAPjPU8PDw2gFAAAAAJ46AAAAACDqAAAAAKDKXwG71cCg9zagRgAAAABJRU5ErkJggg==" alt="GOAT Sports"></div>
+
+<button class="iconbtn cartBtn" aria-label="Shopping cart" onclick="openCart()" style="right:14px;left:auto"><svg viewBox="0 0 24 24"><path d="M3 4h2l2 11h10l3-8H6"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg><span id="cartCount" class="cartCount">0</span></button>
+</header>
+
+<section id="home" class="screen">
+<div class="hero">
+  <img src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/GOAT_App_-_Hero.png?v=1791367112" alt="GOAT Sports">
+</div>
+
+<div class="homeIntro">
+  <div class="kicker">GOAT SPORTS • BUILT FOR TEAMS</div>
+  <h2>GEAR. STORES.<br>OPPORTUNITY.</h2>
+  <p>Everything GOAT Sports in one place — merchandise, team stores, NIL athletes, custom gear and organization programs.</p>
+</div>
+
+<div class="homeVisualGrid">
+  <button class="visualTile merch" onclick="go('shop')"><span class="visualBg"></span><span class="visualMark">G</span><span class="visualCopy"><small>SHOP THE BRAND</small><strong>GOAT<br>MERCH</strong><span>Apparel, gear and GOAT Sports products →</span></span></button>
+  <button class="visualTile fanhq" onclick="go('fanhq')"><span class="visualBg"></span><span class="visualMark">F</span><span class="visualCopy"><small>OFFICIAL TEAM STORES</small><strong>FAN<br>HQ</strong><span>Find your team. Rep your team →</span></span></button>
+  <button class="visualTile nil" onclick="openNILAthletes()"><span class="visualBg"></span><span class="visualMark">N</span><span class="visualCopy"><small>ATHLETE OPPORTUNITIES</small><strong>NIL<br>ATHLETES</strong><span>Build your brand with GOAT Sports →</span></span></button>
+  <button class="visualTile custom" onclick="openLocker()"><span class="visualBg"></span><span class="visualMark">C</span><span class="visualCopy"><small>UNIFORMS + APPAREL</small><strong>CUSTOM<br>GEAR</strong><span>Start and manage custom team projects →</span></span></button>
+</div>
+
+<button class="programFeature" onclick="openTeamPrograms()">
+  <small>TEAM & ORGANIZATION PROGRAMS</small>
+  <strong>YOUR TEAM.<br>YOUR LOOK.<br>YOUR LOCKER.</strong>
+  <span>Discover team stores, private GOAT Lockers, custom gear and fundraising opportunities built around your organization.</span>
+  <em>EXPLORE TEAM PROGRAMS →</em>
+</button>
+
+<div class="homeBand">
+  <div><b>01</b><span>DESIGN & APPROVE</span></div>
+  <div><b>02</b><span>QUOTE & ORDER</span></div>
+  <div><b>03</b><span>TRACK & REORDER</span></div>
+</div>
+
+<div class="homeSectionTitle"><h3>WHY GOAT?</h3><button onclick="openTeamPrograms()">LEARN MORE →</button></div>
+<div class="homeProof">
+  <div><b>ONE PLATFORM</b><span>Keep team projects and customer tools together.</span></div>
+  <div><b>PRIVATE LOCKER</b><span>Quotes, designs, invoices and order progress.</span></div>
+  <div><b>TEAM STORES</b><span>Give supporters a dedicated place to shop.</span></div>
+  <div><b>FUNDRAISING</b><span>Create revenue opportunities around your program.</span></div>
+</div>
+</section>
+
+<section id="shop" class="screen">
+<div class="shopLiveHero"><div class="eyebrow">GOAT SPORTS STORE</div><h1>SHOP<br>GOAT SPORTS</h1><p>Live products from the GOAT Sports Shopify store.</p></div>
+<div class="section shopLiveBody">
+ <div class="shopControls"><button class="chip active" data-collection="" onclick="loadShopCollection('',this)">ALL</button><div id="shopCollectionChips"></div></div>
+ <div id="shopStatus" class="shopStatus">Loading GOAT Sports products…</div>
+ <div id="shopProducts" class="liveProductGrid"></div>
+</div>
+</section>
+<section id="fanhq" class="screen">
+  <div class="fanHero">
+    <div class="eyebrow">OFFICIAL GOAT SPORTS TEAM STORES</div>
+    <h1>GOAT FANHQ</h1>
+    <p>Find your team. Rep your team. Shop official team stores powered by GOAT Sports.</p>
+    <input id="teamSearch" class="teamSearch" type="search" placeholder="Search team, city, state or sport" oninput="filterFanTeams()">
+  </div>
+
+  <div class="section">
+    <div class="sectionHead"><h2>TEAM STORES</h2></div>
+    <div id="fanTeamStatus" class="shopStatus">Loading GOAT Sports teams…</div>
+    <div id="fanTeamGrid" class="fanTeamGrid"></div>
+
+    <div class="lockerEntry">
+      <div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div>
+      <h2>YOUR TEAM HAS A LOCKER.</h2>
+      <p>Existing GOAT Sports custom clients can access designs, approvals, rosters, quotes and reorders.</p>
+      <button class="primaryBtn" onclick="openLocker()">ENTER GOAT LOCKER →</button>
+    </div>
+  </div>
+</section>
+
+<section id="teamstore" class="screen teamStoreScreen">
+  <div id="teamStoreContent"></div>
+</section>
+
+<section id="locker" class="screen privateLocker active">
+ <div class="privateLockerHero"><button class="backMini" onclick="go('account')">‹ ACCOUNT</button><div class="eyebrow">YOUR TEAM & ORGANIZATION PORTAL</div><h1>GOAT<br>LOCKER</h1><p id="lockerIdentity">Quotes, invoices, orders, designs and approvals — all in one place.</p></div>
+ <div class="section lockerTools"><div id="lockerAssignedTeams"></div><div id="lockerInbox"></div><div id="lockerTimelineDropdown"></div>
+ <div id="adminLockerDirectory" class="adminLockerDirectory"></div>
+ <div id="lockerSubView" class="lockerSubView"></div>
+ <div id="lockerHubTools" class="lockerHub">
+   <div class="portalWelcome">
+     <div class="eyebrow">GOAT LOCKER DASHBOARD</div>
+     <h2>YOUR ORGANIZATION</h2>
+     <p>Manage the business side of your GOAT Sports relationship from one private workspace.</p>
+   </div>
+
+   <div class="portalQuickGrid">
+     <button class="portalQuickCard attention" type="button" onclick="renderLockerQuotes();document.getElementById('lockerHubTools').style.display='none'">
+       <b>Q</b><span><strong>QUOTES</strong><small>Review pricing, approve quotes or request changes.</small></span>
+     </button>
+     <button class="portalQuickCard" type="button" onclick="renderLockerInvoices()">
+       <b>$</b><span><strong>INVOICES</strong><small>View invoices, payment links and receipts.</small></span>
+     </button>
+     <button class="portalQuickCard" type="button" onclick="go('orders')">
+       <b>O</b><span><strong>ORDERS</strong><small>View your Shopify order history and order activity.</small></span>
+     </button>
+     <button class="portalQuickCard attention" type="button" onclick="openLockerSection('approvals')">
+       <b>D</b><span><strong>DESIGNS & PROOFS</strong><small>Review artwork, approve designs or request revisions.</small></span>
+     </button>
+   </div>
+
+   <div class="portalActivityHead"><h3>RECENT ACTIVITY</h3><small>ITEMS REQUIRING ATTENTION APPEAR ABOVE</small></div>
+   <div class="portalNav">
+     <button type="button" onclick="showLockerHub()">DASHBOARD</button>
+     <button type="button" onclick="openLockerSection('designs')">DESIGNS</button>
+     <button type="button" onclick="renderLockerTimeline()">TIMELINE</button>
+     <button type="button" onclick="go('orders')">ORDERS</button>
+     <button type="button" onclick="renderLockerInvoices()">INVOICES</button>
+     <button type="button" onclick="go('account')">ACCOUNT</button>
+   </div>
+   <div class="portalFooterNote"><strong>GOAT LOCKER</strong><br>Your team and organization portal for custom projects, approvals, quotes, invoices and order progress.</div>
+ </div></div>
+</section>
+
+<section id="orders" class="screen plain">
+<div class="eyebrow" style="color:var(--teal)">SHOPIFY CUSTOMER ACCOUNT</div><h1>MY ORDERS</h1>
+<div id="ordersContent"><p>Sign in to view your Shopify order history.</p><button class="cta" onclick="customerLogin()">SIGN IN TO VIEW ORDERS</button></div>
+</section>
+
+<section id="teamPrograms" class="screen">
+  <div class="tpHero">
+    <button class="backMini" onclick="go('home')">‹ HOME</button>
+    <div class="eyebrow">GOAT SPORTS TEAM & ORGANIZATION PROGRAMS</div>
+    <h1>YOUR TEAM.<br>YOUR LOOK.<br>YOUR LOCKER.</h1>
+    <p>Build a GOAT Sports program around your organization — from custom uniforms and apparel to a private customer portal, team store and fundraising opportunities.</p>
+  </div>
+
+  <div class="tpWrap">
+    <div class="tpIntro">
+      <h2>BUILD THE PROGRAM THAT FITS YOUR TEAM.</h2>
+      <p>You don't have to use every GOAT Sports service. Start with what your organization needs and build from there.</p>
+    </div>
+
+    <div class="tpCards">
+      <div class="tpCard"><div class="num">01</div><h3>CUSTOM GEAR</h3><p>Uniforms, apparel and custom team projects built around your organization's look.</p></div>
+      <div class="tpCard teal"><div class="num">02</div><h3>TEAM STORE</h3><p>A branded shopping destination where athletes, families and supporters can shop your organization.</p></div>
+      <div class="tpCard"><div class="num">03</div><h3>GOAT LOCKER</h3><p>Your private portal for designs, proofs, quotes, invoices, approvals and order progress.</p></div>
+      <div class="tpCard orange"><div class="num">04</div><h3>FUNDRAISING</h3><p>Create store-based fundraising and revenue opportunities that can give back to your organization.</p></div>
+    </div>
+
+    <div class="tpFlow">
+      <small>HOW IT WORKS</small><h3>FROM FIRST CONVERSATION TO YOUR GOAT PROGRAM.</h3>
+      <div class="tpSteps">
+        <div><b>01</b><span>TELL US WHAT YOU NEED</span></div>
+        <div><b>02</b><span>WE BUILD YOUR PROGRAM</span></div>
+        <div><b>03</b><span>YOUR TEAM GOES LIVE</span></div>
+      </div>
+    </div>
+
+    <div class="tpRevenue">
+      <small>TEAM STORE + FUNDRAISING</small>
+      <h3>LET YOUR STORE WORK FOR YOUR PROGRAM.</h3>
+      <p>A GOAT Sports team store can do more than make merchandise easier to buy. Eligible organization programs can be structured to create fundraising or revenue opportunities around supporter purchases.</p>
+    </div>
+
+    <form class="tpForm" onsubmit="submitTeamProgram(event)">
+      <h3>GET STARTED WITH GOAT SPORTS</h3>
+      <p>Tell us how we can help your organization. This is just the first step — a GOAT Sports representative will follow up with you.</p>
+      <div class="tpField"><label>ORGANIZATION / TEAM NAME *</label><input id="tpOrg" required placeholder="Organization or team name"></div>
+      <div class="tpField"><label>YOUR NAME *</label><input id="tpName" required placeholder="First and last name"></div>
+      <div class="tpField"><label>EMAIL *</label><input id="tpEmail" type="email" required placeholder="you@example.com"></div>
+      <div class="tpField"><label>PHONE</label><input id="tpPhone" type="tel" placeholder="Phone number"></div>
+      <div class="tpField"><label>WHAT ARE YOU INTERESTED IN? *</label></div>
+      <div class="tpChecks">
+        <label><input type="checkbox" name="tpInterest" value="Custom Gear"> Custom Gear</label>
+        <label><input type="checkbox" name="tpInterest" value="Team Store"> Team Store</label>
+        <label><input type="checkbox" name="tpInterest" value="GOAT Locker"> GOAT Locker</label>
+        <label><input type="checkbox" name="tpInterest" value="Fundraising"> Fundraising</label>
+      </div>
+      <div class="tpField"><label>TELL US WHAT YOU'RE LOOKING FOR</label><textarea id="tpNeeds" placeholder="Uniforms, apparel, fan gear, a team store, fundraising, design help, or anything else you have in mind."></textarea></div>
+      <div class="tpField"><label>APPROXIMATE QUANTITY <span style="font-weight:700;color:#999">(OPTIONAL)</span></label><input id="tpQuantity" type="number" min="1" inputmode="numeric" placeholder="Estimated pieces / sets"></div>
+      <div class="tpField"><label>DESIRED IN-HAND DATE <span style="font-weight:700;color:#999">(OPTIONAL)</span></label><input id="tpInHand" type="date"></div>
+      <button class="tpSubmit" id="tpSubmit" type="submit">SEND MY REQUEST →</button>
+      <button class="tpExisting" type="button" onclick="openLocker()">ALREADY A GOAT CLIENT? ENTER YOUR LOCKER →</button>
+      <div id="tpMessage" style="display:none;margin-top:10px;font-size:10px;line-height:1.4"></div>
+    </form>
+  </div>
+</section>
+
+<section id="nilAthletes" class="screen">
+  <div class="privateLockerHero">
+    <button class="backMini" onclick="go('home')">‹ HOME</button>
+    <div class="eyebrow">GOAT SPORTS</div>
+    <h1>NIL<br>ATHLETES</h1>
+    <p>A dedicated home for athlete opportunities with GOAT Sports.</p>
+  </div>
+  <div class="lockerHub">
+    <div class="portalWelcome"><div class="eyebrow">ATHLETE PROGRAM</div><h2>BUILD YOUR BRAND WITH GOAT.</h2><p>This area is ready for the NIL athlete program details, opportunities, eligibility information and athlete application process.</p></div>
+  </div>
+</section>
+
+<section id="account" class="screen plain">
+<div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h1>ACCOUNT</h1>
+<div id="accountContent"><p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button></div>
+<div id="accountAdminLockers" class="adminLockerDirectory"></div>
+</section>
+
+<div id="teamHQModal" class="modalShade" onclick="if(event.target===this)closeFanTeamHQ()">
+  <div class="modalSheet teamHQSheet">
+    <div class="sheetHandle"></div>
+    <button type="button" class="backMini" onclick="closeFanTeamHQ()">‹ BACK TO FANHQ</button>
+    <div id="teamHQContent"></div>
+  </div>
+</div>
+
+<div id="productModal" class="modalShade" onclick="if(event.target===this)hideProductModal()">
+  <div class="modalSheet productSheet">
+    <div class="sheetHandle"></div>
+    <button type="button" class="backMini" onclick="hideProductModal()">‹ BACK</button>
+    <div id="productDetail"></div>
+  </div>
+</div>
+
+<div id="quoteModal" class="modalShade" onclick="if(event.target===this)hide('quoteModal')">
+ <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('quoteModal')">‹ BACK</button>
+ <div class="eyebrow" style="color:var(--orange)">GOAT SPORTS ADMIN</div><h2>ADD QUOTE</h2>
+ <div id="quoteDesignSummary"></div>
+ <form class="quoteForm" onsubmit="submitLockerQuote(event)">
+<input type="hidden" name="designId" id="quoteDesignId"><input type="hidden" name="quoteId" id="quoteEditId"><label id="quoteRevisionReasonWrap" style="display:none">REVISION / CHANGE NOTE<textarea name="revisionReason" placeholder="What changed on this quote?"></textarea></label>
+<label>CUSTOMER EMAIL<input type="email" name="customerEmail" placeholder="Team representative email"></label>
+<label>QUOTE DESCRIPTION<textarea name="description" placeholder="Overall quote description"></textarea></label>
+<div class="quoteItemsHead"><span>ITEM</span><span>QTY</span><span>UNIT $</span><span></span></div><div id="quoteItemRows"></div>
+<button type="button" class="quoteAddLine" onclick="addQuoteItemRow()">+ ADD LINE ITEM</button><div class="quoteBuilderTotal" id="quoteBuilderTotal">$0.00</div>
+<label>NOTES FOR CUSTOMER<textarea name="notes" placeholder="Production, shipping, minimums, or other notes."></textarea></label>
+<label>QUOTE EXPIRATION<input type="date" name="expiresAt"></label>
+<button class="cta" type="submit">SEND QUOTE TO LOCKER</button></form>
+ </div>
+</div>
+<div id="designRevisionModal" class="modalShade" onclick="if(event.target===this)hide('designRevisionModal')">
+ <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('designRevisionModal')">‹ BACK TO LOCKER</button>
+ <div class="eyebrow" style="color:var(--orange)">RESPOND TO CHANGE REQUEST</div><h2>UPLOAD REVISION</h2>
+ <form class="adminDesignForm" onsubmit="submitDesignRevision(event)">
+  <input type="hidden" name="designId" id="revisionDesignId">
+  <label>REVISED ARTWORK / MOCKUP URL<input required type="url" name="assetUrl" placeholder="https://..."></label>
+  <label>REVISION NOTE<textarea name="note" placeholder="Example: Updated lettering and jersey number per request."></textarea></label>
+  <button class="cta" type="submit">SEND REVISION TO TEAM</button>
+ </form></div>
+</div>
+
+<div id="designAdminModal" class="modalShade" onclick="if(event.target===this)hide('designAdminModal')">
+ <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('designAdminModal')">‹ BACK TO LOCKER</button>
+ <div class="eyebrow" style="color:var(--purple)">GOAT LOCKER ADMIN</div><h2>ADD DESIGN</h2>
+ <form class="adminDesignForm" onsubmit="createLockerDesign(event)">
+  <label>LOCKER<select id="designTeamId" name="teamId" required></select></label>
+  <label>DESIGN NAME<input name="title" required placeholder="2027 Home Uniform"></label>
+  <label>DESIGN / MOCKUP URL<input name="assetUrl" type="url" placeholder="https://..."></label>
+  <label>NOTES<textarea name="description" placeholder="Notes for the team rep..."></textarea></label>
+  <button class="cta" type="submit">ADD TO LOCKER FOR APPROVAL</button>
+ </form></div>
+</div>
+
+<div id="lockerAdminModal" class="modalShade" onclick="if(event.target===this)hide('lockerAdminModal')">
+ <div class="modalSheet accountEditSheet"><div class="sheetHandle"></div><button class="backMini" onclick="hide('lockerAdminModal')">‹ BACK TO ACCOUNT</button>
+ <div class="eyebrow" style="color:var(--orange)">GOAT SPORTS MASTER ADMIN</div><h2>LOCKER ACCESS</h2>
+ <p style="font-size:10px;color:#666">Link a Shopify customer email to an organization's GOAT Locker. Removing access does not affect their Shopify customer account.</p>
+ <form class="adminForm" onsubmit="grantLockerAccess(event)">
+  <label>CUSTOMER / TEAM REP EMAIL<input required type="email" name="email" placeholder="rep@example.com"></label>
+  <label>GOAT LOCKER<select required name="teamId" id="adminLockerTeamSelect"><option value="">Select organization…</option></select></label>
+  <label>ROLE<input name="role" value="Team Rep" placeholder="Owner, Coach, Equipment Manager…"></label>
+  <button class="cta" type="submit">LINK TO LOCKER</button>
+ </form>
+ <div id="adminAccessList" class="adminAccessList"></div>
+ </div>
+</div>
+
+<div id="accountEditModal" class="modalShade" onclick="if(event.target===this)hide('accountEditModal')">
+  <div class="modalSheet accountEditSheet">
+    <div class="sheetHandle"></div>
+    <button type="button" class="backMini" onclick="hide('accountEditModal')">‹ BACK TO ACCOUNT</button>
+    <div id="accountEditContent"></div>
+  </div>
+</div>
+
+<div id="cartModal" class="modalShade" onclick="if(event.target===this)hide('cartModal')">
+  <div class="modalSheet cartSheet">
+    <div class="sheetHandle"></div>
+    <button type="button" class="backMini" onclick="hide('cartModal')">‹ CONTINUE SHOPPING</button>
+    <div id="cartContent"></div>
+  </div>
+</div>
+
+<div id="appToast" class="appToast"></div>
+
+<nav class="nav">
+<button class="active" data-id="locker" onclick="go('locker',this);showLockerHub()">DASHBOARD</button>
+<button onclick="go('locker');openLockerSection('designs')">DESIGNS</button>
+<button onclick="go('locker');renderLockerTimeline()">TIMELINE</button>
+<button data-id="orders" onclick="go('orders',this)">ORDERS</button>
+<button data-id="account" onclick="go('account',this)">ACCOUNT</button>
+</nav>
+</main>
+<script>
+function go(id,btn){
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===(id==='teamstore'?'fanhq':(id==='locker'?'account':id))));
+ window.scrollTo({top:0,behavior:'instant'});
+ if(id==='account'){try{const r=renderCustomerAccount();if(r&&typeof r.catch==='function')r.catch(e=>console.error('Account render:',e))}catch(e){console.error('Account render:',e)}}
+ if(id==='orders'){try{const r=renderCustomerOrders();if(r&&typeof r.catch==='function')r.catch(e=>console.error('Orders render:',e))}catch(e){console.error('Orders render:',e)}}
+ if(id==='locker'){try{const r=renderLocker();if(r&&typeof r.catch==='function')r.catch(e=>console.error('Locker render:',e))}catch(e){console.error('Locker render:',e)}}
+}
+function notice(){alert('Notifications are ready to connect once we build account/order data.')}
+
+let activeSport='all',toastTimer;
+function openFinder(){document.getElementById('finderModal').classList.add('show');setTimeout(()=>document.getElementById('teamSearch').focus(),150)}
+function hide(id){
+ const el=document.getElementById(id);
+ if(!el)return;
+ el.classList.remove('show');
+ if(el.classList.contains('modalShade')) el.style.display='none';
+}
+function hideProductModal(){hide('productModal')}
+function closeModal(e,id){if(e.target.id===id)hide(id)}
+function setSport(btn,sport){activeSport=sport;document.querySelectorAll('.filterRow .chip').forEach(x=>x.classList.remove('active'));btn.classList.add('active');filterTeams()}
+function filterTeams(){const q=document.getElementById('teamSearch').value.toLowerCase();document.querySelectorAll('#teamResults article').forEach(x=>{x.style.display=((activeSport==='all'||x.dataset.sport===activeSport)&&x.dataset.search.includes(q))?'grid':'none'})}
+function addTeam(name,sport,loc,mark){
+ const exists=[...document.querySelectorAll('#myTeams .teamMeta strong')].some(x=>x.textContent===name);
+ if(!exists){const a=document.createElement('article');a.className='teamCard';a.innerHTML='<div class="teamMark">'+mark+'</div><div class="teamMeta"><small>'+sport.toUpperCase()+' • '+loc.toUpperCase()+'</small><strong>'+name+'</strong><span>Official GOAT Team HQ</span></div><button class="enterHQ">ENTER HQ</button>';a.querySelector('button').onclick=()=>openHQ(name,sport,loc,mark);document.getElementById('myTeams').appendChild(a)}
+ hide('finderModal');toast(name+' added to your FanHQ')}
+function openHQ(name,sport,loc,mark){document.getElementById('hqName').textContent=name;document.getElementById('hqLocation').textContent=loc.toUpperCase()+' • '+sport.toUpperCase();document.getElementById('hqMark').textContent=mark;document.getElementById('hqModal').classList.add('show')}
+function teamStore(){hide('hqModal');go('shop');toast('Opening this team’s Shopify store')}
+function toast(msg){const e=document.getElementById('appToast');e.textContent=msg;e.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.style.display='none',1500)}
+
+async function submitTeamProgram(e){
+  e.preventDefault();
+  const msg=document.getElementById('tpMessage');
+  const btn=document.getElementById('tpSubmit');
+  const interests=[...document.querySelectorAll('input[name="tpInterest"]:checked')].map(x=>x.value);
+  if(!interests.length){
+    if(msg){msg.style.display='block';msg.style.color='#be5927';msg.innerHTML='<b>PLEASE SELECT AT LEAST ONE PROGRAM.</b> Choose Custom Gear, Team Store, GOAT Locker or Fundraising.';}
+    return;
+  }
+  const lead={
+    organization:(document.getElementById('tpOrg')||{}).value||'',
+    name:(document.getElementById('tpName')||{}).value||'',
+    email:(document.getElementById('tpEmail')||{}).value||'',
+    phone:(document.getElementById('tpPhone')||{}).value||'',
+    interests,
+    products:(document.getElementById('tpNeeds')||{}).value||'',
+    quantity:(document.getElementById('tpQuantity')||{}).value||'',
+    in_hand_date:(document.getElementById('tpInHand')||{}).value||''
+  };
+  if(btn){btn.disabled=true;btn.textContent='SENDING…';}
+  if(msg){msg.style.display='block';msg.style.color='#666';msg.textContent='Sending your information to GOAT Sports…';}
+  try{
+    const res=await fetch('https://goat-sports-api.bikard.workers.dev/api/team-program-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(lead)});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok||!data.success) throw new Error(data.error||'Unable to submit right now.');
+    e.target.reset();
+    if(msg){msg.style.color='#109488';msg.innerHTML='<b>THANK YOU.</b> Your request has been received by GOAT Sports. We’ll follow up using the contact information you provided.';}
+  }catch(err){
+    if(msg){msg.style.color='#be5927';msg.innerHTML='<b>WE COULD NOT SEND YOUR REQUEST.</b> '+String(err.message||err)+' Please try again.';}
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='SEND MY REQUEST →';}
+  }
+}
+function openTeamPrograms(){ go('teamPrograms'); }
+function openNILAthletes(){ go('nilAthletes'); }
+async function openLocker(){
+ if(!customerToken()){await customerLogin();return}
+ await loadLockerSession();
+ if(lockerSession.adminRole||lockerSession.lockerAccess.length){go('locker');return}
+ alert('This Shopify customer account is not currently linked to a GOAT Locker. Contact your GOAT Sports administrator for access.');
+}
+
+function openFinderSport(sport){
+ openFinder();
+ activeSport=sport;
+ document.querySelectorAll('.filterRow .chip').forEach(x=>x.classList.toggle('active',x.textContent.toLowerCase()===sport));
+ filterTeams();
+}
+
+
+/* Shopify Customer Account API — Public OAuth client with PKCE */
+const CUSTOMER_CLIENT_ID='0ce1ce65-71f0-40f5-840c-b30f69e3e924';
+const CUSTOMER_SHOP_DOMAIN='www.begoativated.com';
+const CUSTOMER_REDIRECT_URI=location.origin+location.pathname;
+const CUSTOMER_SCOPE='openid email customer-account-api:full';
+let customerProfile=null, customerOrdersCache=null, lockerSession={adminRole:null,lockerAccess:[]}, adminSelectedLocker=null;
+
+function b64url(bytes){
+ return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+function randomUrlSafe(size=32){const a=new Uint8Array(size);crypto.getRandomValues(a);return b64url(a)}
+async function sha256url(value){
+ const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));
+ return b64url(new Uint8Array(digest));
+}
+async function customerDiscovery(){
+ const cached=sessionStorage.getItem('goat_customer_discovery');
+ if(cached)return JSON.parse(cached);
+ const [oidcR,apiR]=await Promise.all([
+   fetch(`https://${CUSTOMER_SHOP_DOMAIN}/.well-known/openid-configuration`),
+   fetch(`https://${CUSTOMER_SHOP_DOMAIN}/.well-known/customer-account-api`)
+ ]);
+ if(!oidcR.ok||!apiR.ok)throw new Error('Could not connect to Shopify customer accounts');
+ const cfg={...(await oidcR.json()),...(await apiR.json())};
+ sessionStorage.setItem('goat_customer_discovery',JSON.stringify(cfg));return cfg;
+}
+async function customerLogin(){
+ try{
+  const cfg=await customerDiscovery();
+  const verifier=randomUrlSafe(48), state=randomUrlSafe(24), nonce=randomUrlSafe(24);
+  sessionStorage.setItem('goat_pkce_verifier',verifier);
+  sessionStorage.setItem('goat_oauth_state',state);
+  sessionStorage.setItem('goat_oauth_nonce',nonce);
+  const u=new URL(cfg.authorization_endpoint);
+  u.searchParams.set('scope',CUSTOMER_SCOPE);
+  u.searchParams.set('client_id',CUSTOMER_CLIENT_ID);
+  u.searchParams.set('response_type','code');
+  u.searchParams.set('redirect_uri',CUSTOMER_REDIRECT_URI);
+  u.searchParams.set('state',state);u.searchParams.set('nonce',nonce);
+  u.searchParams.set('code_challenge',await sha256url(verifier));
+  u.searchParams.set('code_challenge_method','S256');
+  location.href=u.toString();
+ }catch(e){toast('Sign-in error: '+e.message)}
+}
+async function handleCustomerCallback(){
+ const u=new URL(location.href), code=u.searchParams.get('code');
+ if(!code)return false;
+ const returnedState=u.searchParams.get('state'), expected=sessionStorage.getItem('goat_oauth_state');
+ if(!expected||returnedState!==expected){toast('Sign-in security check failed');return true}
+ try{
+  const cfg=await customerDiscovery(), verifier=sessionStorage.getItem('goat_pkce_verifier');
+  const body=new URLSearchParams({
+   grant_type:'authorization_code',client_id:CUSTOMER_CLIENT_ID,
+   redirect_uri:CUSTOMER_REDIRECT_URI,code,code_verifier:verifier
+  });
+  const r=await fetch(cfg.token_endpoint,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+  const t=await r.json();if(!r.ok||!t.access_token)throw new Error(t.error_description||t.error||'Token exchange failed');
+  sessionStorage.setItem('goat_customer_access_token',t.access_token);
+  sessionStorage.setItem('goat_customer_token_expires',String(Date.now()+(Number(t.expires_in||3600)*1000)));
+  if(t.id_token)sessionStorage.setItem('goat_customer_id_token',t.id_token);
+  sessionStorage.removeItem('goat_pkce_verifier');sessionStorage.removeItem('goat_oauth_state');sessionStorage.removeItem('goat_oauth_nonce');
+  history.replaceState({},'',CUSTOMER_REDIRECT_URI);
+  await loadCustomerData();go('account');toast('Signed in');
+ }catch(e){history.replaceState({},'',CUSTOMER_REDIRECT_URI);toast('Sign-in error: '+e.message)}
+ return true;
+}
+function customerToken(){
+ const token=sessionStorage.getItem('goat_customer_access_token');
+ const exp=Number(sessionStorage.getItem('goat_customer_token_expires')||0);
+ if(!token||Date.now()>exp){sessionStorage.removeItem('goat_customer_access_token');return null}
+ return token;
+}
+async function customerRequest(query,variables={}){
+ const token=customerToken();if(!token)throw new Error('SIGN_IN_REQUIRED');
+ const cfg=await customerDiscovery();
+ const r=await fetch(cfg.graphql_api,{method:'POST',headers:{'Content-Type':'application/json','Authorization':token},body:JSON.stringify({query,variables})});
+ const j=await r.json();if(!r.ok||j.errors)throw new Error(j.errors?.[0]?.message||'Customer account request failed');return j.data;
+}
+async function loadCustomerData(){
+ if(!customerToken()){customerProfile=null;customerOrdersCache=null;return}
+ try{
+  const q=`query GOATCustomer{customer{displayName firstName lastName emailAddress{emailAddress} defaultAddress{id firstName lastName name company address1 address2 city province zoneCode zip country countryCode phoneNumber formatted(withName:true,withCompany:true)} orders(first:25,sortKey:PROCESSED_AT,reverse:true){nodes{id name processedAt fulfillmentStatus financialStatus statusPageUrl totalPrice{amount currencyCode}}}}}`;
+  const d=await customerRequest(q);customerProfile=d.customer;customerOrdersCache=d.customer.orders?.nodes||[];
+ }catch(e){
+  console.warn('Customer data load failed',e);
+  customerProfile={_loadError:e.message||'Unable to load customer account'};
+  customerOrdersCache=[];
+ }
+}
+
+async function lockerApi(action,payload={}){
+ const token=customerToken();if(!token)throw new Error('Sign in required');
+ const r=await fetch(`${SUPABASE_URL}/functions/v1/goat-locker-access`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({action,...payload})});
+ const j=await r.json();if(!r.ok)throw new Error(j.error||'Locker access request failed');return j;
+}
+async function loadLockerSession(){
+ try{const d=await lockerApi('me');lockerSession={adminRole:d.adminRole||null,lockerAccess:d.lockerAccess||[]};}
+ catch(e){console.warn('Locker access check failed',e);lockerSession={adminRole:null,lockerAccess:[]}}
+ return lockerSession;
+}
+async function renderLocker(){
+ const el=document.getElementById('lockerAssignedTeams');if(!el)return;
+ await loadLockerSession();
+ if(lockerSession.adminRole){
+  el.innerHTML=`<div class="lockerTeamCard"><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h3>GOAT SPORTS ADMIN ACCESS</h3><p>You have administrative access to GOAT Locker management.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button></div>`+
+  lockerSession.lockerAccess.map(lockerTeamHtml).join('');
+ }else if(lockerSession.lockerAccess.length) el.innerHTML=lockerSession.lockerAccess.map(lockerTeamHtml).join('');
+ else el.innerHTML=customerToken()?'<div class="lockerTeamCard"><h3>NO LOCKER ASSIGNED</h3><p>Your account is signed in but has not been linked to a GOAT Locker.</p></div>':'<div class="lockerTeamCard"><h3>WELCOME TO GOAT LOCKER</h3><p>Sign in with your GOAT Sports customer account to view your organization and projects.</p><button class="cta" onclick="customerLogin()">SIGN IN TO GOAT LOCKER</button></div>';
+ await renderAdminLockerDirectory();
+ showLockerHub();
+}
+
+async function workspaceApi(action,payload={}){
+ const token=customerToken();if(!token)throw new Error('Sign in required');
+ const r=await fetch(`${SUPABASE_URL}/functions/v1/goat-locker-workspace`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({action,...payload})});
+ const j=await r.json();if(!r.ok)throw new Error(j.error||'Locker workspace request failed');return j;
+}
+async function renderAdminReviewCenter(){
+ const el=document.getElementById('adminReviewCenter');if(!el)return;
+ try{
+  const d=await workspaceApi('admin_inbox',{}),items=d.items||[];
+  adminQuoteDesignMap={};
+  if(items.some(x=>x.type==='quote_needed')){
+   const feed=await workspaceApi('admin_feed');
+   adminQuoteDesignMap=Object.fromEntries((feed.designs||[]).map(x=>[String(x.id),x]));
+  }
+  const labels={art_change:'ARTWORK CHANGES REQUESTED',quote_needed:'QUOTE NEEDED',quote_change:'QUOTE CHANGES REQUESTED',quote_approved:'QUOTE APPROVED'};
+  el.innerHTML=`<div class="lockerInbox open" style="margin-top:14px"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>ADMIN WORK MAILBOX</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' need attention across all Team Lockers'):"You're all caught up across all Team Lockers"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>{const team=x.team?.organization_name||x.team?.team_name||'Team Locker';return `<button type="button" class="lockerInboxItem" onclick="openAdminInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${labels[x.type]||'ACTION NEEDED'}</strong><small>${escapeHtml(team)} • ${escapeHtml(x.title||'Customer response')} • OPEN ITEM${x.approval_number?' • Design # '+escapeHtml(x.approval_number):''}</small></span><span class="arrow">›</span></button>`}).join(''):'<div class="lockerInboxEmpty">No artwork, quote, or customer responses currently need admin attention.</div>'}</div></div>`;
+ }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message||'Could not load admin work mailbox.')}</div>`}
+}
+async function openAdminInboxItem(teamId,type,itemId){
+ try{
+  if(type==='quote_needed'){openQuoteModal(itemId);return}
+  const d=await lockerApi('list'),team=(d.teams||[]).find(t=>Number(t.id)===Number(teamId));
+  if(!team)return alert('Team Locker not found.');
+  adminSelectedLocker=team;
+  if(type==='art_change'){
+   go('locker');
+   await new Promise(r=>setTimeout(r,120));
+   await openLockerSection('approvals');
+   setTimeout(()=>{const cards=[...document.querySelectorAll('[data-design-id]')];const card=cards.find(x=>Number(x.dataset.designId)===Number(itemId));if(card)card.scrollIntoView({behavior:'smooth',block:'center'})},120);
+   return;
+  }
+  if(type==='quote_change'||type==='quote_approved'){
+   go('locker');
+   await new Promise(r=>setTimeout(r,120));
+   await renderLockerQuotes();
+   const h=document.getElementById('lockerHubTools');if(h)h.style.display='none';
+   setTimeout(()=>{const card=document.getElementById('quoteAudit-'+itemId)?.closest('article');if(card)card.scrollIntoView({behavior:'smooth',block:'center'})},120);
+   return;
+  }
+ }catch(e){alert(e.message||'Could not open this work item.')}
+}
+async function renderAdminStandaloneMailbox(){
+ const el=document.getElementById('accountAdminMailboxStandalone');if(!el)return;
+ if(!lockerSession.adminRole){el.innerHTML='';return}
+ try{
+  const d=await workspaceApi('admin_inbox',{}),items=d.items||[];
+  adminQuoteDesignMap={};
+  if(items.some(x=>x.type==='quote_needed')){try{const feed=await workspaceApi('admin_feed');adminQuoteDesignMap=Object.fromEntries((feed.designs||[]).map(x=>[String(x.id),x]))}catch(e){}}
+  const labels={art_change:'ARTWORK CHANGES REQUESTED',quote_needed:'QUOTE NEEDED',quote_change:'QUOTE CHANGES REQUESTED',quote_approved:'QUOTE APPROVED'};
+  el.innerHTML=`<div class="lockerInbox open adminStandaloneMailbox"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>GOAT WORK MAILBOX</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' need attention across all Team Lockers'):"You're all caught up across all Team Lockers"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>{const team=x.team?.organization_name||x.team?.team_name||'Team Locker';return `<button type="button" class="lockerInboxItem" onclick="openAdminInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${labels[x.type]||'ACTION NEEDED'}</strong><small>${escapeHtml(team)} • ${escapeHtml(x.title||'Customer response')}</small></span><span class="arrow">›</span></button>`}).join(''):'<div class="lockerInboxEmpty">No Team Locker items currently need your attention.</div>'}</div></div>`;
+ }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message||'Could not load work mailbox.')}</div>`}
+}
+async function renderAccountAdminLockers(){
+ const el=document.getElementById('accountAdminLockers');if(!el)return;
+ if(!lockerSession.adminRole){el.innerHTML='';return}
+ try{
+  const d=await lockerApi('list'),teams=d.teams||[];
+  let inboxItems=[];try{const ib=await workspaceApi('admin_inbox',{});inboxItems=ib.items||[]}catch(e){}
+  const counts={};inboxItems.forEach(x=>counts[x.team_id]=(counts[x.team_id]||0)+1);
+  el.innerHTML=`<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">MASTER ADMIN</div><h2>ALL GOAT LOCKERS</h2><small style="font-size:8px;color:#777">Select an organization to enter and manage its Locker.</small></div></div><div class="adminLockerGrid">${teams.map(t=>`<button class="adminLockerTile ${counts[t.id]?'adminLockerNeedsAttention':''}" onclick="enterAdminLockerFromAccount(${t.id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span class="adminLockerLogoBlank">G</span>'}<span><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${counts[t.id]?(counts[t.id]+' ACTION'+(counts[t.id]===1?'':'S')+' REQUIRED'):escapeHtml((t.sport||'GOAT Sports')+(t.city||t.state?' • '+[t.city,t.state].filter(Boolean).join(', '):''))}</small></span>${counts[t.id]?`<span class="lockerInboxCount">${counts[t.id]}</span>`:''}<span class="arrow">›</span></button>`).join('')}</div>`;
+ }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+let adminQuoteDesignMap={};
+async function renderAdminQuoteNeeded(){
+ const el=document.getElementById('accountQuoteNeeded');if(!el)return;
+ if(!lockerSession.adminRole){el.innerHTML='';return}
+ try{
+  const d=await workspaceApi('admin_feed');
+  const designs=(d.designs||[]).filter(x=>x.status==='approved'&&x.quote_status==='quote_needed');
+  adminQuoteDesignMap=Object.fromEntries(designs.map(x=>[String(x.id),x]));
+  let html='<div class="adminLockerDirectoryHead"><div><div class="eyebrow" style="color:var(--orange)">ADMIN WORK QUEUE</div><h2>QUOTE NEEDED</h2><small style="font-size:8px;color:#777">Approved artwork waiting for pricing.</small></div></div>';
+  if(!designs.length)html+='<div class="workspaceEmpty">No approved designs currently need a quote.</div>';
+  else html+=designs.map(x=>{const team=x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team';return `<article class="quoteNeededCard">${x.asset_url?`<img src="${escapeHtml(x.asset_url)}" alt="">`:''}<div class="qbody"><span class="quoteFlag">QUOTE NEEDED</span><h3>${escapeHtml(x.title)}</h3><strong style="font-size:10px">${escapeHtml(team)}</strong><div class="quoteMeta">Design # ${escapeHtml(x.approval_number||'—')} • Approved by ${escapeHtml(x.approved_by_email||'—')} • ${x.approved_at?new Date(x.approved_at).toLocaleString():''}</div><button type="button" class="quoteDone" onclick="openQuoteModal(${x.id})">ADD QUOTE</button></div></article>`}).join('');
+  el.innerHTML=html;
+ }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+function addQuoteItemRow(description='',qty=1,price=''){
+ const box=document.getElementById('quoteItemRows');if(!box)return;const row=document.createElement('div');row.className='quoteItemRow';
+ row.innerHTML=`<input class="qiDesc" placeholder="Jerseys, pants, setup..." value="${escapeHtml(description)}"><input class="qiQty" type="number" min=".01" step=".01" value="${qty}"><input class="qiPrice" type="number" min="0" step=".01" placeholder="0.00" value="${price}"><button type="button" class="quoteRemove" onclick="this.parentElement.remove();updateQuoteBuilderTotal()">×</button>`;
+ row.querySelectorAll('input').forEach(x=>x.addEventListener('input',updateQuoteBuilderTotal));box.appendChild(row);updateQuoteBuilderTotal();
+}
+function updateQuoteBuilderTotal(){let total=0;document.querySelectorAll('#quoteItemRows .quoteItemRow').forEach(r=>total+=(Number(r.querySelector('.qiQty').value)||0)*(Number(r.querySelector('.qiPrice').value)||0));const el=document.getElementById('quoteBuilderTotal');if(el)el.textContent='$'+total.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
+function openQuoteModal(id){
+ document.getElementById('quoteEditId').value='';document.getElementById('quoteRevisionReasonWrap').style.display='none';document.querySelector('#quoteModal h2').textContent='ADD QUOTE';
+ const d=adminQuoteDesignMap[String(id)]||{},team=d.goat_teams?.organization_name||d.goat_teams?.team_name||'GOAT Sports';
+ document.getElementById('quoteDesignId').value=id;document.getElementById('quoteDesignSummary').innerHTML=`<div class="dashboardNotice"><strong>${escapeHtml(d.title||'Approved Design')}</strong><p>${escapeHtml(team)} • Design # ${escapeHtml(d.approval_number||'—')}</p></div>`;
+ document.getElementById('quoteItemRows').innerHTML='';addQuoteItemRow();const m=document.getElementById('quoteModal');if(!m){alert('Quote form could not be opened.');return}m.style.display='flex';m.classList.add('show');
+}
+let lockerQuoteMap={};
+async function openQuoteEditor(id){
+ const q=lockerQuoteMap[String(id)];if(!q)return;
+ const form=document.querySelector('#quoteModal .quoteForm');
+ document.getElementById('quoteEditId').value=id;document.getElementById('quoteDesignId').value=q.design_id||'';
+ document.querySelector('#quoteModal h2').textContent='EDIT QUOTE';document.getElementById('quoteRevisionReasonWrap').style.display='';
+ form.customerEmail.value=q.customer_email||'';form.customerEmail.readOnly=true;form.description.value=q.description||'';form.notes.value=q.notes||'';form.expiresAt.value=q.expires_at||'';
+ document.getElementById('quoteItemRows').innerHTML='';(q.goat_locker_quote_items||[]).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).forEach(x=>addQuoteItemRow(x.description,x.quantity,x.unit_price));
+ document.getElementById('quoteDesignSummary').innerHTML=`<div class="dashboardNotice"><strong>${escapeHtml(q.goat_locker_designs?.title||'Approved Design')}</strong><p>Quote # ${escapeHtml(q.quote_number)} • Revision ${Number(q.revision_number||1)}</p></div>`;
+ form.querySelector('button[type=submit]').textContent='SAVE & RESEND QUOTE';const m=document.getElementById('quoteModal');m.style.display='flex';m.classList.add('show');
+}
+async function showQuoteHistory(id){
+ try{const d=await workspaceApi('quote_history',{quoteId:id}),q=d.quote,h=d.history||[];const rows=h.map(x=>{const a=x.snapshot||{};return `<div class="quoteAuditItem"><strong>REVISION ${Number(x.revision_number)} • $${Number(a.amount||0).toFixed(2)}</strong>Saved ${new Date(x.created_at).toLocaleString()} by ${escapeHtml(x.created_by_email||'GOAT Sports')}<br>Status then: ${escapeHtml(String(a.status||'').replaceAll('_',' '))}${a.approved_by_email?`<br>Approved by ${escapeHtml(a.approved_by_email)}${a.responded_at?' • '+new Date(a.responded_at).toLocaleString():''}`:''}${x.reason?`<br>Change note: ${escapeHtml(x.reason)}`:''}</div>`}).join('');const current=`<div class="quoteAuditItem"><strong>CURRENT • REVISION ${Number(q.revision_number||1)}</strong>Last updated ${q.updated_at?new Date(q.updated_at).toLocaleString():'—'}${q.approved_by_email?`<br>Approved by ${escapeHtml(q.approved_by_email)}${q.responded_at?' • '+new Date(q.responded_at).toLocaleString():''}`:''}</div>`;const el=document.getElementById('quoteAudit-'+id);if(el)el.innerHTML=`<h4>QUOTE HISTORY / AUDIT TRAIL</h4>${rows}${current}`}catch(e){alert(e.message)}
+}
+async function submitLockerQuote(e){
+ e.preventDefault();const form=e.currentTarget,f=new FormData(form),btn=form.querySelector('button[type=submit]'),quoteId=Number(f.get('quoteId')||0);const items=[...document.querySelectorAll('#quoteItemRows .quoteItemRow')].map(r=>({description:r.querySelector('.qiDesc').value.trim(),quantity:Number(r.querySelector('.qiQty').value),unitPrice:Number(r.querySelector('.qiPrice').value)})).filter(x=>x.description&&x.quantity>0&&x.unitPrice>=0);
+ if(!items.length){alert('Add at least one valid line item.');return}btn.disabled=true;btn.textContent=quoteId?'SAVING…':'SENDING…';
+ try{const payload={designId:Number(f.get('designId')),customerEmail:String(f.get('customerEmail')||''),description:String(f.get('description')||''),notes:String(f.get('notes')||''),expiresAt:String(f.get('expiresAt')||''),items};const d=quoteId?await workspaceApi('edit_quote',{quoteId,...payload,reason:String(f.get('revisionReason')||'').trim()||'Admin revised quote'}):await workspaceApi('create_quote',payload);form.reset();hide('quoteModal');toast(quoteId?'Quote revised and resent':`Quote ${d.quote.quote_number} sent to customer Locker`);if(adminSelectedLocker)await renderLockerQuotes();else await renderAdminStandaloneMailbox()}catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='SEND QUOTE TO LOCKER'}
+}
+function quoteDesignPreviewHtml(q){
+ const d=q.goat_locker_designs||{};if(!d.asset_url)return '';
+ return `<div class="quoteDesignPreview"><img src="${escapeHtml(d.asset_url)}" alt="${escapeHtml(d.title||'Approved design')}"><div class="quoteDesignPreviewInfo"><strong>APPROVED DESIGN</strong><small>${escapeHtml(d.title||'GOAT Sports Design')}${d.approval_number?' • Design # '+escapeHtml(d.approval_number):''}</small></div></div>`;
+}
+function quoteLinesHtml(q){const items=(q.goat_locker_quote_items||[]).slice().sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));return `<div class="quoteLines">${items.map(x=>`<div class="quoteLine"><span>${escapeHtml(x.description)}<br><small>${Number(x.quantity)} × $${Number(x.unit_price).toFixed(2)}</small></span><strong>$${(Number(x.quantity)*Number(x.unit_price)).toFixed(2)}</strong></div>`).join('')}</div>`}
+async function decideQuote(id,decision){let note=null;if(decision==='changes_requested'){note=prompt('What changes are needed on this quote?');if(note===null)return;if(!note.trim()){alert('Please enter the changes needed.');return}}else if(!confirm('Approve this quote? This confirms the pricing and prepares it for the Shopify invoice step.'))return;try{await workspaceApi('quote_decide',{quoteId:id,decision,note:note||''});toast(decision==='approved'?'Quote approved':'Changes requested');await renderLockerQuotes()}catch(e){alert(e.message)}}
+async function renderLockerQuotes(){
+ const el=document.getElementById('lockerSubView');if(!el)return;const teamId=adminSelectedLocker?.id||(lockerSession.lockerAccess||[])[0]?.team_id;if(!teamId){el.innerHTML=lockerSubHeader('QUOTES','MY QUOTES')+'<div class="workspaceEmpty">No Locker selected.</div>';return}
+ try{const d=await workspaceApi('list_quotes',{teamId}),quotes=d.quotes||[],isRep=!lockerSession.adminRole;lockerQuoteMap=Object.fromEntries(quotes.map(q=>[String(q.id),q]));let html=lockerSubHeader('QUOTES','MY QUOTES');
+ html+=quotes.length?quotes.map(q=>`<article class="quoteCard"><span class="quoteStatus">${escapeHtml(String(q.status||'sent').replaceAll('_',' ').toUpperCase())}</span><h3>${escapeHtml(q.goat_locker_designs?.title||'GOAT Sports Quote')}</h3><div class="quoteAmount">$${Number(q.amount||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</div><strong style="font-size:9px">QUOTE # ${escapeHtml(q.quote_number)}</strong>${q.goat_locker_designs?.approval_number?`<div class="quoteMeta">Design # ${escapeHtml(q.goat_locker_designs.approval_number)}</div>`:''}<div class="quoteMeta">Quote Revision ${Number(q.revision_number||1)}</div>${quoteDesignPreviewHtml(q)}${q.description?`<p>${escapeHtml(q.description)}</p>`:''}${quoteLinesHtml(q)}${q.notes?`<div class="dashboardNotice"><strong>NOTES</strong><p>${escapeHtml(q.notes)}</p></div>`:''}<div class="quoteMeta">Sent ${new Date(q.created_at).toLocaleString()}${q.expires_at?' • Expires '+new Date(q.expires_at+'T12:00:00').toLocaleDateString():''}</div>${isRep&&q.status==='sent'?`<div class="quoteActions"><button class="quoteApprove" onclick="decideQuote(${q.id},'approved')">APPROVE QUOTE</button><button class="quoteChanges" onclick="decideQuote(${q.id},'changes_requested')">REQUEST CHANGES</button></div>`:''}${q.customer_response_note?`<div class="quoteResponse"><strong>CUSTOMER RESPONSE</strong><br>${escapeHtml(q.customer_response_note)}</div>`:''}${q.status==='approved'?`<div class="quoteResponse"><strong>✓ QUOTE APPROVED</strong><br>${escapeHtml(q.approved_by_email||'Authorized team representative')} • ${q.responded_at?new Date(q.responded_at).toLocaleString():''}<br><small>Ready for Shopify invoice creation.</small></div>`:''}${!isRep?`<div class="quoteAdminActions">${q.status==='approved'&&!q.shopify_draft_order_id?`<button class="quoteApprove" onclick="createShopifyInvoice(${q.id})">CREATE SHOPIFY INVOICE</button>`:''}${q.status==='invoiced'&&q.shopify_invoice_url?`<button class="quoteApprove" onclick="window.open('${q.shopify_invoice_url}','_blank','noopener')">OPEN SHOPIFY INVOICE</button>`:''}${!['approved','invoiced','paid'].includes(String(q.status||''))?`<button class="edit" onclick="openQuoteEditor(${q.id})">EDIT / REVISE QUOTE</button>`:''}<button onclick="showQuoteHistory(${q.id})">VIEW HISTORY</button></div>`:''}<div class="quoteAudit" id="quoteAudit-${q.id}"></div></article>`).join(''):'<div class="workspaceEmpty">No quotes have been sent to this Locker yet.</div>';el.innerHTML=html;
+ }catch(e){el.innerHTML=lockerSubHeader('QUOTES','MY QUOTES')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+async function createShopifyInvoice(quoteId){
+ const q=lockerQuoteMap[String(quoteId)];
+ if(!q)return alert('Quote not found.');
+ if(q.status!=='approved')return alert('The customer must approve this quote before a Shopify invoice can be created.');
+ if(!confirm(`Create the Shopify invoice for ${q.quote_number} for $${Number(q.amount||0).toFixed(2)}?`))return;
+ try{
+  const d=await workspaceApi('create_shopify_invoice',{quoteId:Number(quoteId)});
+  toast('Shopify invoice created');
+  await renderLockerQuotes();
+  if(d?.draftOrder?.invoiceUrl&&confirm('Shopify invoice created successfully. Open it now?'))window.open(d.draftOrder.invoiceUrl,'_blank','noopener');
+ }catch(e){alert(e.message||'Could not create Shopify invoice.')}
+}
+async function markDesignQuoted(id){
+ if(!confirm('Mark this approved design as quoted and remove it from Quote Needed?'))return;
+ try{await workspaceApi('mark_quoted',{designId:id});toast('Design marked quoted');await renderAdminQuoteNeeded()}catch(e){alert(e.message)}
+}
+async function enterAdminLockerFromAccount(teamId){
+ const d=await lockerApi('list');
+ const team=(d.teams||[]).find(t=>Number(t.id)===Number(teamId));if(!team){alert('Locker not found');return}
+ adminSelectedLocker=team;
+ go('locker');
+}
+async function renderAdminLockerDirectory(){
+ const el=document.getElementById('adminLockerDirectory');if(!el)return;
+ if(!lockerSession.adminRole||!adminSelectedLocker){el.innerHTML='';return}
+ const t=adminSelectedLocker;
+ el.innerHTML=`<div class="adminLockerContext"><button class="lockerBack" onclick="returnToAdminAccount()">‹ ADMIN ACCOUNT</button><strong>${escapeHtml(t.organization_name||t.team_name)}</strong><small>${escapeHtml(t.sport||'')} ${t.city||t.state?'• '+escapeHtml([t.city,t.state].filter(Boolean).join(', ')):''}</small></div>`;
+}
+function returnToAdminAccount(){adminSelectedLocker=null;go('account')}
+
+async function enterAdminLocker(teamId){
+ try{
+  const d=await lockerApi('list');
+  const team=(d.teams||[]).find(t=>Number(t.id)===Number(teamId));if(!team)throw new Error('Locker not found');
+  adminSelectedLocker=team;
+  const dir=document.getElementById('adminLockerDirectory');if(dir)dir.innerHTML=`<div class="adminLockerContext"><button class="lockerBack" onclick="exitAdminLocker()">‹ ALL GOAT LOCKERS</button><strong>${escapeHtml(team.organization_name||team.team_name)}</strong><small>${escapeHtml(team.sport||'')} ${team.city||team.state?'• '+escapeHtml([team.city,team.state].filter(Boolean).join(', ')):''}</small></div>`;
+  showLockerHub();
+ }catch(e){alert(e.message)}
+}
+async function exitAdminLocker(){
+ adminSelectedLocker=null;
+ await renderAdminLockerDirectory();
+ showLockerHub();
+}
+async function renderLockerInbox(){
+ const el=document.getElementById('lockerInbox');if(!el)return;
+ if(lockerSession.adminRole){el.innerHTML='';return}
+ const teamId=(lockerSession.lockerAccess||[])[0]?.team_id;if(!teamId){el.innerHTML='';return}
+ try{
+  const d=await workspaceApi('inbox',{teamId}),items=d.items||[];
+  el.innerHTML=`<div class="lockerInbox${items.length?'':' open'}"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>REVIEW CENTER</strong><small>${items.length?(items.length+' item'+(items.length===1?'':'s')+' waiting for your review'):"You're all caught up"}</small></span>${items.length?`<span class="lockerInboxCount">${items.length}</span>`:''}</div><div class="lockerInboxItems">${items.length?items.map(x=>`<button type="button" class="lockerInboxItem" onclick="openInboxItem('${x.type}',${x.id})"><span class="lockerInboxDot"></span><span><strong>${x.type==='art'?'ARTWORK TO REVIEW':x.type==='invoice'?'INVOICE READY':'QUOTE TO REVIEW'}</strong><small>${escapeHtml(x.title||'GOAT Sports')} • ${String(x.status||'').replaceAll('_',' ')}</small></span><span class="arrow">›</span></button>`).join(''):'<div class="lockerInboxEmpty">No artwork, quotes or invoices currently need your attention.</div>'}</div></div>`;
+ }catch(e){el.innerHTML=''}
+}
+
+async function renderLockerTimelineDropdown(){
+ const el=document.getElementById('lockerTimelineDropdown');if(!el)return;
+ if(lockerSession.adminRole){el.innerHTML='';return}
+ const teamId=(lockerSession.lockerAccess||[])[0]?.team_id;if(!teamId){el.innerHTML='';return}
+ el.innerHTML=`<div class="lockerTimelineDrop"><button class="lockerTimelineDropHead" type="button" onclick="this.parentElement.classList.toggle('open')"><span class="ico">↗</span><span class="copy"><strong>PROJECT TIMELINE</strong><small>Loading current project progress…</small></span><span class="chev">⌄</span></button><div class="lockerTimelineDropBody"><div class="workspaceEmpty">Loading timeline…</div></div></div>`;
+ try{
+  const [dd,qd]=await Promise.all([workspaceApi('list',{teamId}),workspaceApi('list_quotes',{teamId})]);
+  const designs=dd.designs||[],quotes=qd.quotes||[];
+  const d=[...designs].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const rq=d?quotes.filter(q=>Number(q.design_id)===Number(d.id)):quotes;
+  const q=[...(rq.length?rq:quotes)].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const ev=[];
+  if(d?.created_at)ev.push(['Project / Artwork Started',d.created_at]);
+  if(d?.status==='approved')ev.push(['Artwork Approved',d.approved_at||d.updated_at]);
+  if(q?.created_at)ev.push([`Quote ${q.quote_number||''} Created`.trim(),q.created_at]);
+  if(q?.responded_at&&['approved','invoiced','paid'].includes(q.status))ev.push(['Quote Approved',q.responded_at]);
+  if(q?.shopify_draft_order_id)ev.push(['Shopify Invoice Created',q.updated_at||q.responded_at]);
+  if(q?.status==='paid')ev.push(['Payment Received',q.paid_at||q.updated_at]);
+  let current='AWAITING PROJECT START';
+  if(d)current='ARTWORK';if(d?.status==='approved')current='QUOTE';
+  if(q?.status==='sent'||q?.status==='changes_requested')current='QUOTE REVIEW';
+  if(q?.status==='approved')current='INVOICE / PAYMENT';if(q?.status==='invoiced')current='AWAITING PAYMENT';if(q?.status==='paid')current='PRODUCTION';
+  const box=el.querySelector('.lockerTimelineDrop'),copy=box.querySelector('.copy'),body=box.querySelector('.lockerTimelineDropBody');
+  copy.innerHTML=`<strong>PROJECT TIMELINE</strong><small>CURRENT: ${escapeHtml(current)} • tap to view timestamps</small>`;
+  body.innerHTML=(ev.length?ev.slice(-5).map(x=>`<div class="accountTimelineRow done"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>${escapeHtml(x[0])}</strong><small>${escapeHtml(goatFormatStamp(x[1]))}</small></span></div>`).join(''):`<div class="lockerInboxEmpty">No project milestones have been recorded yet.</div>`)+`<button class="accountTimelineBtn" type="button" onclick="renderLockerTimeline()">VIEW FULL TIMELINE →</button>`;
+ }catch(e){const body=el.querySelector('.lockerTimelineDropBody');if(body)body.innerHTML='<div class="lockerInboxEmpty">Timeline is not available right now.</div>'}
+}
+async function openInboxItem(type,itemId){
+ if(type==='art'){openLockerSection('approvals');return}
+ if(type==='invoice'){
+  try{
+   const teamId=adminSelectedLocker?.id||(lockerSession.lockerAccess||[])[0]?.team_id;
+   const d=await workspaceApi('list_quotes',{teamId:Number(teamId)});
+   const q=(d.quotes||[]).find(x=>Number(x.id)===Number(itemId));
+   const url=q?.shopify_invoice_url;
+   if(url){window.location.assign(url);return}
+   alert('The Shopify invoice link is not available yet.');return;
+  }catch(e){alert(e.message||'Could not open the Shopify invoice.');return}
+ }
+ renderLockerQuotes();document.getElementById('lockerHubTools').style.display='none';
+}
+function showLockerHub(){
+ renderLockerInbox();
+ renderLockerTimelineDropdown();
+ const sub=document.getElementById('lockerSubView'),hub=document.getElementById('lockerHubTools');
+ if(sub)sub.innerHTML='';if(hub)hub.style.display='';
+}
+async function renderLockerTimeline(){
+ const sub=document.getElementById('lockerSubView'),hub=document.getElementById('lockerHubTools');if(hub)hub.style.display='none';if(!sub)return;
+ const teamId=adminSelectedLocker?.id||(lockerSession.lockerAccess||[])[0]?.team_id;
+ if(!teamId){sub.innerHTML=lockerSubHeader('TIMELINE','PROJECT TIMELINE')+'<div class="workspaceEmpty">No Locker selected.</div>';return}
+ sub.innerHTML=lockerSubHeader('TIMELINE','PROJECT TIMELINE')+'<div class="workspaceEmpty">Loading timeline…</div>';
+ try{
+  const [dd,qd]=await Promise.all([workspaceApi('list',{teamId}),workspaceApi('list_quotes',{teamId})]);
+  const designs=dd.designs||[],quotes=qd.quotes||[];
+  const latestDesign=[...designs].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const related=latestDesign?quotes.filter(q=>Number(q.design_id)===Number(latestDesign.id)):quotes;
+  const q=[...(related.length?related:quotes)].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const rows=[];
+  if(latestDesign?.created_at)rows.push(['PROJECT / ARTWORK STARTED',latestDesign.created_at,true]);
+  if(latestDesign?.status==='approved')rows.push(['ARTWORK APPROVED',latestDesign.approved_at||latestDesign.updated_at,true]);
+  if(q?.created_at)rows.push([`QUOTE ${q.quote_number||''} CREATED`,q.created_at,true]);
+  if(q?.responded_at&&['approved','invoiced','paid'].includes(q.status))rows.push(['QUOTE APPROVED',q.responded_at,true]);
+  if(q?.shopify_draft_order_id)rows.push(['SHOPIFY INVOICE CREATED',q.updated_at||q.responded_at,true]);
+  if(q?.status==='paid')rows.push(['PAYMENT RECEIVED',q.paid_at||q.updated_at,true]);
+  const future=['PRODUCTION','QUALITY CHECK','SHIPPED','COMPLETED'];
+  let html=lockerSubHeader('TIMELINE','PROJECT TIMELINE')+`<div class="dashboardNotice"><strong>LIVE PROJECT HISTORY</strong><p>Completed milestones retain their recorded date and time. Production, quality check, shipping and completion will populate as those stages are recorded.</p></div><div class="accountProjectTimeline"><div class="accountTimelineBody">`;
+  html+=(rows.length?rows.map(r=>`<div class="accountTimelineRow done"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>${escapeHtml(r[0])}</strong><small>${escapeHtml(goatFormatStamp(r[1]))}</small></span></div>`).join(''):`<div class="accountTimelineRow current"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>PROJECT NOT STARTED</strong><small>No project milestones have been recorded yet.</small></span></div>`);
+  html+=future.map((x,i)=>`<div class="accountTimelineRow ${i===0&&q?.status==='paid'?'current':''}"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>${x}</strong><small>Upcoming</small></span></div>`).join('')+'</div></div>';
+  sub.innerHTML=html;
+ }catch(e){sub.innerHTML=lockerSubHeader('TIMELINE','PROJECT TIMELINE')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+
+async function renderLockerInvoices(){
+ const sub=document.getElementById('lockerSubView'),hub=document.getElementById('lockerHubTools');if(hub)hub.style.display='none';if(!sub)return;
+ const teamId=adminSelectedLocker?.id||(lockerSession.lockerAccess||[])[0]?.team_id;
+ sub.innerHTML=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS')+'<div class="workspaceEmpty">Loading invoices…</div>';
+ if(!teamId){sub.innerHTML=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS')+'<div class="workspaceEmpty">No Locker selected.</div>';return}
+ try{
+  let d=await workspaceApi('list_quotes',{teamId}); for(const q of (d.quotes||[]).filter(x=>x.status==='invoiced')){try{await workspaceApi('sync_shopify_payment',{quoteId:q.id})}catch(e){}} d=await workspaceApi('list_quotes',{teamId}); const quotes=(d.quotes||[]).filter(q=>['invoiced','paid'].includes(q.status)||q.shopify_invoice_url||q.shopify_order_id);
+  let html=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS');if(!quotes.length){html+='<div class="dashboardNotice"><strong>INVOICES / RECEIPTS</strong><p>Shopify invoices and completed payment receipts will appear here.</p></div><div class="workspaceEmpty">No invoices or receipts yet.</div>';sub.innerHTML=html;return}
+  html+=quotes.map(q=>`<article class="dashboardNotice"><strong>${q.status==='paid'?'PAID • RECEIPT':'INVOICE READY'} • ${escapeHtml(q.quote_number||'')}</strong><p>$${Number(q.amount||0).toFixed(2)}${q.status==='paid'&&q.paid_at?` • Paid ${escapeHtml(goatFormatStamp(q.paid_at))}`:''}${q.shopify_order_name?` • ${escapeHtml(q.shopify_order_name)}`:''}</p>${(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)?`<button class="primaryBtn" type="button" onclick="window.open('${escapeHtml(q.status==='paid'?(q.shopify_receipt_url||q.shopify_invoice_url):q.shopify_invoice_url)}','_blank')">${q.status==='paid'?'VIEW RECEIPT / ORDER DETAILS':'VIEW & PAY INVOICE'}</button>`:''}${q.status==='paid'&&q.order_printer_pdf_url?`<button class="secondaryBtn" style="margin-top:7px" type="button" onclick="window.open('${escapeHtml(q.order_printer_pdf_url)}','_blank')">DOWNLOAD PDF INVOICE / RECEIPT</button>`:''}</article>`).join('');
+  sub.innerHTML=html;
+ }catch(e){sub.innerHTML=lockerSubHeader('INVOICES / RECEIPTS','INVOICES & RECEIPTS')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+function openLockerSection(section){
+ const sub=document.getElementById('lockerSubView'),hub=document.getElementById('lockerHubTools');
+ if(hub)hub.style.display='none';
+ if(!sub)return;
+ sub.innerHTML='<div class="workspaceEmpty">Loading…</div>';
+ if(section==='designs')return renderDesignSection();
+ if(section==='approvals')return renderApprovalSection();
+}
+async function getLockerDesignData(){
+ const access=lockerSession.lockerAccess||[],teamId=access[0]?.team_id;
+ if(lockerSession.adminRole){
+  if(adminSelectedLocker)return await workspaceApi('list',{teamId:adminSelectedLocker.id});
+  return await workspaceApi('admin_feed');
+ }
+ if(!teamId)return {designs:[]};
+ return await workspaceApi('list',{teamId});
+}
+function lockerSubHeader(eyebrow,title,extra=''){
+ return `<div class="lockerSubHead"><div><button class="lockerBack" onclick="showLockerHub()">‹ GOAT LOCKER</button><div class="eyebrow" style="margin-top:8px;color:var(--purple)">${eyebrow}</div><h2>${title}</h2></div>${extra}</div>`;
+}
+async function renderDesignSection(){
+ const el=document.getElementById('lockerSubView');if(!el)return;
+ try{
+  const d=await getLockerDesignData();
+  const designs=(d.designs||[]).filter(x=>x.status==='approved');
+  let html=lockerSubHeader('MY DESIGNS','APPROVED DESIGNS');
+  html+=designs.length?'<div class="designGrid">'+designs.map(designCardHtml).join('')+'</div>':'<div class="workspaceEmpty">No approved designs yet. Designs will appear here after team approval.</div>';
+  el.innerHTML=html;
+ }catch(e){el.innerHTML=lockerSubHeader('MY DESIGNS','APPROVED DESIGNS')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+async function renderApprovalSection(){
+ const el=document.getElementById('lockerSubView');if(!el)return;
+ try{
+  const d=await getLockerDesignData();
+  const designs=(d.designs||[]).filter(x=>x.status==='pending'||x.status==='changes_requested');
+  const add=lockerSession.adminRole?'<button class="cta" onclick="openDesignAdmin()">ADD DESIGN</button>':'';
+  let html=lockerSubHeader('ARTWORK & APPROVALS','ACTIVE APPROVALS',add);
+  html+='<div class="dashboardNotice"><strong>APPROVAL WORKFLOW</strong><p>New designs begin here. Once approved by the team, they automatically move to My Designs.</p></div>';
+  if(!designs.length)html+='<div class="dashboardNotice"><strong>ALL CAUGHT UP</strong><p>There are no designs currently waiting for approval or revision.</p></div>';
+  else html+='<div class="designGrid">'+designs.map(designCardHtml).join('')+'</div>';
+  el.innerHTML=html;
+ }catch(e){el.innerHTML=lockerSubHeader('ARTWORK & APPROVALS','ACTIVE APPROVALS')+`<div class="workspaceEmpty">${escapeHtml(e.message)}</div>`}
+}
+function designCardHtml(d){
+ const status=String(d.status||'pending'), label=status==='approved'?'APPROVED':status==='changes_requested'?'CHANGES REQUESTED':'AWAITING APPROVAL';
+ const asset=d.asset_url?`<img src="${escapeHtml(d.asset_url)}" alt="${escapeHtml(d.title)}">`:'<span>DESIGN PREVIEW</span>';
+ const team=d.goat_teams?.organization_name||d.goat_teams?.team_name||'';
+ const approvals=(d.goat_locker_approvals||[]).slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ const latest=approvals[0];
+ const hist=approvals.map(a=>`<small><b>${a.decision==='approved'?'APPROVED':'CHANGES REQUESTED'}</b> by ${escapeHtml(a.customer_email)}${a.comment?' — '+escapeHtml(a.comment):''}</small>`).join('');
+ const revision=`REVISION ${Number(d.revision_number||1)}`;
+ let actions='';
+ if(lockerSession.adminRole){
+   if(status==='changes_requested'){
+     actions=`<div class="approvalHistory"><div class="eyebrow" style="color:var(--orange)">REQUEST FROM TEAM</div>${latest?`<small><b>${escapeHtml(latest.customer_email)}</b>${latest.comment?' — '+escapeHtml(latest.comment):''}</small>`:'<small>Change request received.</small>'}</div>
+     <div class="approvalActions"><button class="approveBtn" onclick="openRevisionModal(${d.id})">UPLOAD REVISION</button><button class="changesBtn" onclick="markDesignResolved(${d.id})">MARK RESOLVED</button></div>`;
+   }else if(status==='approved'){
+     actions=`<div class="approvalHistory"><div class="eyebrow" style="color:var(--teal)">TEAM APPROVAL</div>${latest?`<small><b>${escapeHtml(latest.customer_email)}</b>${latest.comment?' — '+escapeHtml(latest.comment):''}</small>`:''}</div>`;
+   }else{
+     actions=`<p style="font-size:9px;color:#777;margin-top:10px">Waiting for the team representative to approve this revision or request changes.</p>`;
+   }
+   actions+=`<button style="margin-top:8px;border:0;background:none;font-size:8px;font-weight:900" onclick="deleteLockerDesign(${d.id})">DELETE DESIGN</button>`;
+ }else{
+   if(status==='approved'){
+     actions=hist?`<div class="approvalHistory"><div class="eyebrow">APPROVAL HISTORY</div>${hist}</div>`:'';
+   }else{
+     actions=`<div class="approvalActions"><button class="approveBtn" onclick="decideDesign(${d.id},'approved')">APPROVE</button><button class="changesBtn" onclick="decideDesign(${d.id},'changes_requested')">REQUEST CHANGES</button></div>${hist?`<div class="approvalHistory"><div class="eyebrow">ACTIVITY</div>${hist}</div>`:''}`;
+   }
+ }
+ return `<article class="designCard"><div class="designAsset">${asset}</div><div class="designBody"><span class="statusPill status-${status}">${label}</span><span class="statusPill status-pending" style="margin-left:5px">${revision}</span>${team?`<div class="eyebrow" style="margin-top:8px;color:var(--teal)">${escapeHtml(team)}</div>`:''}<h3>${escapeHtml(d.title)}</h3>${d.description?`<p>${escapeHtml(d.description)}</p>`:''}${status==='approved'?`<div class="approvalStamp"><div class="stampTitle">✓ APPROVED FOR PRODUCTION</div>${d.approval_number?`<strong>DESIGN # ${escapeHtml(d.approval_number)}</strong>`:''}<strong>Approved by ${escapeHtml(d.approved_by_email||latest?.customer_email||'Authorized Team Account')}</strong><small>${d.approved_at?new Date(d.approved_at).toLocaleString():latest?.created_at?new Date(latest.created_at).toLocaleString():''}</small></div>`:''}${actions}</div></article>`;
+}
+
+function openRevisionModal(id){
+ document.getElementById('revisionDesignId').value=id;
+ const m=document.getElementById('designRevisionModal');m.style.display='flex';m.classList.add('show');
+}
+async function submitDesignRevision(e){
+ e.preventDefault();const form=e.currentTarget,f=new FormData(form),btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='SENDING…';
+ try{
+  const d=await workspaceApi('revise',{designId:Number(f.get('designId')),assetUrl:String(f.get('assetUrl')||''),note:String(f.get('note')||'')});
+  form.reset();hide('designRevisionModal');toast(`Revision ${d.revisionNumber} sent to team`);await renderApprovalSection();
+ }catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='SEND REVISION TO TEAM'}
+}
+async function markDesignResolved(id){
+ if(!confirm('Mark this change request resolved and send the current design back to the team for approval?'))return;
+ try{await workspaceApi('resolve',{designId:id});toast('Change request resolved — awaiting team approval');await renderApprovalSection()}catch(e){alert(e.message)}
+}
+async function decideDesign(id,decision){
+ const promptText=decision==='approved'?'Optional approval note:':'What changes are needed?';
+ const comment=prompt(promptText,'');if(comment===null)return;
+ try{await workspaceApi('decide',{designId:id,decision,comment});toast(decision==='approved'?'Design approved':'Changes requested');await renderApprovalSection()}catch(e){alert(e.message)}
+}
+async function openDesignAdmin(){
+ try{
+  let teams=[];
+  if(lockerSession.adminRole){const d=await lockerApi('list');teams=d.teams||[]}
+  else teams=(lockerSession.lockerAccess||[]).map(x=>x.goat_teams).filter(Boolean);
+  const sel=document.getElementById('designTeamId');sel.innerHTML=teams.map(t=>`<option value="${t.id}">${escapeHtml(t.organization_name||t.team_name)}</option>`).join('');
+  if(adminSelectedLocker)sel.value=String(adminSelectedLocker.id);
+  const m=document.getElementById('designAdminModal');m.style.display='flex';m.classList.add('show');
+ }catch(e){alert(e.message)}
+}
+async function createLockerDesign(e){
+ e.preventDefault();const form=e.currentTarget,f=new FormData(form),btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='ADDING…';
+ try{await workspaceApi('create',{teamId:Number(f.get('teamId')),title:String(f.get('title')),assetUrl:String(f.get('assetUrl')||''),description:String(f.get('description')||'')});form.reset();hide('designAdminModal');toast('Design added to Locker');await renderApprovalSection()}
+ catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent='ADD TO LOCKER FOR APPROVAL'}
+}
+async function deleteLockerDesign(id){if(!confirm('Delete this design and its approval history?'))return;try{await workspaceApi('delete',{designId:id});toast('Design deleted');await renderApprovalSection()}catch(e){alert(e.message)}}
+function lockerTeamHtml(x){const t=x.goat_teams||{};return `<div class="lockerTeamCard"><div class="eyebrow" style="color:var(--teal)">AUTHORIZED LOCKER</div><h3>${escapeHtml(t.organization_name||t.team_name||'GOAT Sports Team')}</h3><p>${escapeHtml(x.role||'Team Rep')}${t.sport?' • '+escapeHtml(t.sport):''}</p></div>`}
+async function openLockerAdmin(){
+ try{
+  const d=await lockerApi('list');
+  const m=document.getElementById('lockerAdminModal');m.style.display='flex';m.classList.add('show');
+  const sel=document.getElementById('adminLockerTeamSelect');
+  sel.innerHTML='<option value="">Select organization…</option>'+d.teams.map(t=>`<option value="${t.id}">${escapeHtml(t.organization_name||t.team_name)}</option>`).join('');
+  renderAdminAccess(d.access);
+ }catch(e){alert(e.message)}
+}
+function renderAdminAccess(rows){
+ const el=document.getElementById('adminAccessList');
+ el.innerHTML='<div class="eyebrow" style="margin-top:8px">CURRENT LOCKER ACCESS</div>'+((rows||[]).length?rows.map(x=>`<div class="adminAccessRow"><strong>${escapeHtml(x.customer_email)}</strong><small>${escapeHtml(x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team')} • ${escapeHtml(x.role)} • ${x.active?'ACTIVE':'REVOKED'}</small>${x.active?`<button onclick="revokeLockerAccess(${x.id})">REMOVE ACCESS</button>`:`<button onclick="reactivateLockerAccess(${x.id})">RESTORE ACCESS</button>`}</div>`).join(''):'<p style="font-size:9px;color:#777">No team reps have been linked yet.</p>');
+}
+async function grantLockerAccess(e){
+ e.preventDefault();
+ const form=e.currentTarget;
+ const f=new FormData(form);
+ const btn=form.querySelector('button[type=submit]');
+ btn.disabled=true;btn.textContent='LINKING…';
+ try{
+  await lockerApi('grant',{email:String(f.get('email')).trim(),teamId:Number(f.get('teamId')),role:String(f.get('role')||'Team Rep').trim()});
+  form.reset();
+  toast('Locker access linked');
+  await openLockerAdmin();
+ }catch(err){
+  alert(err.message);
+ }finally{
+  btn.disabled=false;btn.textContent='LINK TO LOCKER';
+ }
+}
+async function revokeLockerAccess(id){if(!confirm('Remove this person’s GOAT Locker access? Their Shopify account will remain active.'))return;try{await lockerApi('revoke',{id});toast('Locker access removed');await openLockerAdmin()}catch(e){alert(e.message)}}
+async function reactivateLockerAccess(id){try{await lockerApi('reactivate',{id});toast('Locker access restored');await openLockerAdmin()}catch(e){alert(e.message)}}
+async function renderCustomerAccount(){
+ const el=document.getElementById('accountContent');if(!el)return;
+ if(!customerToken()){el.innerHTML=`<p>Sign in with the email connected to your existing GOAT Sports Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN / CONTINUE</button>`;return}
+ if(!customerProfile){el.innerHTML='<p>Loading your account…</p>';loadCustomerData().then(renderCustomerAccount);return}
+ if(customerProfile._loadError){el.innerHTML=`<p>We couldn't refresh your Shopify account information.</p><button class="cta" onclick="retryCustomerAccount()">TRY AGAIN</button>`;return}
+ const email=customerProfile.emailAddress?.emailAddress||'';
+ const a=customerProfile.defaultAddress;
+ const addressHtml=a?`<div class="addressCard"><div class="eyebrow" style="color:var(--teal)">DEFAULT SHIPPING ADDRESS</div><strong>${a.name||customerProfile.displayName||''}</strong><p>${(a.formatted||[]).map(x=>escapeHtml(x)).join('<br>')}</p></div>`:
+ `<div class="addressCard"><div class="eyebrow" style="color:var(--teal)">DEFAULT SHIPPING ADDRESS</div><p>No default shipping address is currently listed on this Shopify customer account.</p></div>`;
+ el.innerHTML=`<div class="accountWelcome"><div class="eyebrow">WELCOME BACK</div><h2>${escapeHtml(customerProfile.displayName||'GOAT Sports Customer')}</h2><p>${escapeHtml(email)}</p></div>
+ <div class="editAccountGrid"><button onclick="openProfileEditor()">EDIT PROFILE</button><button onclick="openAddressEditor()">EDIT SHIPPING ADDRESS</button></div>
+ ${addressHtml}
+ <div id="accountLockerAccess" class="lockerAccess"><div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Checking your team access…</p></div>
+ <div id="accountCustomerMailbox"></div>
+ <div id="accountCustomerTimeline"></div>
+ <div id="accountAdminMailboxStandalone"></div>
+ <button class="signOutBtn" onclick="customerLogout()">SIGN OUT</button>`;
+ await renderAccountLockerAccess();
+}
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function renderAccountLockerAccess(){
+ const el=document.getElementById('accountLockerAccess');if(!el)return;
+ await loadLockerSession();
+ if(lockerSession.adminRole){
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER ADMIN</h2><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button>`;
+  await renderAdminStandaloneMailbox();
+  await renderAccountAdminLockers();
+ }else if(lockerSession.lockerAccess.length){
+  el.innerHTML=`<div class="customerLockerSection"><div class="eyebrow" style="color:var(--purple)">GOAT SPORTS CUSTOM CLIENTS</div><h2>TEAM LOCKER</h2><div>${lockerSession.lockerAccess.map(x=>{const t=x.goat_teams||{};const name=t.organization_name||t.team_name||'GOAT Sports Team';const meta=[t.sport,[t.city,t.state].filter(Boolean).join(', ')].filter(Boolean).join(' • ');return `<button type="button" class="customerLockerTile" onclick="openCustomerLocker(${x.team_id})">${t.logo_url?`<img src="${escapeHtml(t.logo_url)}" alt="">`:'<span></span>'}<span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(meta||'Authorized Team Locker')}</small></span><span class="arrow">›</span></button>`}).join('')}</div></div>`;
+  await renderCustomerAccountMailbox();
+  await renderCustomerAccountTimeline();
+ }else{
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><h2>GOAT LOCKER</h2><p>Your private workspace for designs, artwork approvals, rosters, sizing, quotes, documents and reorders.</p><span class="lockerState">TEAM REP ACCESS REQUIRED</span><p style="font-size:9px;color:#aaa">Ask your GOAT Sports administrator to link this customer account to your organization's Locker.</p>`;
+ }
+}
+
+async function renderCustomerAccountMailbox(){
+ const el=document.getElementById('accountCustomerMailbox');if(!el)return;
+ const access=lockerSession.lockerAccess||[];let all=[];
+ try{
+  for(const x of access){const d=await workspaceApi('inbox',{teamId:x.team_id});for(const item of (d.items||[]))all.push({...item,team_id:x.team_id,team_name:x.goat_teams?.organization_name||x.goat_teams?.team_name||'Team Locker'})}
+  all.sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));
+  el.innerHTML=`<div class="lockerInbox open" style="margin-top:10px"><div class="lockerInboxHead" onclick="this.parentElement.classList.toggle('open')"><span class="lockerInboxIcon">✉</span><span><strong>WORK MAILBOX</strong><small>${all.length?(all.length+' item'+(all.length===1?'':'s')+' need your review'):"You're all caught up"}</small></span>${all.length?`<span class="lockerInboxCount">${all.length}</span>`:''}</div><div class="lockerInboxItems">${all.length?all.map(x=>`<button type="button" class="lockerInboxItem" onclick="openCustomerAccountInboxItem(${Number(x.team_id)},'${x.type}',${Number(x.id)})"><span class="lockerInboxDot"></span><span><strong>${x.type==='art'?'ARTWORK TO REVIEW':x.type==='invoice'?'INVOICE READY':'UPDATED QUOTE TO REVIEW'}</strong><small>${escapeHtml(x.team_name)} • ${escapeHtml(x.title||'GOAT Sports')}</small></span><span class="arrow">›</span></button>`).join(''):'<div class="lockerInboxEmpty">No artwork, quotes or invoices currently need your attention.</div>'}</div></div>`;
+ }catch(e){el.innerHTML=`<div class="workspaceEmpty">${escapeHtml(e.message||'Could not load mailbox.')}</div>`}
+}
+
+function goatFormatStamp(v){
+ if(!v)return '';
+ const d=new Date(v); if(Number.isNaN(d.getTime()))return '';
+ return d.toLocaleString([], {month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+}
+async function renderCustomerAccountTimeline(){
+ const el=document.getElementById('accountCustomerTimeline');if(!el)return;
+ const access=lockerSession.lockerAccess||[];
+ if(!access.length){el.innerHTML='';return}
+ const x=access[0],teamId=x.team_id,t=x.goat_teams||{},teamName=t.organization_name||t.team_name||'Team Locker';
+ el.innerHTML=`<div class="accountProjectTimeline"><div class="accountTimelineHead"><span class="accountTimelineIcon">↗</span><span><strong>PROJECT TIMELINE</strong><small>Loading ${escapeHtml(teamName)} project activity…</small></span></div></div>`;
+ try{
+  const [dd,qd]=await Promise.all([workspaceApi('list',{teamId}),workspaceApi('list_quotes',{teamId})]);
+  const designs=dd.designs||[],quotes=qd.quotes||[];
+  const latestDesign=[...designs].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const related=latestDesign?quotes.filter(q=>Number(q.design_id)===Number(latestDesign.id)):quotes;
+  const q=[...(related.length?related:quotes)].sort((a,b)=>String(b.updated_at||b.created_at||'').localeCompare(String(a.updated_at||a.created_at||'')))[0];
+  const events=[];
+  if(latestDesign?.created_at)events.push({label:'Project / Artwork Started',at:latestDesign.created_at,done:true});
+  if(latestDesign?.status==='approved' && (latestDesign.approved_at||latestDesign.updated_at))events.push({label:'Artwork Approved',at:latestDesign.approved_at||latestDesign.updated_at,done:true});
+  if(q?.created_at)events.push({label:`Quote ${q.quote_number||''} Created`.trim(),at:q.created_at,done:true});
+  if(q?.responded_at && ['approved','invoiced','paid'].includes(q.status))events.push({label:'Quote Approved',at:q.responded_at,done:true});
+  if(q?.shopify_draft_order_id && (q.updated_at||q.responded_at))events.push({label:'Shopify Invoice Created',at:q.updated_at||q.responded_at,done:true});
+  if(q?.status==='paid')events.push({label:'Payment Received',at:q.paid_at||q.updated_at,done:true});
+  let current='AWAITING PROJECT START';
+  if(latestDesign)current='ARTWORK';
+  if(latestDesign?.status==='approved')current='QUOTE';
+  if(q?.status==='sent'||q?.status==='changes_requested')current='QUOTE REVIEW';
+  if(q?.status==='approved')current='INVOICE / PAYMENT';
+  if(q?.status==='invoiced')current='AWAITING PAYMENT';
+  if(q?.status==='paid')current='PRODUCTION';
+  const upcoming=q?.status==='paid'?['Production','Quality Check','Shipped','Completed']:q?.status==='invoiced'?['Payment Received','Production','Quality Check','Shipped','Completed']:['Invoice / Payment','Production','Quality Check','Shipped','Completed'];
+  const recent=events.slice(-4);
+  el.innerHTML=`<div class="accountProjectTimeline"><div class="accountTimelineHead"><span class="accountTimelineIcon">↗</span><span><strong>PROJECT TIMELINE</strong><small>${escapeHtml(teamName)} • live project progress</small></span></div><div class="accountTimelineBody"><div class="accountTimelineCurrent">CURRENT: ${escapeHtml(current)}</div>${recent.length?recent.map(e=>`<div class="accountTimelineRow done"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>${escapeHtml(e.label)}</strong><small>${escapeHtml(goatFormatStamp(e.at))}</small></span></div>`).join(''):'<div class="accountTimelineRow current"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>Project not started yet</strong><small>Activity will appear here with timestamps as the project moves forward.</small></span></div>'}${upcoming.slice(0,2).map((label,i)=>`<div class="accountTimelineRow ${i===0?'current':''}"><span class="accountTimelineDot"></span><span class="accountTimelineText"><strong>${escapeHtml(label)}</strong><small>${i===0?'Next stage':'Upcoming'}</small></span></div>`).join('')}<button class="accountTimelineBtn" type="button" onclick="openCustomerTimeline(${Number(teamId)})">VIEW FULL TIMELINE →</button></div></div>`;
+ }catch(e){el.innerHTML=`<div class="accountProjectTimeline"><div class="accountTimelineHead"><span class="accountTimelineIcon">↗</span><span><strong>PROJECT TIMELINE</strong><small>Timeline will appear as project activity is recorded.</small></span></div></div>`}
+}
+async function openCustomerTimeline(teamId){
+ const access=(lockerSession.lockerAccess||[]).find(x=>Number(x.team_id)===Number(teamId));if(!access)return;
+ adminSelectedLocker=null;go('locker');await new Promise(r=>setTimeout(r,120));await renderLockerTimeline();
+}
+async function openCustomerAccountInboxItem(teamId,type,itemId){
+ const access=(lockerSession.lockerAccess||[]).find(x=>Number(x.team_id)===Number(teamId));if(!access)return;
+ if(type==='invoice'){
+  try{
+   const d=await workspaceApi('list_quotes',{teamId:Number(teamId)});
+   const q=(d.quotes||[]).find(x=>Number(x.id)===Number(itemId));
+   const url=q?.shopify_invoice_url;
+   if(url){window.location.assign(url);return}
+   alert('The Shopify invoice link is not available yet.');return;
+  }catch(e){alert(e.message||'Could not open the Shopify invoice.');return}
+ }
+ adminSelectedLocker=null;go('locker');await new Promise(r=>setTimeout(r,120));
+ if(type==='art')await openLockerSection('approvals');else{await renderLockerQuotes();const h=document.getElementById('lockerHubTools');if(h)h.style.display='none';}
+}
+function openCustomerLocker(teamId){
+ const access=(lockerSession.lockerAccess||[]).find(x=>Number(x.team_id)===Number(teamId));
+ if(!access)return;
+ adminSelectedLocker=null;
+ openLocker();
+}
+async function customerMutation(query,variables={}){
+ const data=await customerRequest(query,variables);
+ return data;
+}
+function showAccountEdit(html){
+ const m=document.getElementById('accountEditModal');
+ document.getElementById('accountEditContent').innerHTML=html;m.style.display='flex';m.classList.add('show');
+}
+function openProfileEditor(){
+ const c=customerProfile||{};
+ showAccountEdit(`<div class="eyebrow" style="color:var(--purple)">CUSTOMER ACCOUNT</div><h2>EDIT PROFILE</h2>
+ <form class="accountForm" onsubmit="saveCustomerProfile(event)">
+ <label>FIRST NAME<input name="firstName" autocomplete="given-name" value="${escapeHtml(c.firstName||'')}"></label>
+ <label>LAST NAME<input name="lastName" autocomplete="family-name" value="${escapeHtml(c.lastName||'')}"></label>
+ <div class="accountFormNote">Your sign-in email is managed by Shopify Customer Accounts and is shown on your account screen.</div>
+ <button class="cta" type="submit">SAVE PROFILE</button></form>`);
+}
+async function saveCustomerProfile(e){
+ e.preventDefault();const f=new FormData(e.currentTarget),btn=e.currentTarget.querySelector('button[type=submit]');
+ btn.disabled=true;btn.textContent='SAVING…';
+ try{
+  const q=`mutation UpdateGOATCustomer($input:CustomerUpdateInput!){customerUpdate(input:$input){customer{firstName lastName displayName} userErrors{field message}}}`;
+  const d=await customerMutation(q,{input:{firstName:String(f.get('firstName')||'').trim(),lastName:String(f.get('lastName')||'').trim()}});
+  const errs=d.customerUpdate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
+  await loadCustomerData();hide('accountEditModal');renderCustomerAccount();toast('Profile updated');
+ }catch(err){btn.disabled=false;btn.textContent='SAVE PROFILE';alert(err.message)}
+}
+function openAddressEditor(){
+ const a=customerProfile?.defaultAddress||{};
+ showAccountEdit(`<div class="eyebrow" style="color:var(--teal)">CUSTOMER ACCOUNT</div><h2>EDIT SHIPPING ADDRESS</h2>
+ <form class="accountForm" onsubmit="saveCustomerAddress(event)">
+ <label>FIRST NAME<input name="firstName" autocomplete="given-name" value="${escapeHtml(a.firstName||customerProfile?.firstName||'')}"></label>
+ <label>LAST NAME<input name="lastName" autocomplete="family-name" value="${escapeHtml(a.lastName||customerProfile?.lastName||'')}"></label>
+ <label class="full">COMPANY<input name="company" autocomplete="organization" value="${escapeHtml(a.company||'')}"></label>
+ <label class="full">ADDRESS<input required name="address1" autocomplete="address-line1" value="${escapeHtml(a.address1||'')}"></label>
+ <label class="full">APT / SUITE / UNIT<input name="address2" autocomplete="address-line2" value="${escapeHtml(a.address2||'')}"></label>
+ <label>CITY<input required name="city" autocomplete="address-level2" value="${escapeHtml(a.city||'')}"></label>
+ <label>STATE / PROVINCE<input required name="zoneCode" autocomplete="address-level1" value="${escapeHtml(a.zoneCode||a.province||'')}"></label>
+ <label>ZIP / POSTAL CODE<input required name="zip" autocomplete="postal-code" value="${escapeHtml(a.zip||'')}"></label>
+ <label>COUNTRY CODE<input required maxlength="2" name="territoryCode" autocomplete="country" value="${escapeHtml(a.countryCode||'US')}"></label>
+ <label class="full">PHONE<input name="phoneNumber" autocomplete="tel" value="${escapeHtml(a.phoneNumber||'')}"></label>
+ <div class="accountFormNote">Saving updates the shipping address stored with your Shopify customer account.</div>
+ <button class="cta" type="submit">SAVE SHIPPING ADDRESS</button></form>`);
+}
+async function saveCustomerAddress(e){
+ e.preventDefault();const f=new FormData(e.currentTarget),a=customerProfile?.defaultAddress,btn=e.currentTarget.querySelector('button[type=submit]');
+ btn.disabled=true;btn.textContent='SAVING…';
+ const input={
+  firstName:String(f.get('firstName')||'').trim(),lastName:String(f.get('lastName')||'').trim(),
+  company:String(f.get('company')||'').trim()||null,address1:String(f.get('address1')||'').trim(),
+  address2:String(f.get('address2')||'').trim()||null,city:String(f.get('city')||'').trim(),
+  zoneCode:String(f.get('zoneCode')||'').trim(),zip:String(f.get('zip')||'').trim(),
+  countryCode:String(f.get('territoryCode')||'US').trim().toUpperCase(),
+  phoneNumber:String(f.get('phoneNumber')||'').trim()||null
+ };
+ try{
+  if(a?.id){
+   const q=`mutation UpdateGOATAddress($addressId:ID!,$address:CustomerAddressInput!,$defaultAddress:Boolean){customerAddressUpdate(addressId:$addressId,address:$address,defaultAddress:$defaultAddress){customerAddress{id} userErrors{field message}}}`;
+   const d=await customerMutation(q,{addressId:a.id,address:input,defaultAddress:true});const errs=d.customerAddressUpdate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
+  }else{
+   const q=`mutation CreateGOATAddress($address:CustomerAddressInput!,$defaultAddress:Boolean){customerAddressCreate(address:$address,defaultAddress:$defaultAddress){customerAddress{id} userErrors{field message}}}`;
+   const d=await customerMutation(q,{address:input,defaultAddress:true});const errs=d.customerAddressCreate?.userErrors||[];if(errs.length)throw new Error(errs.map(x=>x.message).join(', '));
+  }
+  await loadCustomerData();hide('accountEditModal');renderCustomerAccount();toast('Shipping address updated');
+ }catch(err){btn.disabled=false;btn.textContent='SAVE SHIPPING ADDRESS';alert(err.message)}
+}
+async function retryCustomerAccount(){customerProfile=null;document.getElementById('accountContent').innerHTML='<p>Loading your account…</p>';await loadCustomerData();renderCustomerAccount()}
+function renderCustomerOrders(){
+ const el=document.getElementById('ordersContent');if(!el)return;
+ if(!customerToken()){el.innerHTML=`<p>Sign in to view purchases connected to your Shopify customer account.</p><button class="cta" onclick="customerLogin()">SIGN IN TO VIEW ORDERS</button>`;return}
+ if(!customerProfile){el.innerHTML='<p>Loading your orders…</p>';loadCustomerData().then(renderCustomerOrders);return}
+ const orders=customerOrdersCache||[];
+ if(!orders.length){el.innerHTML='<p>No Shopify orders were found for this customer account.</p>';return}
+ el.innerHTML=orders.map(o=>`<article class="orderCard"><div class="orderTop"><strong>${o.name}</strong><span>${money(o.totalPrice.amount,o.totalPrice.currencyCode)}</span></div><div class="orderMeta">${new Date(o.processedAt).toLocaleDateString()}</div><span class="orderStatus">${String(o.fulfillmentStatus||'ORDER RECEIVED').replace(/_/g,' ')}</span>${o.statusPageUrl?`<a class="orderLink" href="${o.statusPageUrl}" target="_blank" rel="noopener">VIEW ORDER DETAILS →</a>`:''}</article>`).join('');
+}
+async function customerLogout(){
+ try{
+  const cfg=await customerDiscovery(), idToken=sessionStorage.getItem('goat_customer_id_token');
+  sessionStorage.removeItem('goat_customer_access_token');sessionStorage.removeItem('goat_customer_token_expires');sessionStorage.removeItem('goat_customer_id_token');
+  customerProfile=null;customerOrdersCache=null;
+  const u=new URL(cfg.end_session_endpoint||cfg.logout_endpoint);
+  if(idToken)u.searchParams.set('id_token_hint',idToken);
+  u.searchParams.set('post_logout_redirect_uri',CUSTOMER_REDIRECT_URI);
+  location.href=u.toString();
+ }catch(e){sessionStorage.clear();location.href=CUSTOMER_REDIRECT_URI}
+}
+const SHOPIFY_STORE='186815-4c.myshopify.com';
+const SHOPIFY_PUBLIC_TOKEN='df49776e20924d7b35003c9e6b675938';
+const SHOPIFY_API_VERSION='2026-10';
+const SHOPIFY_ENDPOINT=`https://${SHOPIFY_STORE}/api/${SHOPIFY_API_VERSION}/graphql.json`;
+let liveProducts=[], currentProduct=null;
+
+async function shopifyRequest(query,variables={}){
+ const r=await fetch(SHOPIFY_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','X-Shopify-Storefront-Access-Token':SHOPIFY_PUBLIC_TOKEN},body:JSON.stringify({query,variables})});
+ const j=await r.json(); if(!r.ok||j.errors) throw new Error(j.errors?.[0]?.message||'Shopify request failed'); return j.data;
+}
+async function loadShop(){
+ const q=`query GOATProducts($first:Int!){products(first:$first){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}}}}}`;
+ try{const d=await shopifyRequest(q,{first:50});liveProducts=d.products.nodes||[];renderProducts(liveProducts);document.getElementById('shopStatus').textContent=liveProducts.length?`${liveProducts.length} products`:'No products are currently published to this storefront.';loadCollections();}
+ catch(e){document.getElementById('shopStatus').textContent='Could not load products: '+e.message;}
+}
+function money(a,c='USD'){return new Intl.NumberFormat('en-US',{style:'currency',currency:c}).format(Number(a))}
+function renderProducts(items){
+ const el=document.getElementById('shopProducts');el.innerHTML=items.map((p,i)=>`<button class="liveProduct" onclick="openProduct(${i})"><div class="productImg">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.featuredImage.altText||p.title}">`:'<span class="noImg">NO IMAGE</span>'}</div><div class="productCopy"><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small><em>${p.availableForSale?'AVAILABLE':'SOLD OUT'}</em></div></button>`).join('');
+}
+async function loadCollections(){
+ const q=`query GOATCollections{collections(first:100){nodes{title handle products(first:1){nodes{id}}}}}`;
+ try{const d=await shopifyRequest(q);const cs=(d.collections.nodes||[]).filter(x=>x.products.nodes.length).slice(0,8);document.getElementById('shopCollectionChips').innerHTML=cs.map(c=>`<button class="chip" onclick="loadShopCollection('${c.handle}',this)">${c.title}</button>`).join('');}catch(e){}
+}
+async function loadShopCollection(handle,btn){
+ document.querySelectorAll('.shopControls .chip').forEach(x=>x.classList.remove('active'));if(btn)btn.classList.add('active');
+ if(!handle){renderProducts(liveProducts);document.getElementById('shopStatus').textContent=`${liveProducts.length} products`;return}
+ document.getElementById('shopStatus').textContent='Loading collection…';
+ const q=`query GOATCollection($handle:String!){collection(handle:$handle){title products(first:50){nodes{id title handle description availableForSale featuredImage{url altText} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode}}}}}}}`;
+ try{const d=await shopifyRequest(q,{handle});const items=d.collection?.products.nodes||[];liveProducts=items;renderProducts(items);document.getElementById('shopStatus').textContent=`${d.collection?.title||'Collection'} • ${items.length} products`;}catch(e){document.getElementById('shopStatus').textContent=e.message}
+}
+function openProduct(i){
+ const p=liveProducts[i];currentProduct=p;const variants=p.variants.nodes||[];
+ document.getElementById('productDetail').innerHTML=`<div class="productDetailImage">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}</div><h2>${p.title}</h2><div class="productPrice">${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</div><p class="productDesc">${p.description||''}</p><select id="shopVariant" class="variantSelect">${variants.map(v=>`<option value="${v.id}" ${!v.availableForSale?'disabled':''}>${v.title} — ${money(v.price.amount,v.price.currencyCode)}${!v.availableForSale?' — SOLD OUT':''}</option>`).join('')}</select><button class="shopBuy" onclick="startShopifyCart()" ${!p.availableForSale?'disabled':''}>${p.availableForSale?'ADD TO CART':'SOLD OUT'}</button>`;
+ const pm=document.getElementById('productModal'); pm.style.display='flex'; pm.classList.add('show');
+}
+const CART_FIELDS=`id checkoutUrl totalQuantity cost{subtotalAmount{amount currencyCode} totalAmount{amount currencyCode}} lines(first:100){nodes{id quantity merchandise{... on ProductVariant{id title product{title featuredImage{url altText}} price{amount currencyCode}}}}}`;
+
+function cartErrors(payload){
+ const e=payload?.userErrors||[];
+ if(e.length) throw new Error(e.map(x=>x.message).join(', '));
+}
+function saveCart(cart){
+ if(!cart)return;
+ localStorage.setItem('goat_cart_id',cart.id);
+ localStorage.setItem('goat_cart_checkout',cart.checkoutUrl||'');
+ updateCartBadge(cart.totalQuantity||0);
+}
+function updateCartBadge(n){
+ const b=document.getElementById('cartCount'); if(!b)return;
+ b.textContent=n||0;b.style.display=n?'grid':'none';
+}
+async function getCart(){
+ const id=localStorage.getItem('goat_cart_id'); if(!id)return null;
+ const q=`query GetCart($id:ID!){cart(id:$id){${CART_FIELDS}}}`;
+ try{
+  const d=await shopifyRequest(q,{id});
+  if(!d.cart){localStorage.removeItem('goat_cart_id');localStorage.removeItem('goat_cart_checkout');updateCartBadge(0)}
+  return d.cart||null;
+ }catch(e){console.warn('Cart fetch failed',e);return null}
+}
+async function startShopifyCart(){
+ const merchandiseId=document.getElementById('shopVariant')?.value;
+ if(!merchandiseId)return toast('Please select an available option');
+ try{
+  let cart=await getCart();
+  if(cart){
+   const q=`mutation AddCartLines($cartId:ID!,$lines:[CartLineInput!]!){cartLinesAdd(cartId:$cartId,lines:$lines){cart{${CART_FIELDS}} userErrors{field message}}}`;
+   const d=await shopifyRequest(q,{cartId:cart.id,lines:[{merchandiseId,quantity:1}]});
+   cartErrors(d.cartLinesAdd);cart=d.cartLinesAdd.cart;
+  }else{
+   const q=`mutation CartCreate($input:CartInput!){cartCreate(input:$input){cart{${CART_FIELDS}} userErrors{field message}}}`;
+   const d=await shopifyRequest(q,{input:{lines:[{merchandiseId,quantity:1}]}});
+   cartErrors(d.cartCreate);cart=d.cartCreate.cart;
+  }
+  saveCart(cart);hide('productModal');toast('Added to cart');openCart(cart);
+ }catch(e){toast('Cart error: '+e.message)}
+}
+async function openCart(prefetched){
+ const modal=document.getElementById('cartModal');modal.style.display='flex';modal.classList.add('show');
+ document.getElementById('cartContent').innerHTML='<div class="cartEmpty">Loading cart…</div>';
+ const cart=prefetched||await getCart();renderCart(cart);
+}
+function renderCart(cart){
+ const c=document.getElementById('cartContent');if(!c)return;
+ if(!cart||!cart.lines?.nodes?.length){updateCartBadge(0);c.innerHTML='<div class="cartHead"><h2>YOUR CART</h2></div><div class="cartEmpty">Your cart is empty.</div>';return}
+ saveCart(cart);
+ const lines=cart.lines.nodes;
+ c.innerHTML=`<div class="cartHead"><h2>YOUR CART</h2><small>${cart.totalQuantity} ITEM${cart.totalQuantity===1?'':'S'}</small></div>
+ ${lines.map(l=>{const m=l.merchandise,p=m.product;return `<div class="cartLine">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:'<div></div>'}<div><strong>${p.title}</strong><small>${m.title==='Default Title'?'':m.title}</small><small>${money(m.price.amount,m.price.currencyCode)}</small><div class="cartQty"><button onclick="changeCartQty('${l.id}',${Math.max(0,l.quantity-1)})">−</button><span>${l.quantity}</span><button onclick="changeCartQty('${l.id}',${l.quantity+1})">+</button></div></div><button class="cartRemove" onclick="changeCartQty('${l.id}',0)">REMOVE</button></div>`}).join('')}
+ <div class="cartSummary"><div class="cartTotal"><span>TOTAL</span><span>${money(cart.cost.totalAmount.amount,cart.cost.totalAmount.currencyCode)}</span></div><button class="checkoutBtn" onclick="goToCheckout()">SECURE CHECKOUT →</button></div>`;
+}
+async function changeCartQty(lineId,quantity){
+ const cartId=localStorage.getItem('goat_cart_id');if(!cartId)return;
+ try{
+  let d,payload;
+  if(quantity<=0){
+   const q=`mutation RemoveCartLines($cartId:ID!,$lineIds:[ID!]!){cartLinesRemove(cartId:$cartId,lineIds:$lineIds){cart{${CART_FIELDS}} userErrors{field message}}}`;
+   d=await shopifyRequest(q,{cartId,lineIds:[lineId]});payload=d.cartLinesRemove;
+  }else{
+   const q=`mutation UpdateCartLines($cartId:ID!,$lines:[CartLineUpdateInput!]!){cartLinesUpdate(cartId:$cartId,lines:$lines){cart{${CART_FIELDS}} userErrors{field message}}}`;
+   d=await shopifyRequest(q,{cartId,lines:[{id:lineId,quantity}]});payload=d.cartLinesUpdate;
+  }
+  cartErrors(payload);saveCart(payload.cart);renderCart(payload.cart);
+ }catch(e){toast('Cart error: '+e.message)}
+}
+function goToCheckout(){
+ const url=localStorage.getItem('goat_cart_checkout');
+ if(url) location.href=url; else toast('Checkout is not available yet.');
+}
+async function restoreCart(){
+ const cart=await getCart();if(cart)saveCart(cart);
+}
+document.addEventListener('DOMContentLoaded',async()=>{if(!(await handleCustomerCallback())){await loadCustomerData();renderCustomerAccount();await renderLocker();}});
+
+const SUPABASE_URL='https://qpavspvpdebtbbffdcmo.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_NoP_3R4R1WeoM7tivVJPAA_i4flKD1b';
+let fanTeams=[], activeFanTeam=null, teamProducts=[];
+
+async function loadFanTeams(){
+ const status=document.getElementById('fanTeamStatus');
+ try{
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/goat_teams?select=*&active=eq.true&order=featured.desc,team_name.asc`,{
+   headers:{'apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':`Bearer ${SUPABASE_PUBLISHABLE_KEY}`}
+  });
+  if(!r.ok) throw new Error(`Supabase ${r.status}`);
+  fanTeams=await r.json();
+  renderFanTeams(fanTeams);
+  status.textContent=fanTeams.length?`${fanTeams.length} official team store${fanTeams.length===1?'':'s'}`:'No active team stores yet.';
+ }catch(e){
+  status.textContent='Could not load team stores: '+e.message;
+  document.getElementById('fanTeamGrid').innerHTML='';
+ }
+}
+function fanInitials(name=''){return name.split(/\s+/).map(x=>x[0]).join('').slice(0,3).toUpperCase()}
+function renderFanTeams(items){
+ const grid=document.getElementById('fanTeamGrid');
+ grid.innerHTML=items.map(t=>`<button type="button" class="fanTeamCard" onclick="openFanTeam(${t.id})">
+   <div class="fanTeamLogo">${t.logo_url?`<img src="${t.logo_url}" alt="${t.team_name} logo">`:`<span class="fanInitials">${fanInitials(t.team_name)}</span>`}</div>
+   <div class="fanTeamCopy"><strong>${t.team_name}</strong><small>${[t.city,t.state].filter(Boolean).join(', ')}</small><em>${(t.sport||'TEAM').toUpperCase()}</em></div>
+ </button>`).join('');
+}
+function filterFanTeams(){
+ const q=(document.getElementById('teamSearch').value||'').trim().toLowerCase();
+ const items=!q?fanTeams:fanTeams.filter(t=>[t.team_name,t.organization_name,t.sport,t.city,t.state].some(v=>(v||'').toLowerCase().includes(q)));
+ renderFanTeams(items);
+ document.getElementById('fanTeamStatus').textContent=`${items.length} team${items.length===1?'':'s'} found`;
+}
+async function openFanTeam(id){
+ const t=fanTeams.find(x=>String(x.id)===String(id)); if(!t)return; activeFanTeam=t;
+ go('teamstore');
+ const content=document.getElementById('teamStoreContent');
+ const isMyrtle=String(t.team_name||'').trim().toLowerCase()==='myrtle beach collegiate';
+ const primary=isMyrtle?'#0080C6':(t.primary_color||'#683695');
+ const secondary=isMyrtle?'#FFEF00':(t.secondary_color||'#109488');
+ const bannerUrl=isMyrtle?'https://cdn.shopify.com/s/files/1/0657/3480/3625/files/Myrtle_Beach_Collegiate_Team_Store_Banner.png?v=1791143502':(t.hero_image_url||'');
+ content.style.setProperty('--team-primary',primary);
+ content.style.setProperty('--team-secondary',secondary);
+ const place=[t.city,t.state].filter(Boolean).join(', ');
+ content.innerHTML=`
+   <button type="button" class="teamStoreBack" onclick="backToFanHQ()">‹ BACK TO FANHQ</button>
+   <div class="teamStoreHero">
+     ${bannerUrl?`<img class="teamStoreBanner" src="${bannerUrl}" alt="${t.team_name} Team Store banner">`:''}
+   </div>
+   <div class="teamStoreIdentity">
+     <div class="teamStoreIdentityInner">
+       <div>
+         <div class="eyebrow">OFFICIAL TEAM STORE</div>
+         <h1>${t.team_name}</h1>
+         <p>${[t.sport,place].filter(Boolean).join(' • ')}</p>
+       </div>
+     </div>
+   </div>
+   <div class="teamStoreBody">
+     <div class="teamStoreTitleRow">
+       <div><div class="eyebrow">OFFICIAL MERCHANDISE</div><h2>SHOP ${String(t.team_name).toUpperCase()}</h2></div>
+       <span id="teamStoreCount" class="teamStoreCount">LOADING…</span>
+     </div>
+     <div id="teamStoreProducts" class="teamStoreLoading">Loading team merchandise…</div>
+   </div>`;
+
+ const productFields=`id title handle description availableForSale featuredImage{url altText width height} priceRange{minVariantPrice{amount currencyCode}} variants(first:50){nodes{id title availableForSale price{amount currencyCode} compareAtPrice{amount currencyCode}}}`;
+ const collectionHandle=String(t.shopify_collection_handle||'').trim();
+ const teamQuery=`title:"${String(t.team_name||'').replace(/"/g,'\\"')}"`;
+
+ try{
+   teamProducts=[];
+   let source='title';
+
+   // Preferred route: use the team's Shopify collection and preserve its Shopify arrangement.
+   if(collectionHandle){
+     try{
+       const collectionQ=`query FanTeamCollection($handle:String!){collection(handle:$handle){id title handle products(first:100,sortKey:COLLECTION_DEFAULT){nodes{${productFields}}}}}`;
+       const collectionData=await shopifyRequest(collectionQ,{handle:collectionHandle});
+       if(collectionData.collection){
+         teamProducts=(collectionData.collection.products?.nodes||[]).filter(p=>p.availableForSale);
+         source='collection';
+       }
+     }catch(collectionError){
+       console.warn('Team collection lookup failed; using title fallback.',collectionError);
+     }
+   }
+
+   // Safe fallback: keep the title-based system that is already working.
+   if(source!=='collection'){
+     const fallbackQ=`query FanTeamProducts($first:Int!,$query:String!){products(first:$first,query:$query,sortKey:TITLE){nodes{${productFields}}}}`;
+     const fallbackData=await shopifyRequest(fallbackQ,{first:100,query:teamQuery});
+     teamProducts=(fallbackData.products?.nodes||[]).filter(p=>p.availableForSale);
+   }
+
+   const count=document.getElementById('teamStoreCount');
+   const grid=document.getElementById('teamStoreProducts');
+   if(!grid)return;
+   count.textContent=`${teamProducts.length} PRODUCT${teamProducts.length===1?'':'S'}`;
+   grid.className=teamProducts.length?'teamStoreProducts':'teamStoreEmpty';
+   grid.innerHTML=teamProducts.length
+     ? teamProducts.map((p,i)=>`<button type="button" class="teamStoreProduct" onclick="openTeamProduct(${i})"><div class="imageBox">${p.featuredImage?`<img src="${p.featuredImage.url}" alt="${p.title}">`:''}</div><div class="teamStoreProductInfo"><strong>${p.title}</strong><small>${money(p.priceRange.minVariantPrice.amount,p.priceRange.minVariantPrice.currencyCode)}</small></div></button>`).join('')
+     : `No storefront products were found for <strong>${t.team_name}</strong>.`;
+ }catch(e){
+   const grid=document.getElementById('teamStoreProducts');
+   if(grid){grid.className='teamStoreEmpty';grid.textContent='Could not load team products: '+e.message}
+ }
+}
+function backToFanHQ(){go('fanhq')}
+function closeFanTeamHQ(){
+ const m=document.getElementById('teamHQModal');
+ if(m){m.classList.remove('show');m.style.display='none'}
+}
+function openTeamProduct(i){
+ const p=teamProducts[i]; if(!p)return;
+ liveProducts=teamProducts;
+ closeFanTeamHQ();
+ openProduct(i);
+}
+document.addEventListener('DOMContentLoaded',loadFanTeams);
+</script>
+</body></html>
