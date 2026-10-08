@@ -310,6 +310,16 @@ async function qcreateShopify(id){
   alert('Shopify Draft Order '+(data.draftOrder?.name||'created')+' created internally. No invoice sent.');await qload();
  }catch(e){alert(e.message||'Shopify draft creation failed');await qload();}
 }
+async function qattachCustomer(id){
+ const btn=document.getElementById('q-attach-'+id);if(btn)btn.disabled=true;
+ try{
+  if(!confirm('Find or create the Shopify customer from the MNTR INC CRM and attach them to Draft Order D131?\n\nPrimary email: bikard@aiapparelgroup.com\n\nNo invoice will be sent.'))return;
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-customer-sync',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'attach_customer',quoteId:id,confirmEmail:'bikard@aiapparelgroup.com'})});
+  const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok)throw Error(data.error||'Customer attachment failed');
+  alert((data.customerCreated?'Shopify customer created':'Existing Shopify customer found')+' and attached to '+data.draftOrder+'. No invoice sent.');
+  await qreviewInvoice(id);
+ }catch(e){alert(e.message||'Customer sync failed. Check Shopify before retrying.')}finally{if(btn)btn.disabled=false}
+}
 async function qreviewInvoice(id){
  const btn=document.getElementById('q-review-'+id);if(btn)btn.disabled=true;
  try{
@@ -318,8 +328,9 @@ async function qreviewInvoice(id){
   const panel=document.getElementById('q-invoice-review-'+id);
   if(panel){
    const details='<strong>Shopify Invoice Review — NOT SENT</strong><p>Draft: '+safe(data.draftOrder)+'<br>Shopify recipient: '+safe(data.recipient)+'<br>Shopify amount: $'+Number(data.amount).toFixed(2)+' '+safe(data.currency)+'<br>Status: '+safe(data.status)+'</p><p><a href="'+safe(data.draftOrderUrl)+'" target="_blank" rel="noopener noreferrer">Open draft in Shopify</a></p>';
-   const send=data.sendEnabled?'<p><button class="primary" id="q-send-'+safe(id)+'" onclick="qsendInvoice(\''+safe(id)+'\')">Send Shopify Invoice to bikard@aiapparelgroup.com</button></p><p class="muted">This sends a real Shopify invoice email. Confirmation required.</p>':'<p class="muted">Sending is blocked: '+safe(data.warning||'Shopify invoice details need review')+'. Open the Shopify draft and set the email to bikard@aiapparelgroup.com, then review again.</p>';
-   panel.innerHTML='<div class="panel" style="margin:12px 0;padding:14px;border:1px solid #109488">'+details+send+'</div>';
+   const attach=data.draftOrder==='#D131'?'<p><button class="secondary" id="q-attach-'+safe(id)+'" onclick="qattachCustomer(\''+safe(id)+'\')">Find / Create &amp; Attach Shopify Customer</button></p><p class="muted">Uses MNTR INC CRM contact information. Does not send an invoice.</p>':'';
+   const send=data.sendEnabled?'<p><button class="primary" id="q-send-'+safe(id)+'" onclick="qsendInvoice(\''+safe(id)+'\')">Send Shopify Invoice to bikard@aiapparelgroup.com</button></p><p class="muted">This sends a real Shopify invoice email. Confirmation required.</p>':'<p class="muted">Sending is blocked: '+safe(data.warning||'Shopify invoice details need review')+'. Verify the customer and Shopify total before sending.</p>';
+   panel.innerHTML='<div class="panel" style="margin:12px 0;padding:14px;border:1px solid #109488">'+details+attach+send+'</div>';
   }
  }catch(e){alert(e.message||'Invoice review failed')}finally{if(btn)btn.disabled=false}
 }
