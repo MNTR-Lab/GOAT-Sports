@@ -189,6 +189,21 @@ function renderProjectTimeline(){
  }
  return html+'</div>';
 }
+async function openSecureProof(jobId,assetId,filename,download=false){
+ const popup=download?null:window.open('about:blank','_blank');
+ try{
+  if(!directoryState.selected||!customerToken())throw new Error('Please sign in and choose an organization.');
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-proof',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({organizationId:String(directoryState.selected.mondayItemId),jobId:String(jobId),assetId:String(assetId)})
+  });
+  if(!response.ok){let info={};try{info=await response.json()}catch{}throw new Error(info.error||'Unable to open proof');}
+  const blob=await response.blob();const url=URL.createObjectURL(blob);
+  if(download){const a=document.createElement('a');a.href=url;a.download=filename||'proof';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+  else if(popup){popup.location.href=url;setTimeout(()=>URL.revokeObjectURL(url),300000);}
+  else{URL.revokeObjectURL(url);throw new Error('Please allow pop-ups to preview the proof.');}
+ }catch(error){if(popup)popup.close();alert(error.message||'Proof unavailable');}
+}
 function renderDesigns(){
  if(!customerToken()||!lockerIdentity)return `<div class="panel"><h2>Designs &amp; Proofs</h2>${authMessage()}</div>`;
  if(lockerIdentity.adminRole!=='master_admin')return `<div class="panel"><h2>Designs &amp; Proofs</h2><div class="empty">Design access will be available when your organization is assigned and verified.</div></div>`;
@@ -201,9 +216,9 @@ function renderDesigns(){
  if(!jobState.jobs.length)return out+'<div class="empty">No linked jobs with Job IDs were found for this organization.</div></div>';
  for(const j of jobState.jobs){
   const artwork=String(j.artworkStatus||'Not set');
-  out+=`<article class="design-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><div class="design-meta"><span><strong>Artwork:</strong> ${safe(artwork)}</span><span><strong>Job:</strong> ${safe(j.status||'Not set')}</span></div><div class="proof-area"><strong>Artwork &amp; proof files</strong>${Array.isArray(j.artworkFiles)&&j.artworkFiles.length?`<p class="muted">${j.artworkFiles.length} file(s) attached in Monday.com:</p><ul class="proof-files">${j.artworkFiles.map(f=>`<li><span aria-hidden="true">📎</span> ${safe(f.name)}</li>`).join('')}</ul><p class="muted">File previews and downloads will be enabled after secure file access is verified.</p>`:'<p class="muted">No artwork or proof files are attached to this job in Monday.com.</p>'}</div><div class="design-actions"><button class="secondary" disabled title="Available after secure proof access is connected">Request revision — coming soon</button><button class="primary" disabled title="Available after secure proof access is connected">Approve proof — coming soon</button></div></article>`;
+  out+=`<article class="design-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><div class="design-meta"><span><strong>Artwork:</strong> ${safe(artwork)}</span><span><strong>Job:</strong> ${safe(j.status||'Not set')}</span></div><div class="proof-area"><strong>Artwork &amp; proof files</strong>${Array.isArray(j.artworkFiles)&&j.artworkFiles.length?`<p class="muted">${j.artworkFiles.length} file(s) attached in Monday.com:</p><ul class="proof-files">${j.artworkFiles.map(f=>`<li><span aria-hidden="true">📎</span> ${safe(f.name)} ${/^[0-9]+$/.test(String(f.assetId||''))?`<button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),false)">Preview</button> <button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),true)">Download</button>`:''}</li>`).join('')}</ul><p class="muted">Test access is limited to authorized GOAT Locker administrators.</p>`:'<p class="muted">No artwork or proof files are attached to this job in Monday.com.</p>'}</div><div class="design-actions"><button class="secondary" disabled title="Available after secure proof access is connected">Request revision — coming soon</button><button class="primary" disabled title="Available after secure proof access is connected">Approve proof — coming soon</button></div></article>`;
  }
- return out+'<p class="muted">Read-only test: artwork statuses and attached filenames are retrieved from Monday.com. Secure file downloads and approval actions are not enabled yet.</p></div>';
+ return out+'<p class="muted">Read-only test: artwork statuses and attached filenames are retrieved from Monday.com. Proof previews and downloads are restricted to the MNTR INC admin test. Approval actions are not enabled yet.</p></div>';
 }
 function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
 function render(){
