@@ -101,7 +101,7 @@ async function loadLockerIdentity(){
 }
 function lockerSignOut(){
  for(const k of ['goat_customer_access_token','goat_customer_token_expires','goat_pkce_verifier','goat_oauth_state'])sessionStorage.removeItem(k);
- lockerIdentity=null;lockerError='';render();
+ lockerIdentity=null;lockerError='';sessionStorage.removeItem('goat_locker_selected_org');directoryState.selected=null;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:null};render();
 }
 let directoryState={loading:false,loaded:false,organizations:[],error:'',selected:null};
 let jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:null};
@@ -115,12 +115,14 @@ async function loadAdminDirectory(){
   });
   const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load organizations');
   directoryState.organizations=Array.isArray(data.organizations)?data.organizations:[];directoryState.loaded=true;
+  const savedId=sessionStorage.getItem('goat_locker_selected_org');
+  if(savedId&&!directoryState.selected){const saved=directoryState.organizations.find(x=>String(x.mondayItemId)===savedId);if(saved){directoryState.selected=saved;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:savedId};loadOrganizationJobs();}else{sessionStorage.removeItem('goat_locker_selected_org');}}
  }catch(e){directoryState.error=e.message||'Directory unavailable';}
  finally{directoryState.loading=false;render();}
 }
 function selectAdminOrganization(id){
  const o=directoryState.organizations.find(x=>String(x.mondayItemId)===String(id));
- if(!o)return;directoryState.selected=o;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};render();loadOrganizationJobs();
+ if(!o)return;directoryState.selected=o;sessionStorage.setItem('goat_locker_selected_org',String(o.mondayItemId));jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};render();loadOrganizationJobs();
 }
 async function loadOrganizationJobs(){
  const o=directoryState.selected;
@@ -152,7 +154,7 @@ function adminDirectory(){
  if(lockerIdentity?.adminRole!=='master_admin')return '';
  const d=directoryState;
  let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">MNTR INC was not found in the Client CRM.</p>':'<p class="muted">The first test will load MNTR INC from the existing Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD TEST ORGANIZATION</button>';
- if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
+ if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;sessionStorage.removeItem('goat_locker_selected_org');render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
  return `<div class="panel"><div class="eyebrow">MASTER ADMIN / ORGANIZATIONS</div><h2>GOAT Locker Directory</h2><p class="muted">Read-only Client CRM connection · first test: MNTR INC</p>${contents}</div>`;
 }
 function show(id){if(!tabs.some(t=>t[0]===id))id='dashboard';active=id;render();window.scrollTo({top:0,behavior:'instant'});}
