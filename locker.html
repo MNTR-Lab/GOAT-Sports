@@ -15,6 +15,7 @@
 .primary{border:0;background:var(--purple);color:white;padding:12px 19px;border-radius:10px;font-weight:800}.secondary{background:white;border:1px solid #d4d6dd;border-radius:10px;padding:11px 16px;font-weight:700}.empty{padding:24px;border:1px dashed #cfd4de;border-radius:12px;background:#fafbfc}.hidden{display:none!important}.footer{text-align:center;color:#7b818b;padding:20px;font-size:12px}.notice{border-left:4px solid var(--teal);padding:12px 16px;background:#f0faf8;border-radius:6px;margin-top:14px}.notice.error{border-left-color:var(--orange);background:#fff7f2}.linkrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.mobile-nav{display:none}
 @media(max-width:750px){.top{padding:14px 18px}.brand{font-size:18px}.topright .eyebrow{display:none}.hero{padding:30px 20px}.layout{display:block;padding:18px 14px 90px}.side{display:none}.cards{grid-template-columns:1fr}.panel{padding:19px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;overflow-x:auto;background:white;border-top:1px solid var(--line);padding:7px;z-index:5;gap:4px}.mobile-nav button{flex:1;min-width:65px;border:0;background:white;color:#525466;font-size:11px;font-weight:800;padding:10px 4px;border-radius:7px}.mobile-nav button.active{background:#f0eaf7;color:var(--purple)}}
 .brand{gap:10px;letter-spacing:normal}.brand .goat-logo{display:block;width:clamp(170px,24vw,270px);height:auto;max-height:52px;object-fit:contain}.brand .locker-wordmark{color:var(--teal);font-size:clamp(15px,2vw,22px);font-weight:900;white-space:nowrap}.brand-mark{display:none}@media(max-width:750px){.brand .goat-logo{width:clamp(125px,37vw,205px)}.brand .locker-wordmark{font-size:15px}.top{gap:8px}.topright .secondary{padding:8px 10px;font-size:12px}}
+.job-list{margin-top:18px;border-top:1px solid var(--line);padding-top:18px}.job-item{border:1px solid var(--line);padding:18px;border-radius:12px;background:#fafbfc;margin:12px 0}.job-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.job-grid div{display:flex;flex-direction:column;gap:3px}.job-grid strong{font-size:13px}@media(max-width:750px){.job-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -99,6 +100,7 @@ function lockerSignOut(){
  lockerIdentity=null;lockerError='';render();
 }
 let directoryState={loading:false,loaded:false,organizations:[],error:'',selected:null};
+let jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:null};
 async function loadAdminDirectory(){
  if(lockerIdentity?.adminRole!=='master_admin'||!customerToken())return;
  directoryState.loading=true;directoryState.error='';render();
@@ -114,13 +116,39 @@ async function loadAdminDirectory(){
 }
 function selectAdminOrganization(id){
  const o=directoryState.organizations.find(x=>String(x.mondayItemId)===String(id));
- if(!o)return;directoryState.selected=o;render();
+ if(!o)return;directoryState.selected=o;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};render();loadOrganizationJobs();
+}
+async function loadOrganizationJobs(){
+ const o=directoryState.selected;
+ if(!o||lockerIdentity?.adminRole!=='master_admin'||!customerToken())return;
+ const id=String(o.mondayItemId);
+ jobState.loading=true;jobState.error='';jobState.organizationId=id;render();
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-jobs',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({action:'list_test_jobs',organizationId:id})
+  });
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load jobs');
+  if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id){
+   jobState.jobs=Array.isArray(data.jobs)?data.jobs:[];jobState.loaded=true;
+  }
+ }catch(e){if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id)jobState.error=e.message||'Jobs unavailable';}
+ finally{jobState.loading=false;render();}
+}
+function organizationJobs(){
+ const j=jobState;
+ if(!directoryState.selected)return '';
+ if(j.loading)return '<p class="muted">Loading live jobs from the Jobs Board…</p>';
+ if(j.error)return `<div class="notice error"><strong>Jobs connection issue</strong><p>${safe(j.error)}</p><button class="secondary" onclick="loadOrganizationJobs()">Retry jobs</button></div>`;
+ if(!j.loaded)return '<button class="secondary" onclick="loadOrganizationJobs()">Load organization jobs</button>';
+ if(!j.jobs.length)return '<p class="muted">No linked jobs were found for this organization.</p>';
+ return j.jobs.map(x=>`<div class="job-item"><div class="eyebrow">JOB ${safe(x.jobId||x.id)}</div><h3>${safe(x.name)}</h3><div class="job-grid"><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div><div><span class="muted">Quote</span><strong>${safe(x.quoteStatus||'Not set')}</strong></div><div><span class="muted">Payment</span><strong>${safe(x.paymentStatus||'Not set')}</strong></div><div><span class="muted">Target date</span><strong>${safe(x.targetDate||'Not set')}</strong></div></div>${x.customerNotes?`<p><strong>Customer notes:</strong> ${safe(x.customerNotes)}</p>`:''}</div>`).join('');
 }
 function adminDirectory(){
  if(lockerIdentity?.adminRole!=='master_admin')return '';
  const d=directoryState;
  let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">MNTR INC was not found in the Client CRM.</p>':'<p class="muted">The first test will load MNTR INC from the existing Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD TEST ORGANIZATION</button>';
- if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Live jobs, quotes and invoices will be connected in the next stage. No customer records have been exposed.</p><button class="secondary" onclick="directoryState.selected=null;render()">Back to directory</button></div>`;
+ if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
  return `<div class="panel"><div class="eyebrow">MASTER ADMIN / ORGANIZATIONS</div><h2>GOAT Locker Directory</h2><p class="muted">Read-only Client CRM connection · first test: MNTR INC</p>${contents}</div>`;
 }
 function show(id){if(!tabs.some(t=>t[0]===id))id='dashboard';active=id;render();window.scrollTo({top:0,behavior:'instant'});}
