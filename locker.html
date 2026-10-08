@@ -18,6 +18,8 @@
 .job-list{margin-top:18px;border-top:1px solid var(--line);padding-top:18px}.job-item{border:1px solid var(--line);padding:18px;border-radius:12px;background:#fafbfc;margin:12px 0}.job-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.job-grid div{display:flex;flex-direction:column;gap:3px}.job-grid strong{font-size:13px}@media(max-width:750px){.job-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .timeline-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.timeline-job{border:1px solid var(--line);border-radius:12px;padding:18px;margin:15px 0;background:white}.timeline-track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:18px 0 12px}.timeline-step{background:#edf0f4;border-radius:8px;padding:10px 5px;text-align:center;color:#69717e;font-size:11px;font-weight:700;min-height:64px;display:flex;align-items:center;justify-content:center}.timeline-step.done{background:#e6f6f3;color:#087b70}.timeline-step.current{background:#683695;color:white}.timeline-step.future{opacity:.72}.timeline-detail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.timeline-detail div{background:#f7f8fa;border-radius:8px;padding:10px}.timeline-detail strong{display:block}.timeline-note{font-size:13px;color:#69717e}@media(max-width:750px){.timeline-track{grid-template-columns:repeat(3,minmax(0,1fr))}.timeline-detail{grid-template-columns:1fr}}
+
+.design-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}.design-job{border:1px solid var(--line);border-radius:13px;padding:20px;margin:16px 0;background:#fff}.design-meta{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}.design-meta span{border-radius:7px;background:#f5f6f9;padding:7px 11px;font-size:13px}.proof-area{margin-top:15px;background:#fafbfc;border:1px dashed #cbd2dc;border-radius:11px;padding:17px}.proof-area p{margin:7px 0 0}.design-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}.design-actions button:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -185,12 +187,29 @@ function renderProjectTimeline(){
  }
  return html+'</div>';
 }
+function renderDesigns(){
+ if(!customerToken()||!lockerIdentity)return `<div class="panel"><h2>Designs &amp; Proofs</h2>${authMessage()}</div>`;
+ if(lockerIdentity.adminRole!=='master_admin')return `<div class="panel"><h2>Designs &amp; Proofs</h2><div class="empty">Design access will be available when your organization is assigned and verified.</div></div>`;
+ const org=directoryState.selected;
+ if(!org)return `<div class="panel"><div class="eyebrow">GOAT LOCKER / DESIGNS &amp; PROOFS</div><h2>Designs &amp; Proofs</h2><p class="muted">Choose an organization on the Dashboard to see its jobs and artwork statuses.</p><button class="primary" onclick="show('dashboard')">Choose organization</button></div>`;
+ let out=`<div class="panel"><div class="eyebrow">GOAT LOCKER / DESIGNS &amp; PROOFS</div><div class="design-head"><div><h2>Designs &amp; Proofs</h2><p class="muted">${safe(org.name)} · ${safe(org.clientId||'')} · Current artwork status from GOAT Sports Jobs Board</p></div><button class="secondary" onclick="loadOrganizationJobs()">Refresh designs</button></div>`;
+ if(jobState.loading)return out+'<p class="muted">Loading jobs and artwork statuses…</p></div>';
+ if(jobState.error)return out+`<div class="notice error">${safe(jobState.error)}</div></div>`;
+ if(!jobState.loaded)return out+'<button class="primary" onclick="loadOrganizationJobs()">Load designs</button></div>';
+ if(!jobState.jobs.length)return out+'<div class="empty">No linked jobs with Job IDs were found for this organization.</div></div>';
+ for(const j of jobState.jobs){
+  const artwork=String(j.artworkStatus||'Not set');
+  out+=`<article class="design-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><div class="design-meta"><span><strong>Artwork:</strong> ${safe(artwork)}</span><span><strong>Job:</strong> ${safe(j.status||'Not set')}</span></div><div class="proof-area"><strong>Artwork &amp; proof files</strong><p class="muted">Proof attachments are not yet available through the secure Locker Jobs connection. This does not mean the job has no files in the GOAT Sports Jobs Board.</p></div><div class="design-actions"><button class="secondary" disabled title="Available after secure proof access is connected">Request revision — coming soon</button><button class="primary" disabled title="Available after secure proof access is connected">Approve proof — coming soon</button></div></article>`;
+ }
+ return out+'<p class="muted">Read-only test: statuses are live; proof files and approval actions require a separate authorized backend connection.</p></div>';
+}
 function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
 function render(){
  renderNav();const el=document.getElementById('content');
  if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div>${adminDirectory()}<div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
  else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
  else if(active==='timeline')el.innerHTML=renderProjectTimeline();
+ else if(active==='designs')el.innerHTML=renderDesigns();
  else el.innerHTML=section(active);
 }
 async function initializeLocker(){
