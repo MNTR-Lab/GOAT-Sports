@@ -266,6 +266,26 @@ function renderDesigns(){
  return out+'<p class="muted">Live artwork statuses and files are retrieved from Monday.com. Proof decisions are currently restricted to the MNTR INC master-admin test; customer approvals are not yet enabled.</p></div>';
 }
 
+
+// GOAT Locker test-only quote drafts; server enforces master-admin and job authorization.
+let quoteRows=[{source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''}];
+let quoteState={quotes:[],loading:false,error:''};
+function qval(id){return document.getElementById(id)?.value??'';}
+function qcollect(){return quoteRows.map((_,i)=>({source:qval('q-source-'+i),description:qval('q-desc-'+i),quantity:Number(qval('q-qty-'+i)),unitPrice:Number(qval('q-price-'+i)),shopifyVariantId:qval('q-variant-'+i)}));}
+function qremember(){if(document.getElementById('q-desc-0'))quoteRows=qcollect();}
+function qadd(){qremember();quoteRows.push({source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''});render();}
+function qremove(i){qremember();if(quoteRows.length>1){quoteRows.splice(i,1);render();}}
+async function qapi(payload){const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-quote-drafts',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify(payload)});const data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.error||'Quote service unavailable');return data;}
+async function qload(){quoteState.loading=true;quoteState.error='';render();try{quoteState.quotes=(await qapi({action:'list'})).quotes||[];}catch(e){quoteState.error=e.message;}finally{quoteState.loading=false;render();}}
+async function qsave(){const button=document.getElementById('q-save');if(button)button.disabled=true;try{const items=qcollect();const result=await qapi({action:'save_draft',organizationId:'13227365382',jobId:'13227526735',items,notes:qval('q-notes'),shipping:Number(qval('q-shipping')),discount:Number(qval('q-discount')),tax:Number(qval('q-tax'))});alert('Test quote saved in GOAT Locker. No Shopify draft order or Monday.com change was made.');quoteRows=[{source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''}];await qload();}catch(e){alert(e.message||'Could not save quote');if(button)button.disabled=false;}}
+function renderQuotes(){
+ if(!customerToken()||!lockerIdentity)return '<div class="panel"><h2>Quotes &amp; Approvals</h2>'+authMessage()+'</div>';
+ if(lockerIdentity.adminRole!=='master_admin')return '<div class="panel"><h2>Quotes &amp; Approvals</h2><p class="muted">Customer quote access is not yet enabled.</p></div>';
+ if(String(directoryState.selected?.mondayItemId)!=='13227365382')return '<div class="panel"><h2>Quotes &amp; Approvals</h2><p class="muted">Select MNTR INC on the Dashboard to access the test quote builder.</p></div>';
+ const rows=quoteRows.map((r,i)=>`<div class="panel" style="margin:12px 0;padding:14px"><strong>Line item ${i+1}</strong><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:10px 0"><label>Item type<select id="q-source-${i}"><option value="custom" ${r.source==='custom'?'selected':''}>Custom item</option><option value="shopify" ${r.source==='shopify'?'selected':''}>Shopify product variant</option></select></label><label>Description<input id="q-desc-${i}" value="${safe(r.description)}" placeholder="Apparel, decoration or service"></label><label>Quantity<input id="q-qty-${i}" type="number" min="1" step="1" value="${Number(r.quantity)||1}"></label><label>Unit price ($)<input id="q-price-${i}" type="number" min="0" step="0.01" value="${Number(r.unitPrice)||0}"></label><label>Shopify variant GID (Shopify items only)<input id="q-variant-${i}" value="${safe(r.shopifyVariantId||'')}" placeholder="gid://shopify/ProductVariant/..."></label></div><button class="secondary" type="button" onclick="qremove(${i})">Remove line</button></div>`).join('');
+ return `<div class="panel"><div class="eyebrow">MASTER ADMIN · MNTR INC TEST ONLY</div><h2>Create Quote Draft</h2><p class="muted">Job TEST-LOCKER-001. Save an internal quote draft; Shopify and Monday.com synchronization will be added after testing. For Shopify products, enter the variant GID for now; a searchable catalog picker comes next.</p>${rows}<button class="secondary" onclick="qadd()">+ Add line item</button><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0"><label>Shipping ($)<input id="q-shipping" type="number" min="0" step=".01" value="0"></label><label>Discount ($)<input id="q-discount" type="number" min="0" step=".01" value="0"></label><label>Tax ($)<input id="q-tax" type="number" min="0" step=".01" value="0"></label></div><label>Internal notes<textarea id="q-notes" rows="3" style="display:block;width:100%"></textarea></label><div class="linkrow"><button class="primary" id="q-save" onclick="qsave()">Save quote draft</button><button class="secondary" onclick="qload()">Refresh drafts</button></div></div><div class="panel"><h3>Saved drafts</h3>${quoteState.loading?'<p>Loading…</p>':quoteState.error?'<p class="muted">'+safe(quoteState.error)+'</p>':quoteState.quotes.length?quoteState.quotes.map(q=>`<p><strong>${safe(String(q.id).slice(0,8))}</strong> · $${Number(q.total).toFixed(2)} · ${safe(q.status)} · ${safe(String(q.created_at).slice(0,10))}</p>`).join(''):'<p class="muted">No test drafts yet. Create one above.</p>'}</div>`;
+}
+
 function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
 function render(){
  renderNav();const el=document.getElementById('content');
@@ -273,6 +293,7 @@ function render(){
  else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
  else if(active==='timeline')el.innerHTML=renderProjectTimeline();
  else if(active==='designs')el.innerHTML=renderDesigns();
+ else if(active==='quotes')el.innerHTML=renderQuotes();
  else el.innerHTML=section(active);
 }
 async function initializeLocker(){
