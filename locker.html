@@ -1,11 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GOAT Locker | Customer Workspace</title>
 <meta name="description" content="GOAT Sports private customer workspace for projects, proofs, quotes, invoices and orders.">
 <style>
-:root{--purple:#683695;--teal:#109488;--orange:#be5927;--silver:#868e92;--ink:#171925;--bg:#f5f6f9;--line:#e5e7ee}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Arial,Helvetica,sans-serif}button,a{font:inherit}button{cursor:pointer}a{color:var(--purple)}.shell{max-width:1320px;margin:auto;min-height:100vh}.top{background:white;border-bottom:1px solid var(--line);padding:18px clamp(18px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{display:flex;align-items:center;gap:12px;color:var(--purple);font-size:24px;font-weight:900;letter-spacing:1px}.brand-mark{display:grid;place-items:center;background:var(--purple);color:white;width:42px;height:42px;border-radius:12px;font-size:21px}.topright{display:flex;gap:12px;align-items:center}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:800;color:var(--teal)}.hero{background:linear-gradient(115deg,#392054,#683695 65%,#109488);color:white;padding:40px clamp(18px,4vw,48px)}.hero .eyebrow{color:#b9f5ed}.hero h1{font-size:clamp(32px,5vw,55px);margin:7px 0}.hero p{max-width:650px;margin:0;color:#eee4f7}.layout{display:grid;grid-template-columns:230px 1fr;gap:26px;padding:28px clamp(18px,4vw,48px)}.side{display:flex;flex-direction:column;gap:7px}.side button{border:0;text-align:left;padding:13px 15px;border-radius:10px;background:transparent;font-weight:700;color:#535463}.side button.active{background:var(--purple);color:white}.main{min-width:0}.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 6px 24px #17203608}h2{margin:0 0 10px;font-size:25px}h3{margin:0 0 8px}.muted{color:#69717e}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:18px 0}.card{border:1px solid var(--line);background:#fff;border-radius:14px;padding:19px;text-align:left;min-height:145px}.card strong{display:block;font-size:17px;margin:9px 0 5px}.card:hover{border-color:var(--teal)}.pill{display:inline-block;background:#e6f6f3;color:#087b70;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800}.primary{border:0;background:var(--purple);color:white;padding:12px 19px;border-radius:10px;font-weight:800}.secondary{background:white;border:1px solid #d4d6dd;border-radius:10px;padding:11px 16px;font-weight:700}.empty{padding:24px;border:1px dashed #cfd4de;border-radius:12px;background:#fafbfc}.hidden{display:none!important}.footer{text-align:center;color:#7b818b;padding:20px;font-size:12px}.notice{border-left:4px solid var(--teal);padding:12px 16px;background:#f0faf8;border-radius:6px;margin-top:14px}.linkrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.mobile-nav{display:none}@media(max-width:750px){.top{padding:14px 18px}.brand{font-size:18px}.topright .eyebrow{display:none}.hero{padding:30px 20px}.layout{display:block;padding:18px 14px 90px}.side{display:none}.cards{grid-template-columns:1fr}.panel{padding:19px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;overflow-x:auto;background:white;border-top:1px solid var(--line);padding:7px;z-index:5;gap:4px}.mobile-nav button{flex:1;min-width:65px;border:0;background:white;color:#525466;font-size:11px;font-weight:800;padding:10px 4px;border-radius:7px}.mobile-nav button.active{background:#f0eaf7;color:var(--purple)}}
+:root{--purple:#683695;--teal:#109488;--orange:#be5927;--silver:#868e92;--ink:#171925;--bg:#f5f6f9;--line:#e5e7ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Arial,Helvetica,sans-serif}button,a{font:inherit}button{cursor:pointer}a{color:var(--purple)}
+.shell{max-width:1320px;margin:auto;min-height:100vh}.top{background:white;border-bottom:1px solid var(--line);padding:18px clamp(18px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{display:flex;align-items:center;gap:12px;color:var(--purple);font-size:24px;font-weight:900;letter-spacing:1px}.brand-mark{display:grid;place-items:center;background:var(--purple);color:white;width:42px;height:42px;border-radius:12px;font-size:21px}.topright{display:flex;gap:12px;align-items:center}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:800;color:var(--teal)}
+.hero{background:linear-gradient(115deg,#392054,#683695 65%,#109488);color:white;padding:40px clamp(18px,4vw,48px)}.hero .eyebrow{color:#b9f5ed}.hero h1{font-size:clamp(32px,5vw,55px);margin:7px 0}.hero p{max-width:650px;margin:0;color:#eee4f7}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:26px;padding:28px clamp(18px,4vw,48px)}.side{display:flex;flex-direction:column;gap:7px}.side button{border:0;text-align:left;padding:13px 15px;border-radius:10px;background:transparent;font-weight:700;color:#535463}.side button.active{background:var(--purple);color:white}.main{min-width:0}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 6px 24px #17203608}h2{margin:0 0 10px;font-size:25px}h3{margin:0 0 8px}.muted{color:#69717e}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:18px 0}.card{border:1px solid var(--line);background:#fff;border-radius:14px;padding:19px;text-align:left;min-height:145px}.card strong{display:block;font-size:17px;margin:9px 0 5px}.card:hover{border-color:var(--teal)}.pill{display:inline-block;background:#e6f6f3;color:#087b70;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800}
+.primary{border:0;background:var(--purple);color:white;padding:12px 19px;border-radius:10px;font-weight:800}.secondary{background:white;border:1px solid #d4d6dd;border-radius:10px;padding:11px 16px;font-weight:700}.empty{padding:24px;border:1px dashed #cfd4de;border-radius:12px;background:#fafbfc}.hidden{display:none!important}.footer{text-align:center;color:#7b818b;padding:20px;font-size:12px}.notice{border-left:4px solid var(--teal);padding:12px 16px;background:#f0faf8;border-radius:6px;margin-top:14px}.notice.error{border-left-color:var(--orange);background:#fff7f2}.linkrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.mobile-nav{display:none}
+@media(max-width:750px){.top{padding:14px 18px}.brand{font-size:18px}.topright .eyebrow{display:none}.hero{padding:30px 20px}.layout{display:block;padding:18px 14px 90px}.side{display:none}.cards{grid-template-columns:1fr}.panel{padding:19px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;overflow-x:auto;background:white;border-top:1px solid var(--line);padding:7px;z-index:5;gap:4px}.mobile-nav button{flex:1;min-width:65px;border:0;background:white;color:#525466;font-size:11px;font-weight:800;padding:10px 4px;border-radius:7px}.mobile-nav button.active{background:#f0eaf7;color:var(--purple)}}
 </style>
 </head>
 <body>
@@ -17,18 +25,99 @@
 </div><nav class="mobile-nav" id="mobile" aria-label="Mobile Locker navigation"></nav>
 <script>
 'use strict';
-// This standalone build deliberately does not request or display customer records
-// until verified account authentication and server-side organization authorization exist.
+// Shopify Customer Account API: public client ID and PKCE; no client secret in browser.
+const CUSTOMER_CLIENT_ID='0ce1ce65-71f0-40f5-840c-b30f69e3e924';
+const CUSTOMER_REDIRECT_URI='https://locker.begoativated.com/';
+const CUSTOMER_SCOPE='openid email customer-account-api:full';
+const SUPABASE_URL='https://qpavspvpdebtbbffdcmo.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_NoP_3R4R1WeoM7tivVJPAA_i4flKD1b';
 const tabs=[['dashboard','Dashboard'],['designs','Designs'],['timeline','Timeline'],['quotes','Quotes'],['orders','Orders'],['invoices','Invoices'],['account','Account']];
 const descriptions={designs:['Designs & Proofs','Review artwork, proofs, and requests for revisions.'],timeline:['Project Timeline','Follow milestones and production progress for your organization.'],quotes:['Quotes & Approvals','Review estimates and approved quotes for your projects.'],orders:['Orders','Track orders associated with your customer account.'],invoices:['Invoices & Payments','View invoices and payment information.']};
-let active='dashboard';
+let active='dashboard',lockerIdentity=null,lockerError='',checking=false;
 function safe(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function b64url(bytes){return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function randomUrlSafe(n=32){const a=new Uint8Array(n);crypto.getRandomValues(a);return b64url(a);}
+async function sha256url(s){return b64url(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))));}
+async function customerDiscovery(){
+ const [oidc,api]=await Promise.all([fetch('https://www.begoativated.com/.well-known/openid-configuration'),fetch('https://www.begoativated.com/.well-known/customer-account-api')]);
+ if(!oidc.ok||!api.ok)throw new Error('Could not connect to Shopify customer accounts');
+ return {...await oidc.json(),...await api.json()};
+}
+function customerToken(){
+ const token=sessionStorage.getItem('goat_customer_access_token');
+ const expires=Number(sessionStorage.getItem('goat_customer_token_expires')||0);
+ return token&&Date.now()<expires?token:null;
+}
+async function customerLogin(){
+ try{
+  lockerError='';
+  const cfg=await customerDiscovery();
+  const verifier=randomUrlSafe(48),state=randomUrlSafe(24),nonce=randomUrlSafe(24);
+  sessionStorage.setItem('goat_pkce_verifier',verifier);
+  sessionStorage.setItem('goat_oauth_state',state);
+  const u=new URL(cfg.authorization_endpoint);
+  for(const [k,v] of Object.entries({scope:CUSTOMER_SCOPE,client_id:CUSTOMER_CLIENT_ID,response_type:'code',redirect_uri:CUSTOMER_REDIRECT_URI,state,nonce,code_challenge:await sha256url(verifier),code_challenge_method:'S256'}))u.searchParams.set(k,v);
+  location.assign(u.toString());
+ }catch(e){lockerError='Sign-in could not start: '+e.message;render();}
+}
+async function handleCustomerCallback(){
+ const u=new URL(location.href),code=u.searchParams.get('code'),error=u.searchParams.get('error');
+ if(!code&&!error)return;
+ // Remove sensitive authorization code from the browser address bar.
+ history.replaceState({},'',CUSTOMER_REDIRECT_URI);
+ if(error){lockerError=u.searchParams.get('error_description')||error;return;}
+ const expected=sessionStorage.getItem('goat_oauth_state');
+ const verifier=sessionStorage.getItem('goat_pkce_verifier');
+ sessionStorage.removeItem('goat_oauth_state');sessionStorage.removeItem('goat_pkce_verifier');
+ if(!expected||u.searchParams.get('state')!==expected||!verifier){lockerError='Sign-in security check failed. Please try again.';return;}
+ try{
+  const cfg=await customerDiscovery();
+  const body=new URLSearchParams({grant_type:'authorization_code',client_id:CUSTOMER_CLIENT_ID,redirect_uri:CUSTOMER_REDIRECT_URI,code,code_verifier:verifier});
+  const response=await fetch(cfg.token_endpoint,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+  const result=await response.json();
+  if(!response.ok||!result.access_token)throw new Error(result.error_description||result.error||'Token exchange failed');
+  sessionStorage.setItem('goat_customer_access_token',result.access_token);
+  sessionStorage.setItem('goat_customer_token_expires',String(Date.now()+Number(result.expires_in||3600)*1000));
+ }catch(e){lockerError='Sign-in failed: '+e.message;}
+}
+async function loadLockerIdentity(){
+ const token=customerToken();
+ if(!token){lockerIdentity=null;return;}
+ checking=true;render();
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-access',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({action:'me'})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||'Access verification failed');
+  lockerIdentity={adminRole:data.adminRole||null,lockerAccess:Array.isArray(data.lockerAccess)?data.lockerAccess:[]};
+  lockerError='';
+ }catch(e){lockerIdentity=null;lockerError='Could not verify Locker permissions: '+e.message;}
+ finally{checking=false;render();}
+}
+function lockerSignOut(){
+ for(const k of ['goat_customer_access_token','goat_customer_token_expires','goat_pkce_verifier','goat_oauth_state'])sessionStorage.removeItem(k);
+ lockerIdentity=null;lockerError='';render();
+}
 function show(id){if(!tabs.some(t=>t[0]===id))id='dashboard';active=id;render();window.scrollTo({top:0,behavior:'instant'});}
 function renderNav(){for(const target of ['side','mobile'])document.getElementById(target).innerHTML=tabs.map(([id,label])=>`<button type="button" class="${id===active?'active':''}" onclick="show('${id}')" aria-current="${id===active?'page':'false'}">${label}</button>`).join('');}
-function authMessage(){return `<div class="notice"><strong>Customer access is being connected.</strong><div class="muted">To protect your organization’s files and financial information, records will appear only after secure account sign-in and organization access verification are configured.</div></div>`;}
-function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once account access and the GOAT Sports project database are connected.</p></div>${authMessage()}</div>`;}
-function render(){renderNav();const el=document.getElementById('content');if(active==='dashboard'){el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div><div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;}else if(active==='account'){el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Secure sign-in and organization permissions are required before private project information can be shown.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;}else{el.innerHTML=section(active);}}
-render();
+function authMessage(){
+ if(lockerError)return `<div class="notice error"><strong>Account connection issue</strong><p class="muted">${safe(lockerError)}</p><button class="secondary" onclick="customerLogin()">Try signing in again</button></div>`;
+ if(!customerToken())return `<div class="notice"><strong>Sign in to GOAT Locker</strong><p class="muted">Use your existing GOAT Sports Shopify customer account.</p><button class="primary" onclick="customerLogin()">Sign in with Shopify</button></div>`;
+ if(checking||!lockerIdentity)return `<div class="notice"><strong>Verifying organization access…</strong><p class="muted">Your account permissions are being checked securely.</p>${checking?'':'<button class="secondary" onclick="loadLockerIdentity()">Retry verification</button>'}</div>`;
+ const a=lockerIdentity,admin=a.adminRole?safe(a.adminRole.replace(/_/g,' ').toUpperCase()):'';
+ return `<div class="notice"><strong>Signed in${admin?' · '+admin:''}</strong><p class="muted">${a.adminRole?'Administrator access verified.':a.lockerAccess.length?'Organization access verified.':'No Locker organization has been assigned to this account yet.'} Assigned Lockers: ${a.lockerAccess.length}.</p><p class="muted">Your private project records are not connected to this standalone page yet.</p><button class="secondary" onclick="lockerSignOut()">Sign out of this website</button></div>`;
+}
+function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
+function render(){
+ renderNav();const el=document.getElementById('content');
+ if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div><div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
+ else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing Shopify customer login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
+ else el.innerHTML=section(active);
+}
+async function initializeLocker(){
+ render();await handleCustomerCallback();
+ if(customerToken()&&!lockerError)await loadLockerIdentity();else render();
+}
+initializeLocker();
 </script>
 </body>
 </html>
