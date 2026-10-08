@@ -16,6 +16,8 @@
 @media(max-width:750px){.top{padding:14px 18px}.brand{font-size:18px}.topright .eyebrow{display:none}.hero{padding:30px 20px}.layout{display:block;padding:18px 14px 90px}.side{display:none}.cards{grid-template-columns:1fr}.panel{padding:19px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;overflow-x:auto;background:white;border-top:1px solid var(--line);padding:7px;z-index:5;gap:4px}.mobile-nav button{flex:1;min-width:65px;border:0;background:white;color:#525466;font-size:11px;font-weight:800;padding:10px 4px;border-radius:7px}.mobile-nav button.active{background:#f0eaf7;color:var(--purple)}}
 .brand{gap:10px;letter-spacing:normal}.brand .goat-logo{display:block;width:clamp(170px,24vw,270px);height:auto;max-height:52px;object-fit:contain}.brand .locker-wordmark{color:var(--teal);font-size:clamp(15px,2vw,22px);font-weight:900;white-space:nowrap}.brand-mark{display:none}@media(max-width:750px){.brand .goat-logo{width:clamp(125px,37vw,205px)}.brand .locker-wordmark{font-size:15px}.top{gap:8px}.topright .secondary{padding:8px 10px;font-size:12px}}
 .job-list{margin-top:18px;border-top:1px solid var(--line);padding-top:18px}.job-item{border:1px solid var(--line);padding:18px;border-radius:12px;background:#fafbfc;margin:12px 0}.job-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.job-grid div{display:flex;flex-direction:column;gap:3px}.job-grid strong{font-size:13px}@media(max-width:750px){.job-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.timeline-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.timeline-job{border:1px solid var(--line);border-radius:12px;padding:18px;margin:15px 0;background:white}.timeline-track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:18px 0 12px}.timeline-step{background:#edf0f4;border-radius:8px;padding:10px 5px;text-align:center;color:#69717e;font-size:11px;font-weight:700;min-height:64px;display:flex;align-items:center;justify-content:center}.timeline-step.done{background:#e6f6f3;color:#087b70}.timeline-step.current{background:#683695;color:white}.timeline-step.future{opacity:.72}.timeline-detail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.timeline-detail div{background:#f7f8fa;border-radius:8px;padding:10px}.timeline-detail strong{display:block}.timeline-note{font-size:13px;color:#69717e}@media(max-width:750px){.timeline-track{grid-template-columns:repeat(3,minmax(0,1fr))}.timeline-detail{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -160,11 +162,35 @@ function authMessage(){
  const a=lockerIdentity,admin=a.adminRole?safe(a.adminRole.replace(/_/g,' ').toUpperCase()):'';
  return `<div class="notice"><strong>Signed in${admin?' · '+admin:''}</strong><p class="muted">${a.adminRole?'Administrator access verified.':a.lockerAccess.length?'Organization access verified.':'No Locker organization has been assigned to this account yet.'} Assigned Lockers: ${a.lockerAccess.length}.</p><p class="muted">Your private project records are not connected to this standalone page yet.</p><button class="secondary" onclick="lockerSignOut()">Sign out of this website</button></div>`;
 }
+const timelineStages=[['New','New'],['Artwork / Design','Design'],['Awaiting Customer','Customer Review'],['Approved','Approved'],['Quoting','Quote'],['Quote Approved','Quote Approved'],['Invoiced','Invoiced'],['Paid','Paid'],['Production','Production'],['Ready / Shipping','Ready / Shipping'],['Completed','Completed']];
+function renderProjectTimeline(){
+ const selected=directoryState.selected;
+ if(!customerToken()||!lockerIdentity)return `<div class="panel"><h2>Project Timeline</h2>${authMessage()}</div>`;
+ if(lockerIdentity.adminRole!=='master_admin')return `<div class="panel"><h2>Project Timeline</h2><div class="empty">Your organization timeline will become available after your Locker is assigned.</div></div>`;
+ if(!selected)return `<div class="panel"><div class="eyebrow">GOAT LOCKER / PROJECT TIMELINE</div><h2>Project Timeline</h2><p class="muted">Select an organization from the Dashboard to view its live job timeline.</p><button class="primary" onclick="show('dashboard')">Choose organization</button></div>`;
+ let html=`<div class="panel"><div class="eyebrow">GOAT LOCKER / PROJECT TIMELINE</div><div class="timeline-header"><div><h2>Project Timeline</h2><p class="muted">${safe(selected.name)} · ${safe(selected.clientId||'')} · Live job status from GOAT Sports Jobs Board</p></div><button class="secondary" onclick="loadOrganizationJobs()">Refresh timeline</button></div>`;
+ if(jobState.loading)return html+'<p class="muted">Loading timeline…</p></div>';
+ if(jobState.error)return html+`<div class="notice error">${safe(jobState.error)}</div></div>`;
+ if(!jobState.loaded)return html+'<button class="primary" onclick="loadOrganizationJobs()">Load timeline</button></div>';
+ if(!jobState.jobs.length)return html+'<div class="empty">No jobs with a Job ID are currently linked to this organization.</div></div>';
+ for(const j of jobState.jobs){
+  const status=String(j.status||'').trim();
+  const idx=timelineStages.findIndex(x=>x[0]===status);
+  const exceptional=status==='On Hold'||status==='Cancelled';
+  const stages=[['New','New'],['Artwork / Design','Design'],['Approved','Approval'],['Quoting','Quote'],['Production','Production'],['Completed','Complete']];
+  // Milestone blocks are a simplified visual grouping, not an audit trail.
+  const rank={'New':0,'Artwork / Design':1,'Awaiting Customer':1,'Approved':2,'Quoting':3,'Quote Approved':3,'Invoiced':3,'Paid':3,'Production':4,'Ready / Shipping':4,'Completed':5};
+  const current=Object.prototype.hasOwnProperty.call(rank,status)?rank[status]:-1;
+  html+=`<div class="timeline-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><p><strong>Current status: ${safe(status||'Not set')}</strong>${exceptional?' · Workflow paused or stopped':''}</p><div class="timeline-track">${stages.map((st,i)=>`<div class="timeline-step ${exceptional||current<0?'future':i<current?'done':i===current?'current':'future'}">${safe(st[1])}</div>`).join('')}</div><p class="timeline-note">Timeline reflects the current workflow stage, not confirmed completion dates for earlier milestones.</p><div class="timeline-detail"><div><span class="muted">Artwork status</span><strong>${safe(j.artworkStatus||'Not set')}</strong></div><div><span class="muted">Production status</span><strong>${safe(j.productionStatus||'Not set')}</strong></div><div><span class="muted">Target / in-hand date</span><strong>${safe(j.targetDate||'Not set')}</strong></div><div><span class="muted">Payment status</span><strong>${safe(j.paymentStatus||'Not set')}</strong></div></div></div>`;
+ }
+ return html+'</div>';
+}
 function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
 function render(){
  renderNav();const el=document.getElementById('content');
  if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div>${adminDirectory()}<div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
  else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
+ else if(active==='timeline')el.innerHTML=renderProjectTimeline();
  else el.innerHTML=section(active);
 }
 async function initializeLocker(){
