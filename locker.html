@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>GOAT Locker | GOAT Sports</title>
+<title>GOAT Locker | Standalone Portal v2</title>
+<meta name="goat-locker-build" content="standalone-v2-20261008">
 <style>
 :root{--purple:#683695;--teal:#109488;--orange:#BE5927;--silver:#868e92;--ink:#0a0b0d;--paper:#fff;--soft:#f4f5f6;--line:#e6e7e9}
 *{box-sizing:border-box}html,body{margin:0;background:#e9eaec;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
@@ -335,6 +336,14 @@ header .brand img{display:block;width:100%;height:auto;max-height:none;max-width
 .nav{display:flex;justify-content:space-around;gap:2px}
 .nav button{flex:1;min-width:0;font-size:10px}
 @media(min-width:850px){.app{max-width:1180px}.nav{max-width:1180px}.nav button{font-size:12px}}
+
+/* Standalone Locker: public GOAT Sports screens must never render. */
+#home,#shop,#fanhq,#teamstore,#teamPrograms,#nilAthletes{display:none!important}
+#locker.screen.active,#orders.screen.active,#account.screen.active{display:block!important}
+.app{max-width:1100px!important}
+.privateLockerHero .backMini{display:none!important}
+.cartBtn{display:none!important}
+@media(max-width:700px){.app{max-width:100%!important}.nav button{font-size:9px!important}}
 </style>
 </head>
 <body>
