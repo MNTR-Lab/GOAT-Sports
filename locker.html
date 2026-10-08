@@ -98,6 +98,31 @@ function lockerSignOut(){
  for(const k of ['goat_customer_access_token','goat_customer_token_expires','goat_pkce_verifier','goat_oauth_state'])sessionStorage.removeItem(k);
  lockerIdentity=null;lockerError='';render();
 }
+let directoryState={loading:false,loaded:false,organizations:[],error:'',selected:null};
+async function loadAdminDirectory(){
+ if(lockerIdentity?.adminRole!=='master_admin'||!customerToken())return;
+ directoryState.loading=true;directoryState.error='';render();
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-directory',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({action:'list_test'})
+  });
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load organizations');
+  directoryState.organizations=Array.isArray(data.organizations)?data.organizations:[];directoryState.loaded=true;
+ }catch(e){directoryState.error=e.message||'Directory unavailable';}
+ finally{directoryState.loading=false;render();}
+}
+function selectAdminOrganization(id){
+ const o=directoryState.organizations.find(x=>String(x.mondayItemId)===String(id));
+ if(!o)return;directoryState.selected=o;render();
+}
+function adminDirectory(){
+ if(lockerIdentity?.adminRole!=='master_admin')return '';
+ const d=directoryState;
+ let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">MNTR INC was not found in the Client CRM.</p>':'<p class="muted">The first test will load MNTR INC from the existing Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD TEST ORGANIZATION</button>';
+ if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Live jobs, quotes and invoices will be connected in the next stage. No customer records have been exposed.</p><button class="secondary" onclick="directoryState.selected=null;render()">Back to directory</button></div>`;
+ return `<div class="panel"><div class="eyebrow">MASTER ADMIN / ORGANIZATIONS</div><h2>GOAT Locker Directory</h2><p class="muted">Read-only Client CRM connection · first test: MNTR INC</p>${contents}</div>`;
+}
 function show(id){if(!tabs.some(t=>t[0]===id))id='dashboard';active=id;render();window.scrollTo({top:0,behavior:'instant'});}
 function renderNav(){for(const target of ['side','mobile'])document.getElementById(target).innerHTML=tabs.map(([id,label])=>`<button type="button" class="${id===active?'active':''}" onclick="show('${id}')" aria-current="${id===active?'page':'false'}">${label}</button>`).join('');}
 function authMessage(){
@@ -110,13 +135,13 @@ function authMessage(){
 function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
 function render(){
  renderNav();const el=document.getElementById('content');
- if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div><div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
+ if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div>${adminDirectory()}<div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
  else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
  else el.innerHTML=section(active);
 }
 async function initializeLocker(){
  render();await handleCustomerCallback();
- if(customerToken()&&!lockerError)await loadLockerIdentity();else render();
+ if(customerToken()&&!lockerError){await loadLockerIdentity();if(lockerIdentity?.adminRole==='master_admin')await loadAdminDirectory();}else render();
 }
 initializeLocker();
 </script>
