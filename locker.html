@@ -316,8 +316,23 @@ async function qreviewInvoice(id){
   const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-invoice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'review_invoice',quoteId:id})});
   const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok)throw Error(data.error||'Invoice review failed');
   const panel=document.getElementById('q-invoice-review-'+id);
-  if(panel)panel.innerHTML='<div class="panel" style="margin:12px 0;padding:14px;border:1px solid #109488"><strong>Shopify Invoice Review — NOT SENT</strong><p>Draft: '+safe(data.draftOrder)+'<br>Recipient: '+safe(data.recipient)+'<br>Amount: $'+Number(data.amount).toFixed(2)+' '+safe(data.currency)+'</p><p><a href="'+safe(data.draftOrderUrl)+'" target="_blank" rel="noopener noreferrer">Open draft in Shopify</a></p><p class="muted">Review only. Sending is not enabled yet. No email has been sent.</p></div>';
+  if(panel){
+   const details='<strong>Shopify Invoice Review — NOT SENT</strong><p>Draft: '+safe(data.draftOrder)+'<br>Shopify recipient: '+safe(data.recipient)+'<br>Shopify amount: $'+Number(data.amount).toFixed(2)+' '+safe(data.currency)+'<br>Status: '+safe(data.status)+'</p><p><a href="'+safe(data.draftOrderUrl)+'" target="_blank" rel="noopener noreferrer">Open draft in Shopify</a></p>';
+   const send=data.sendEnabled?'<p><button class="primary" id="q-send-'+safe(id)+'" onclick="qsendInvoice(\''+safe(id)+'\')">Send Shopify Invoice to bikard@aiapparelgroup.com</button></p><p class="muted">This sends a real Shopify invoice email. Confirmation required.</p>':'<p class="muted">Sending is blocked: '+safe(data.warning||'Shopify invoice details need review')+'. Open the Shopify draft and set the email to bikard@aiapparelgroup.com, then review again.</p>';
+   panel.innerHTML='<div class="panel" style="margin:12px 0;padding:14px;border:1px solid #109488">'+details+send+'</div>';
+  }
  }catch(e){alert(e.message||'Invoice review failed')}finally{if(btn)btn.disabled=false}
+}
+async function qsendInvoice(id){
+ if(!confirm('SEND A REAL SHOPIFY INVOICE EMAIL?\n\nDraft: #D131\nRecipient: bikard@aiapparelgroup.com\nAmount: $44.95 USD\n\nThis action will email the recipient. Continue?'))return;
+ const btn=document.getElementById('q-send-'+id);if(btn)btn.disabled=true;
+ try{
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-invoice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'send_invoice',quoteId:id,confirmDraft:'#D131',confirmRecipient:'bikard@aiapparelgroup.com',confirmAmount:44.95})});
+  const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok||!data.invoiceSent)throw Error(data.error||'Shopify did not confirm invoice sending. Check Shopify before retrying.');
+  const panel=document.getElementById('q-invoice-review-'+id);
+  if(panel)panel.innerHTML='<div class="panel"><strong>Shopify confirmed invoice sent for #D131.</strong><p>Recipient: bikard@aiapparelgroup.com · $44.95 USD</p><p>'+safe(data.message||'Invoice sent')+'</p></div>';
+  alert(data.mondaySynced?'Invoice sent. Monday.com updated.':'Invoice sent. Monday.com sync needs review. Do NOT resend.');
+ }catch(e){alert(e.message||'Invoice sending failed. Check Shopify before retrying.');if(btn)btn.disabled=true}
 }
 function renderQuotes(){
  if(!customerToken()||!lockerIdentity)return '<div class="panel"><h2>Quotes &amp; Approvals</h2>'+authMessage()+'</div>';
