@@ -335,13 +335,13 @@ async function qreviewInvoice(id){
  }catch(e){alert(e.message||'Invoice review failed')}finally{if(btn)btn.disabled=false}
 }
 async function qsendInvoice(id){
- if(!confirm('SEND A REAL SHOPIFY INVOICE EMAIL?\n\nDraft: #D131\nRecipient: bikard@aiapparelgroup.com\nAmount: $44.95 USD\n\nThis action will email the recipient. Continue?'))return;
+ if(!confirm('SEND A REAL SHOPIFY INVOICE EMAIL?\n\nDraft: #D131\nRecipient: bikard@aiapparelgroup.com\nAmount: $'+Number(document.getElementById('q-send-'+id)?.dataset.amount||0).toFixed(2)+' USD\n\nThis action will email the recipient. Continue?'))return;
  const btn=document.getElementById('q-send-'+id);if(btn)btn.disabled=true;
  try{
-  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-invoice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'send_invoice',quoteId:id,confirmDraft:'#D131',confirmRecipient:'bikard@aiapparelgroup.com',confirmAmount:44.95})});
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-invoice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'send_invoice',quoteId:id,confirmDraft:'#D131',confirmRecipient:'bikard@aiapparelgroup.com',confirmAmount:Number(btn?.dataset.amount)})});
   const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok||!data.invoiceSent)throw Error(data.error||'Shopify did not confirm invoice sending. Check Shopify before retrying.');
   const panel=document.getElementById('q-invoice-review-'+id);
-  if(panel)panel.innerHTML='<div class="panel"><strong>Shopify confirmed invoice sent for #D131.</strong><p>Recipient: bikard@aiapparelgroup.com · $44.95 USD</p><p>'+safe(data.message||'Invoice sent')+'</p></div>';
+  if(panel)panel.innerHTML='<div class="panel"><strong>Shopify confirmed invoice sent for #D131.</strong><p>Recipient: bikard@aiapparelgroup.com · $'+Number(btn?.dataset.amount).toFixed(2)+' USD</p><p>'+safe(data.message||'Invoice sent')+'</p></div>';
   alert(data.mondaySynced?'Invoice sent. Monday.com updated.':'Invoice sent. Monday.com sync needs review. Do NOT resend.');
  }catch(e){alert(e.message||'Invoice sending failed. Check Shopify before retrying.');if(btn)btn.disabled=true}
 }
