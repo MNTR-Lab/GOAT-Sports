@@ -20,6 +20,8 @@
 .timeline-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.timeline-job{border:1px solid var(--line);border-radius:12px;padding:18px;margin:15px 0;background:white}.timeline-track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:18px 0 12px}.timeline-step{background:#edf0f4;border-radius:8px;padding:10px 5px;text-align:center;color:#69717e;font-size:11px;font-weight:700;min-height:64px;display:flex;align-items:center;justify-content:center}.timeline-step.done{background:#e6f6f3;color:#087b70}.timeline-step.current{background:#683695;color:white}.timeline-step.future{opacity:.72}.timeline-detail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.timeline-detail div{background:#f7f8fa;border-radius:8px;padding:10px}.timeline-detail strong{display:block}.timeline-note{font-size:13px;color:#69717e}@media(max-width:750px){.timeline-track{grid-template-columns:repeat(3,minmax(0,1fr))}.timeline-detail{grid-template-columns:1fr}}
 
 .design-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}.design-job{border:1px solid var(--line);border-radius:13px;padding:20px;margin:16px 0;background:#fff}.design-meta{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}.design-meta span{border-radius:7px;background:#f5f6f9;padding:7px 11px;font-size:13px}.proof-area{margin-top:15px;background:#fafbfc;border:1px dashed #cbd2dc;border-radius:11px;padding:17px}.proof-area p{margin:7px 0 0}.proof-files{padding-left:20px;margin:10px 0}.proof-files li{padding:4px 0;overflow-wrap:anywhere}.design-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}.design-actions button:disabled{opacity:.5;cursor:not-allowed}
+
+.proof-decision-box{margin-top:14px;border:1px solid #dce2e9;background:#f8fafb;border-radius:12px;padding:15px}.proof-decision-box label{display:block;font-weight:800;margin:0 0 7px}.proof-decision-box textarea{width:100%;min-height:100px;border:1px solid #cfd4de;border-radius:9px;padding:12px;font:inherit;resize:vertical}.proof-decision-box .hint{font-size:12px;color:#69717e;margin:8px 0}.proof-decision-box .decision-buttons{display:flex;flex-wrap:wrap;gap:10px}.proof-decision-box .danger{background:#fff;color:#a44824;border:1px solid #cf987e;border-radius:10px;padding:11px 16px;font-weight:800}.proof-decision-box button:disabled{opacity:.5;cursor:wait}.proof-feedback{margin-top:10px;font-size:13px;font-weight:700}.proof-feedback.error{color:#a44824}.proof-feedback.success{color:#087b70}
 </style>
 </head>
 <body>
@@ -204,6 +206,49 @@ async function openSecureProof(jobId,assetId,filename,download=false){
   else{URL.revokeObjectURL(url);throw new Error('Please allow pop-ups to preview the proof.');}
  }catch(error){if(popup)popup.close();alert(error.message||'Proof unavailable');}
 }
+let decisionBusy=false;
+function proofDecisionAllowed(job){
+ return lockerIdentity?.adminRole==='master_admin' &&
+ String(directoryState.selected?.mondayItemId)==='13227365382' &&
+ String(job.artworkStatus||'').trim()==='Sent for Review';
+}
+function decisionPanel(job){
+ const files=Array.isArray(job.artworkFiles)?job.artworkFiles.filter(f=>/^[0-9]+$/.test(String(f.assetId||''))):[];
+ if(!files.length)return '<p class="muted">Attach an artwork file in Monday.com before submitting a proof decision.</p>';
+ if(!proofDecisionAllowed(job))return '<p class="muted">Approval and revision requests become available when the artwork status is <strong>Sent for Review</strong>. This test is restricted to the master administrator and MNTR INC.</p>';
+ const id=String(job.id);
+ return `<div class="proof-decision-box"><label for="asset-${safe(id)}">Proof file to review</label><select id="asset-${safe(id)}" class="secondary" style="max-width:100%;width:100%;text-align:left">${files.map(f=>`<option value="${safe(f.assetId)}">${safe(f.name)}</option>`).join('')}</select><label for="comments-${safe(id)}" style="margin-top:14px">Revision instructions</label><textarea id="comments-${safe(id)}" maxlength="2000" placeholder="Describe the changes needed to the selected proof (required for a revision request)"></textarea><p class="hint">Approving confirms the selected proof. Requesting a revision requires 3–2000 characters. Both actions update the artwork status in Monday.com and add a job update identifying the signed-in account.</p><div class="decision-buttons"><button class="danger" data-proof-submit onclick="submitProofDecision('${safe(id)}','revision')">Request Revision</button><button class="primary" data-proof-submit onclick="submitProofDecision('${safe(id)}','approve')">Approve Proof</button></div><div class="proof-feedback" id="feedback-${safe(id)}" role="status"></div></div>`;
+}
+async function submitProofDecision(jobId,decision){
+ if(decisionBusy)return;
+ const job=jobState.jobs.find(j=>String(j.id)===String(jobId));
+ if(!job||!proofDecisionAllowed(job)){alert('This proof is not currently available for approval. Refresh the designs.');return;}
+ const selector=document.getElementById('asset-'+jobId);
+ const commentInput=document.getElementById('comments-'+jobId);
+ const feedback=document.getElementById('feedback-'+jobId);
+ const assetId=selector?.value||'';
+ const comments=commentInput?.value.trim()||'';
+ if(!/^[0-9]+$/.test(assetId)){alert('Select a valid attached proof file.');return;}
+ if(decision==='revision'&&(comments.length<3||comments.length>2000)){alert('Please enter revision instructions between 3 and 2000 characters.');commentInput?.focus();return;}
+ const selectedName=selector?.selectedOptions?.[0]?.textContent||'the selected proof';
+ const confirmation=decision==='approve'?`Approve ${selectedName}? This will update the artwork status in Monday.com.`:`Request revisions to ${selectedName}? Your comments will be saved to the Monday.com job.`;
+ if(!confirm(confirmation))return;
+ decisionBusy=true;
+ document.querySelectorAll('[data-proof-submit]').forEach(b=>b.disabled=true);
+ if(feedback){feedback.className='proof-feedback';feedback.textContent='Submitting your decision securely…';}
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-proof-decision',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({organizationId:String(directoryState.selected.mondayItemId),jobId:String(jobId),assetId:String(assetId),decision,comments})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok){if(data.partial){await loadOrganizationJobs();alert(data.error||'The status changed, but the audit update failed. Contact GOAT Sports.');return;}throw new Error(data.error||'The decision could not be recorded.');}
+  if(feedback){feedback.className='proof-feedback success';feedback.textContent='Decision saved to Monday.com. Refreshing artwork status…';}
+  await loadOrganizationJobs();
+  alert(`Proof decision saved: ${data.status||'Success'}. The job has been refreshed.`);
+ }catch(error){if(feedback){feedback.className='proof-feedback error';feedback.textContent=error.message||'Unable to submit decision';}alert(error.message||'Unable to submit proof decision');}
+ finally{decisionBusy=false;document.querySelectorAll('[data-proof-submit]').forEach(b=>b.disabled=false);}
+}
 function renderDesigns(){
  if(!customerToken()||!lockerIdentity)return `<div class="panel"><h2>Designs &amp; Proofs</h2>${authMessage()}</div>`;
  if(lockerIdentity.adminRole!=='master_admin')return `<div class="panel"><h2>Designs &amp; Proofs</h2><div class="empty">Design access will be available when your organization is assigned and verified.</div></div>`;
@@ -216,10 +261,11 @@ function renderDesigns(){
  if(!jobState.jobs.length)return out+'<div class="empty">No linked jobs with Job IDs were found for this organization.</div></div>';
  for(const j of jobState.jobs){
   const artwork=String(j.artworkStatus||'Not set');
-  out+=`<article class="design-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><div class="design-meta"><span><strong>Artwork:</strong> ${safe(artwork)}</span><span><strong>Job:</strong> ${safe(j.status||'Not set')}</span></div><div class="proof-area"><strong>Artwork &amp; proof files</strong>${Array.isArray(j.artworkFiles)&&j.artworkFiles.length?`<p class="muted">${j.artworkFiles.length} file(s) attached in Monday.com:</p><ul class="proof-files">${j.artworkFiles.map(f=>`<li><span aria-hidden="true">📎</span> ${safe(f.name)} ${/^[0-9]+$/.test(String(f.assetId||''))?`<button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),false)">Preview</button> <button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),true)">Download</button>`:''}</li>`).join('')}</ul><p class="muted">Test access is limited to authorized GOAT Locker administrators.</p>`:'<p class="muted">No artwork or proof files are attached to this job in Monday.com.</p>'}</div><div class="design-actions"><button class="secondary" disabled title="Available after secure proof access is connected">Request revision — coming soon</button><button class="primary" disabled title="Available after secure proof access is connected">Approve proof — coming soon</button></div></article>`;
+  out+=`<article class="design-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><div class="design-meta"><span><strong>Artwork:</strong> ${safe(artwork)}</span><span><strong>Job:</strong> ${safe(j.status||'Not set')}</span></div><div class="proof-area"><strong>Artwork &amp; proof files</strong>${Array.isArray(j.artworkFiles)&&j.artworkFiles.length?`<p class="muted">${j.artworkFiles.length} file(s) attached in Monday.com:</p><ul class="proof-files">${j.artworkFiles.map(f=>`<li><span aria-hidden="true">📎</span> ${safe(f.name)} ${/^[0-9]+$/.test(String(f.assetId||''))?`<button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),false)">Preview</button> <button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),true)">Download</button>`:''}</li>`).join('')}</ul>`:'<p class="muted">No artwork or proof files are attached to this job in Monday.com.</p>'}</div>${decisionPanel(j)}</article>`;
  }
- return out+'<p class="muted">Read-only test: artwork statuses and attached filenames are retrieved from Monday.com. Proof previews and downloads are restricted to the MNTR INC admin test. Approval actions are not enabled yet.</p></div>';
+ return out+'<p class="muted">Live artwork statuses and files are retrieved from Monday.com. Proof decisions are currently restricted to the MNTR INC master-admin test; customer approvals are not yet enabled.</p></div>';
 }
+
 function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
 function render(){
  renderNav();const el=document.getElementById('content');
