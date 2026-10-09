@@ -638,5 +638,53 @@ function goatArtworkRender(term=''){
 }
 async function goatArtworkDownload(assetId){const popup=window.open('about:blank','_blank');try{const data=await goatArtworkRequest('file',{assetId:String(assetId)});if(!data.url)throw Error('No download URL returned');if(popup)popup.location.href=data.url;else alert('Please allow popups for artwork downloads.');}catch(e){popup?.close();alert(e.message);}}
 </script>
+<script>
+/* Phase 3: organization-scoped Monday artwork history, read-only */
+let customerArtworkState={org:'',loading:false,loaded:false,error:'',artworks:[]};
+function customerArtworkEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function customerArtworkApi(action,extra={}){
+ const token=customerToken();if(!token)throw Error('Sign in to view artwork.');
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),18000);
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-customer-artwork',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+token},body:JSON.stringify({action,...extra})});
+  const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Artwork service unavailable');return data;
+ }finally{clearTimeout(timeout);}
+}
+async function loadCustomerArtwork(force=false){
+ const org=directoryState.selected;const id=String(org?.mondayItemId||'');if(!id||!customerToken())return;
+ if(customerArtworkState.loading||(!force&&customerArtworkState.loaded&&customerArtworkState.org===id))return;
+ customerArtworkState={org:id,loading:true,loaded:false,error:'',artworks:[]};if(active==='designs')render();
+ try{
+  const data=await customerArtworkApi('list',{organizationId:id});
+  if(String(directoryState.selected?.mondayItemId)!==id)return;
+  customerArtworkState={org:id,loading:false,loaded:true,error:'',artworks:Array.isArray(data.artworks)?data.artworks:[]};
+ }catch(e){customerArtworkState={org:id,loading:false,loaded:false,error:e?.name==='AbortError'?'Artwork request timed out':String(e?.message||e),artworks:[]};}
+ if(active==='designs')render();
+}
+async function downloadCustomerArtwork(assetId,download=false){
+ const org=String(directoryState.selected?.mondayItemId||'');if(!org||!/^\d+$/.test(String(assetId)))return;
+ try{
+  const data=await customerArtworkApi('file',{organizationId:org,assetId:String(assetId)});
+  if(!/^https:\/\//i.test(data.url||''))throw Error('Artwork file URL unavailable');
+  window.open(data.url,'_blank','noopener,noreferrer');
+ }catch(e){alert('Unable to open artwork: '+String(e?.message||e));}
+}
+function customerArtworkPanel(){
+ const org=directoryState.selected;if(!org)return '';
+ const id=String(org.mondayItemId);const a=customerArtworkState;
+ if(a.org!==id||(!a.loading&&!a.loaded&&!a.error))queueMicrotask(()=>loadCustomerArtwork());
+ let content='';
+ if(a.org!==id||a.loading)content='<p class="muted">Loading artwork versions from Monday.com…</p>';
+ else if(a.error)content='<div class="notice error"><strong>Artwork connection issue</strong><p>'+customerArtworkEsc(a.error)+'</p></div>';
+ else if(!a.artworks.length)content='<p class="muted">No artwork versions linked to this organization yet.</p>';
+ else content=a.artworks.map(x=>{
+  const files=Array.isArray(x.files)?x.files:[];
+  return '<article class="design-job"><div class="eyebrow">JOB '+customerArtworkEsc(x.jobCode||x.jobId||'Unassigned')+'</div><h3>'+customerArtworkEsc(x.title||'Artwork')+'</h3><div class="design-meta"><span><strong>Version:</strong> '+customerArtworkEsc(x.version||'Not set')+'</span><span><strong>Status:</strong> '+customerArtworkEsc(x.status||'Not set')+'</span><span><strong>Uploaded:</strong> '+customerArtworkEsc(x.uploaded||'Not set')+'</span></div>'+(x.notes?'<p>'+customerArtworkEsc(x.notes)+'</p>':'')+(files.length?'<div class="proof-area"><strong>Artwork files</strong><div class="linkrow">'+files.filter(f=>/^\d+$/.test(String(f.id))).map(f=>'<button type="button" class="secondary" onclick="downloadCustomerArtwork(\''+customerArtworkEsc(f.id)+'\')">Open '+customerArtworkEsc(f.name||'Artwork file')+' ↗</button>').join('')+'</div></div>':'<p class="muted">No files attached to this version.</p>')+'</article>';
+ }).join('');
+ return '<div class="panel"><div class="design-head"><div><div class="eyebrow">GOAT LOCKER / CLIENT ARTWORK HISTORY</div><h2>Artwork Versions</h2><p class="muted">'+customerArtworkEsc(org.name)+' · '+(a.loaded?a.artworks.length+' artwork version(s)':'Secure organization-scoped artwork')+' · Read-only review</p></div><button class="secondary" type="button" onclick="loadCustomerArtwork(true)">Refresh artwork</button></div>'+content+'<p class="muted">Artwork decisions are not enabled in this new history section yet. Existing approval workflows remain unchanged.</p></div>';
+}
+const previousRenderDesigns=renderDesigns;
+renderDesigns=function(){return customerArtworkPanel()+previousRenderDesigns();};
+</script>
 </body>
 </html>
