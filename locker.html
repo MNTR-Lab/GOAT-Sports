@@ -42,6 +42,8 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_NoP_3R4R1WeoM7tivVJPAA_i4flKD1b';
 const tabs=[['dashboard','Dashboard'],['designs','Designs'],['timeline','Timeline'],['quotes','Quotes'],['orders','Orders'],['invoices','Invoices'],['account','Account']];
 const descriptions={designs:['Designs & Proofs','Review artwork, proofs, and requests for revisions.'],timeline:['Project Timeline','Follow milestones and production progress for your organization.'],quotes:['Quotes & Approvals','Review estimates and approved quotes for your projects.'],orders:['Orders','Track orders associated with your customer account.'],invoices:['Invoices & Payments','View invoices and payment information.']};
 let active='dashboard',lockerIdentity=null,lockerError='',checking=false;
+// Compatibility with the shared master-admin artwork library module.
+const lockerSession={get adminRole(){return lockerIdentity?.adminRole||null;}};
 function safe(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function b64url(bytes){return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
 function randomUrlSafe(n=32){const a=new Uint8Array(n);crypto.getRandomValues(a);return b64url(a);}
@@ -158,7 +160,7 @@ function adminDirectory(){
  const d=directoryState;
  let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">MNTR INC was not found in the Client CRM.</p>':'<p class="muted">The first test will load MNTR INC from the existing Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD TEST ORGANIZATION</button>';
  if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;sessionStorage.removeItem('goat_locker_selected_org');render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
- return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Read-only Client CRM connection · MNTR INC test</p>${contents}</div>`;
+ return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Read-only Client CRM connection · MNTR INC test</p>${isMaster?'<div class="linkrow"><button type="button" class="primary" onclick="openGoatArtworkLibrary()">CLIENT ARTWORK LIBRARY</button></div>':''}${contents}</div>;
 }
 function show(id){
  if(!tabs.some(t=>t[0]===id))id='dashboard';
@@ -572,5 +574,6 @@ async function initializeLocker(){
 }
 initializeLocker();
 </script>
+<script src="goat-artwork-library.js" defer></script>
 </body>
 </html>
