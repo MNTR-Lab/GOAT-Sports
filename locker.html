@@ -23,6 +23,7 @@
 
 .proof-decision-box{margin-top:14px;border:1px solid #dce2e9;background:#f8fafb;border-radius:12px;padding:15px}.proof-decision-box label{display:block;font-weight:800;margin:0 0 7px}.proof-decision-box textarea{width:100%;min-height:100px;border:1px solid #cfd4de;border-radius:9px;padding:12px;font:inherit;resize:vertical}.proof-decision-box .hint{font-size:12px;color:#69717e;margin:8px 0}.proof-decision-box .decision-buttons{display:flex;flex-wrap:wrap;gap:10px}.proof-decision-box .danger{background:#fff;color:#a44824;border:1px solid #cf987e;border-radius:10px;padding:11px 16px;font-weight:800}.proof-decision-box button:disabled{opacity:.5;cursor:wait}.proof-feedback{margin-top:10px;font-size:13px;font-weight:700}.proof-feedback.error{color:#a44824}.proof-feedback.success{color:#087b70}
 .job-details{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}.job-details summary{cursor:pointer;font-weight:700;color:var(--purple)}.job-details[open] summary{margin-bottom:14px}.job-details .job-grid{margin-top:12px}
+.goat-artwork-section{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}.artwork-version{border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:12px;background:white}.goat-artwork-results{margin-top:12px}.goat-artwork-section h4{margin:0 0 8px}
 </style>
 </head>
 <body>
@@ -169,6 +170,64 @@ async function loadOrganizationJobs(){
  }catch(e){if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id)jobState.error=e.message||'Jobs unavailable';}
  finally{jobState.loading=false;render();}
 }
+const goatArtworkCache = new Map();
+async function goatArtworkRequest(payload){
+ const token=customerToken();if(!token)throw Error('Please sign in again to review artwork.');
+ const response=await fetch(SUPABASE_URL+'/functions/v1/goat-customer-artwork',{
+  method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:SUPABASE_PUBLISHABLE_KEY},
+  body:JSON.stringify(payload)
+ });
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw Error(data.error||'Artwork service unavailable');
+ return data;
+}
+function artworkPanelHtml(jobId,artworks){
+ if(!artworks.length)return '<p class="muted">No artwork versions have been uploaded for this job yet.</p>';
+ return artworks.map(a=>{
+  const review=a.status==='Sent for Review';
+  return `<div class="artwork-version"><strong>${safe(a.title||'Artwork proof')} · ${safe(a.version||'Version not set')}</strong><div class="muted">Status: ${safe(a.status||'Not set')} · Uploaded: ${safe(a.uploaded||'Not set')}</div>${a.notes?`<p>${safe(a.notes)}</p>`:''}<div class="linkrow">${(a.files||[]).map(f=>`<button class="secondary" type="button" onclick="goatOpenArtworkFile('${safe(f.id)}')">VIEW ${safe(f.name||'ARTWORK')}</button>`).join('')}${review?`<button class="primary" type="button" onclick="goatArtworkDecision('${safe(a.id)}','approve')">APPROVE</button><button class="secondary" type="button" onclick="goatArtworkDecision('${safe(a.id)}','changes')">REQUEST CHANGES</button>`:''}</div></div>`;
+ }).join('');
+}
+async function goatLoadJobArtwork(jobId){
+ const org=directoryState.selected?.mondayItemId;
+ const panel=document.getElementById('goat-art-'+jobId);
+ if(!org||!panel)return;
+ panel.textContent='Loading artwork versions…';
+ try{
+  const data=await goatArtworkRequest({action:'list',organizationId:String(org)});
+  goatArtworkCache.set(String(org),data);
+  const j=(data.jobs||[]).find(j=>String(j.id)===String(jobId));
+  if(!j)throw Error('This job is not available for the selected organization.');
+  panel.innerHTML=artworkPanelHtml(jobId,j.artworks||[]);
+ }catch(e){panel.textContent=e.message||'Artwork unavailable';}
+}
+async function goatOpenArtworkFile(assetId){
+ const org=directoryState.selected?.mondayItemId;
+ if(!org)return;
+ // Open a blank tab directly from the click so browsers do not block the file.
+ const tab=window.open('','_blank');
+ try{
+  const data=await goatArtworkRequest({action:'file',organizationId:String(org),assetId:String(assetId)});
+  if(tab){tab.opener=null;tab.location.replace(data.url);}else window.location.assign(data.url);
+ }catch(e){if(tab)tab.close();alert(e.message||'Could not open artwork');}
+}
+async function goatArtworkDecision(artworkId,decision){
+ const org=directoryState.selected?.mondayItemId;
+ if(!org)return;
+ let feedback='';
+ if(decision==='changes'){
+  const response=prompt('Describe the changes requested (at least 5 characters):');
+  if(response===null)return;
+  feedback=response.trim();
+  if(feedback.length<5||feedback.length>2000){alert('Please enter 5–2000 characters.');return;}
+ }else if(!confirm('Approve this artwork version for the selected job?'))return;
+ try{
+  await goatArtworkRequest({action:'decision',organizationId:String(org),artworkId:String(artworkId),decision,feedback});
+  alert(decision==='approve'?'Artwork approved.':'Change request submitted.');
+  const panels=[...document.querySelectorAll('[id^="goat-art-"]')];
+  for(const panel of panels)if(panel.dataset.loaded==='true')await goatLoadJobArtwork(panel.dataset.jobId);
+ }catch(e){alert(e.message||'Could not submit artwork decision');}
+}
 function organizationJobs(){
  const j=jobState;
  if(!directoryState.selected)return '';
@@ -176,7 +235,7 @@ function organizationJobs(){
  if(j.error)return `<div class="notice error"><strong>Jobs connection issue</strong><p>${safe(j.error)}</p><button class="secondary" onclick="loadOrganizationJobs()">Retry jobs</button></div>`;
  if(!j.loaded)return '<button class="secondary" onclick="loadOrganizationJobs()">Load organization jobs</button>';
  if(!j.jobs.length)return '<p class="muted">No linked jobs were found for this organization.</p>';
- return j.jobs.map(x=>`<div class="job-item"><div class="eyebrow">JOB ${safe(x.jobId||x.id)}</div><h3>${safe(x.name)}</h3><div class="job-grid"><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div></div><details class="job-details"><summary>VIEW JOB DETAILS</summary><div class="job-grid"><div><span class="muted">Job ID</span><strong>${safe(x.jobId||x.id)}</strong></div><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork review</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div><div><span class="muted">Quote</span><strong>${safe(x.quoteStatus||'Not set')}</strong></div><div><span class="muted">Payment</span><strong>${safe(x.paymentStatus||'Not set')}</strong></div><div><span class="muted">Target date</span><strong>${safe(x.targetDate||'Not set')}</strong></div></div>${x.customerNotes?`<p><strong>Customer notes:</strong> ${safe(x.customerNotes)}</p>`:''}<p class="muted">Artwork files, invoices, and shipping details will be shown here once connected and authorized for this organization.</p></details></div>`).join('');
+ return j.jobs.map(x=>`<div class="job-item"><div class="eyebrow">JOB ${safe(x.jobId||x.id)}</div><h3>${safe(x.name)}</h3><div class="job-grid"><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div></div><details class="job-details"><summary>VIEW JOB DETAILS</summary><div class="job-grid"><div><span class="muted">Job ID</span><strong>${safe(x.jobId||x.id)}</strong></div><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork review</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div><div><span class="muted">Quote</span><strong>${safe(x.quoteStatus||'Not set')}</strong></div><div><span class="muted">Payment</span><strong>${safe(x.paymentStatus||'Not set')}</strong></div><div><span class="muted">Target date</span><strong>${safe(x.targetDate||'Not set')}</strong></div></div>${x.customerNotes?`<p><strong>Customer notes:</strong> ${safe(x.customerNotes)}</p>`:''}<div class="goat-artwork-section"><h4>Artwork Versions & Approvals</h4><p class="muted">Review all proof versions linked to this job. Only versions marked Sent for Review can be approved or returned for changes.</p><button class="secondary" type="button" onclick="document.getElementById('goat-art-${safe(x.id)}').dataset.loaded='true';goatLoadJobArtwork('${safe(x.id)}')">LOAD ARTWORK VERSIONS</button><div class="goat-artwork-results" id="goat-art-${safe(x.id)}" data-job-id="${safe(x.id)}"></div></div><p class="muted">Invoices and shipping details will appear here when connected to this job.</p></details></div>`).join('');
 }
 function adminDirectory(){
  if(!lockerIdentity||(lockerIdentity.adminRole!=='master_admin'&&!lockerIdentity.organizationAccess?.length))return '';
