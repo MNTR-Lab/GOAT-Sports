@@ -814,7 +814,7 @@ async function renderLocker(){
  const el=document.getElementById('lockerAssignedTeams');if(!el)return;
  await loadLockerSession();
  if(lockerSession.adminRole){
-  el.innerHTML=`<div class="lockerTeamCard"><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h3>GOAT SPORTS ADMIN ACCESS</h3><p>You have administrative access to GOAT Locker management.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button></div>`+
+  el.innerHTML=`<div class="lockerTeamCard"><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h3>GOAT SPORTS ADMIN ACCESS</h3><p>You have administrative access to GOAT Locker management.</p><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button><a href="shipping-import.html" target="_blank" rel="noopener noreferrer" class="cta" style="display:inline-block;text-align:center;text-decoration:none;margin:10px 0 0;background:var(--teal);color:#fff;border-radius:6px">SHIPPING COST IMPORT ↗</a></div>`+
   lockerSession.lockerAccess.map(lockerTeamHtml).join('');
  }else if(lockerSession.lockerAccess.length) el.innerHTML=lockerSession.lockerAccess.map(lockerTeamHtml).join('');
  else el.innerHTML='<div class="lockerTeamCard"><h3>NO LOCKER ASSIGNED</h3><p>Your account is signed in but has not been linked to a GOAT Locker.</p></div>';
@@ -1245,7 +1245,7 @@ async function renderAccountLockerAccess(){
  const el=document.getElementById('accountLockerAccess');if(!el)return;
  await loadLockerSession();
  if(lockerSession.adminRole){
-  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER ADMIN</h2><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button>`;
+  el.innerHTML=`<div class="eyebrow">GOAT SPORTS CUSTOM CLIENTS</div><span class="adminBadge">${lockerSession.adminRole==='master_admin'?'MASTER ADMIN':'ADMIN'}</span><h2>GOAT LOCKER ADMIN</h2><button class="cta" onclick="openLockerAdmin()">MANAGE LOCKER ACCESS</button><a href="shipping-import.html" target="_blank" rel="noopener noreferrer" class="cta" style="display:inline-block;text-align:center;text-decoration:none;margin:10px 0 0;background:var(--teal);color:#fff;border-radius:6px">SHIPPING COST IMPORT ↗</a>`;
   await renderAdminStandaloneMailbox();
   await renderAccountAdminLockers();
  }else if(lockerSession.lockerAccess.length){
