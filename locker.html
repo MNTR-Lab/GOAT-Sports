@@ -145,8 +145,13 @@ async function loadOrganizationJobs(){
  if(lockerIdentity.adminRole==='master_admin'&&Array.isArray(o.liveJobs)){
   jobState.jobs=o.liveJobs.map(j=>({
    id:j.id,jobId:j.jobCode||j.id,name:j.name,
-   status:'View full status in Monday.com',
-   artworkStatus:(j.artworks||[]).length+' artwork versions',
+   status:j.status||'View full status in Monday.com',
+   productionStatus:j.productionStatus||'View in Monday.com',
+   artworkStatus:j.artworkStatus||((j.artworks||[]).length+' artwork versions'),
+   quoteStatus:j.quoteStatus||'View in Monday.com',
+   paymentStatus:j.paymentStatus||'View in Monday.com',
+   targetDate:j.targetDate||'',
+   customerNotes:j.customerNotes||'',
    mondayUrl:j.url
   }));
   jobState.loaded=true;jobState.loading=false;render();return;
