@@ -164,6 +164,7 @@ function show(id){
  if(!tabs.some(t=>t[0]===id))id='dashboard';
  active=id;render();window.scrollTo({top:0,behavior:'instant'});
  if(id==='quotes')autoLoadQuotes(true);
+ else if(id==='designs')artLoad();
  else if(id==='timeline')autoLoadJobs();
  else if(id==='dashboard')autoLoadDirectory();
 }
@@ -256,9 +257,73 @@ async function submitProofDecision(jobId,decision){
  }catch(error){if(feedback){feedback.className='proof-feedback error';feedback.textContent=error.message||'Unable to submit decision';}alert(error.message||'Unable to submit proof decision');}
  finally{decisionBusy=false;document.querySelectorAll('[data-proof-submit]').forEach(b=>b.disabled=false);}
 }
+// GOAT Locker artwork pilot — MNTR INC only.
+const ART_ORG='13227365382', ART_JOB='13227526735';
+let artProofs=[], artError='', artLoading=false, artBusy=false;
+async function artAPI(action, extra={}) {
+ const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-artwork', {
+  method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+  body:JSON.stringify({action,organizationId:ART_ORG,jobId:ART_JOB,...extra})
+ });
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||'Artwork service unavailable');
+ return data;
+}
+async function artLoad() {
+ if(artLoading||!customerToken()||!lockerIdentity)return;
+ artLoading=true;
+ try {const result=await artAPI('list');artProofs=result.proofs||[];artError='';}
+ catch(error){artError=error.message||'Could not load artwork';}
+ finally {artLoading=false;if(active==='designs')render();}
+}
+function artPanel(master) {
+ const entries=artProofs.map(p=>{
+  const status=String(p.status||'draft').replaceAll('_',' ');
+  const response=p.response_notes?`<p><strong>Customer feedback:</strong> ${safe(p.response_notes)}</p>`:'';
+  const send=master&&p.status==='draft'?` <button class="primary" onclick="artSend('${safe(p.id)}')">Send for Approval</button>`:'';
+  const decision=!master&&p.status==='sent_for_review'?`<label for="art-comment-${safe(p.id)}">Revision instructions</label><textarea id="art-comment-${safe(p.id)}" maxlength="2000" rows="3" style="display:block;width:100%;margin:8px 0" placeholder="Required if requesting changes"></textarea><div class="linkrow"><button class="primary" onclick="artDecide('${safe(p.id)}','approve')">Approve Artwork</button><button class="secondary" onclick="artDecide('${safe(p.id)}','revision')">Request Changes</button></div>`:'';
+  return `<div class="design-job"><strong>Version ${Number(p.version)} · ${safe(p.file_name)}</strong><p class="muted">Status: ${safe(status)}</p>${p.notes?`<p>${safe(p.notes)}</p>`:''}${response}<div class="linkrow"><button class="secondary" onclick="artOpen('${safe(p.id)}')">Preview / Download</button>${send}</div>${decision}</div>`;
+ }).join('');
+ const uploader=master?`<label for="art-upload-file"><strong>Artwork file</strong> (PDF, PNG, JPG, WEBP; maximum 15 MB)</label><input type="file" id="art-upload-file" accept=".pdf,.png,.jpg,.jpeg,.webp" style="display:block;margin:10px 0 15px"><label for="art-upload-notes"><strong>Instructions for customer</strong></label><textarea id="art-upload-notes" rows="3" maxlength="2000" style="display:block;width:100%;margin:8px 0" placeholder="Describe what the customer should review"></textarea><button class="primary" id="art-upload-button" onclick="artUpload()">Upload Artwork</button><p class="muted">Uploading creates a private draft. Use Send for Approval to make it available to the test customer.</p>`:'';
+ return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ARTWORK APPROVAL PILOT</div><h2>${master?'Upload Artwork Proof':'Artwork for Your Review'}</h2><p class="muted">MNTR INC · TEST-LOCKER-001 · Private proof versions</p>${artError?`<div class="notice error">${safe(artError)}</div>`:''}${uploader}<div class="linkrow"><button class="secondary" onclick="artLoad()">Refresh Proofs</button></div><h3 style="margin-top:20px">Proof History</h3>${entries||'<p class="muted">No GOAT Locker proofs yet.</p>'}<p class="muted">Pilot only: Monday.com status updates and email notifications are not yet connected.</p></div>`;
+}
+async function artUpload(){
+ if(artBusy)return;
+ const file=document.getElementById('art-upload-file')?.files?.[0];
+ const notes=document.getElementById('art-upload-notes')?.value||'';
+ if(!file||file.size>15728640||!['application/pdf','image/png','image/jpeg','image/webp'].includes(file.type)){alert('Select a PDF or image file under 15 MB.');return;}
+ artBusy=true;const btn=document.getElementById('art-upload-button');if(btn)btn.disabled=true;
+ try{
+  const p=await artAPI('upload',{fileName:file.name,mimeType:file.type,notes});
+  const path=p.path.split('/').map(encodeURIComponent).join('/');
+  const url=SUPABASE_URL+'/storage/v1/object/upload/sign/goat-locker-proofs/'+path+'?token='+encodeURIComponent(p.uploadToken);
+  const response=await fetch(url,{method:'PUT',headers:{'Content-Type':file.type,'x-upsert':'false'},body:file});
+  if(!response.ok)throw Error('File upload failed. Do not retry this proof until its record is checked.');
+  await artLoad();alert('Artwork draft uploaded. Use Send for Approval when ready.');
+ }catch(error){alert(error.message||'Upload failed');}
+ finally{artBusy=false;if(btn)btn.disabled=false;}
+}
+async function artSend(id){
+ if(!confirm('Send this artwork version to the test customer for approval?'))return;
+ try{await artAPI('send',{proofId:id});await artLoad();alert('Proof is now available for customer review. No email notification was sent.');}
+ catch(error){alert(error.message||'Unable to send proof');}
+}
+async function artOpen(id){
+ const tab=window.open('','_blank');
+ try{const data=await artAPI('file',{proofId:id});if(tab)tab.location.href=data.url;else alert('Allow pop-ups to preview this proof.');}
+ catch(error){if(tab)tab.close();alert(error.message||'Unable to open proof');}
+}
+async function artDecide(id,decision){
+ const comments=document.getElementById('art-comment-'+id)?.value.trim()||'';
+ if(decision==='revision'&&comments.length<3){alert('Please describe the requested changes.');return;}
+ if(!confirm(decision==='approve'?'Approve this artwork version?':'Submit your revision request?'))return;
+ try{await artAPI('decide',{proofId:id,decision,comments});await artLoad();alert('Artwork decision recorded.');}
+ catch(error){alert(error.message||'Unable to record decision');}
+}
+
 function renderDesigns(){
  if(!customerToken()||!lockerIdentity)return `<div class="panel"><h2>Designs &amp; Proofs</h2>${authMessage()}</div>`;
- if(lockerIdentity.adminRole!=='master_admin')return `<div class="panel"><h2>Designs &amp; Proofs</h2><div class="empty">Design access will be available when your organization is assigned and verified.</div></div>`;
+ if(lockerIdentity.adminRole!=='master_admin')return artPanel(false);
  const org=directoryState.selected;
  if(!org)return `<div class="panel"><div class="eyebrow">GOAT LOCKER / DESIGNS &amp; PROOFS</div><h2>Designs &amp; Proofs</h2><p class="muted">Choose an organization on the Dashboard to see its jobs and artwork statuses.</p><button class="primary" onclick="show('dashboard')">Choose organization</button></div>`;
  let out=`<div class="panel"><div class="eyebrow">GOAT LOCKER / DESIGNS &amp; PROOFS</div><div class="design-head"><div><h2>Designs &amp; Proofs</h2><p class="muted">${safe(org.name)} · ${safe(org.clientId||'')} · Current artwork status from GOAT Sports Jobs Board</p></div><button class="secondary" onclick="loadOrganizationJobs()">Refresh designs</button></div>`;
@@ -270,7 +335,7 @@ function renderDesigns(){
   const artwork=String(j.artworkStatus||'Not set');
   out+=`<article class="design-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><div class="design-meta"><span><strong>Artwork:</strong> ${safe(artwork)}</span><span><strong>Job:</strong> ${safe(j.status||'Not set')}</span></div><div class="proof-area"><strong>Artwork &amp; proof files</strong>${Array.isArray(j.artworkFiles)&&j.artworkFiles.length?`<p class="muted">${j.artworkFiles.length} file(s) attached in Monday.com:</p><ul class="proof-files">${j.artworkFiles.map(f=>`<li><span aria-hidden="true">📎</span> ${safe(f.name)} ${/^[0-9]+$/.test(String(f.assetId||''))?`<button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),false)">Preview</button> <button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),true)">Download</button>`:''}</li>`).join('')}</ul>`:'<p class="muted">No artwork or proof files are attached to this job in Monday.com.</p>'}</div>${decisionPanel(j)}</article>`;
  }
- return out+'<p class="muted">Live artwork statuses and files are retrieved from Monday.com. Proof decisions are currently restricted to the MNTR INC master-admin test; customer approvals are not yet enabled.</p></div>';
+ return out+'</div>'+artPanel(true);
 }
 
 
