@@ -170,6 +170,35 @@ async function loadOrganizationJobs(){
  }catch(e){if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id)jobState.error=e.message||'Jobs unavailable';}
  finally{jobState.loading=false;render();}
 }
+// Read-only order information. The server checks the signed-in customer's organization access.
+async function goatLoadJobOrderDetails(jobId){
+ const org=directoryState.selected?.mondayItemId;
+ const panel=document.getElementById('goat-order-'+jobId);
+ if(!org||!panel)return;
+ panel.textContent='Loading order and delivery details…';
+ try{
+  const token=customerToken();
+  if(!token)throw Error('Please sign in again.');
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-jobs',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({action:'list',organizationId:String(org)})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(data.error||'Order information unavailable');
+  const job=(data.jobs||[]).find(x=>String(x.id)===String(jobId));
+  if(!job)throw Error('This job is not linked to the selected organization.');
+  const fields=[
+   ['Order / invoice number',job.invoiceNumber],
+   ['Invoice amount',job.invoiceAmount ? '$'+job.invoiceAmount : 'Not available'],
+   ['Quote number',job.quoteNumber],
+   ['Quote amount',job.quoteAmount ? '$'+job.quoteAmount : 'Not available'],
+   ['Payment status',job.paymentStatus],
+   ['Production status',job.productionStatus],
+   ['Tracking number',job.trackingNumber]
+  ];
+  panel.innerHTML='<div class="job-grid">'+fields.map(([label,value])=>'<div><span class="muted">'+safe(label)+'</span><strong>'+safe(value||'Not available')+'</strong></div>').join('')+'</div><p class="muted">Details are shown only when linked to this job in the GOAT Sports database. Shipping carrier and tracking links will be added when verified.</p>';
+ }catch(e){panel.textContent=e.message||'Order information unavailable';}
+}
 const goatArtworkCache = new Map();
 async function goatArtworkRequest(payload){
  const token=customerToken();if(!token)throw Error('Please sign in again to review artwork.');
@@ -235,7 +264,7 @@ function organizationJobs(){
  if(j.error)return `<div class="notice error"><strong>Jobs connection issue</strong><p>${safe(j.error)}</p><button class="secondary" onclick="loadOrganizationJobs()">Retry jobs</button></div>`;
  if(!j.loaded)return '<button class="secondary" onclick="loadOrganizationJobs()">Load organization jobs</button>';
  if(!j.jobs.length)return '<p class="muted">No linked jobs were found for this organization.</p>';
- return j.jobs.map(x=>`<div class="job-item"><div class="eyebrow">JOB ${safe(x.jobId||x.id)}</div><h3>${safe(x.name)}</h3><div class="job-grid"><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div></div><details class="job-details"><summary>VIEW JOB DETAILS</summary><div class="job-grid"><div><span class="muted">Job ID</span><strong>${safe(x.jobId||x.id)}</strong></div><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork review</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div><div><span class="muted">Quote</span><strong>${safe(x.quoteStatus||'Not set')}</strong></div><div><span class="muted">Payment</span><strong>${safe(x.paymentStatus||'Not set')}</strong></div><div><span class="muted">Target date</span><strong>${safe(x.targetDate||'Not set')}</strong></div></div>${x.customerNotes?`<p><strong>Customer notes:</strong> ${safe(x.customerNotes)}</p>`:''}<div class="goat-artwork-section"><h4>Artwork Versions & Approvals</h4><p class="muted">Review all proof versions linked to this job. Only versions marked Sent for Review can be approved or returned for changes.</p><button class="secondary" type="button" onclick="document.getElementById('goat-art-${safe(x.id)}').dataset.loaded='true';goatLoadJobArtwork('${safe(x.id)}')">LOAD ARTWORK VERSIONS</button><div class="goat-artwork-results" id="goat-art-${safe(x.id)}" data-job-id="${safe(x.id)}"></div></div><p class="muted">Invoices and shipping details will appear here when connected to this job.</p></details></div>`).join('');
+ return j.jobs.map(x=>`<div class="job-item"><div class="eyebrow">JOB ${safe(x.jobId||x.id)}</div><h3>${safe(x.name)}</h3><div class="job-grid"><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div></div><details class="job-details"><summary>VIEW JOB DETAILS</summary><div class="job-grid"><div><span class="muted">Job ID</span><strong>${safe(x.jobId||x.id)}</strong></div><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork review</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div><div><span class="muted">Quote</span><strong>${safe(x.quoteStatus||'Not set')}</strong></div><div><span class="muted">Payment</span><strong>${safe(x.paymentStatus||'Not set')}</strong></div><div><span class="muted">Target date</span><strong>${safe(x.targetDate||'Not set')}</strong></div></div>${x.customerNotes?`<p><strong>Customer notes:</strong> ${safe(x.customerNotes)}</p>`:''}<div class="goat-artwork-section"><h4>Artwork Versions & Approvals</h4><p class="muted">Review all proof versions linked to this job. Only versions marked Sent for Review can be approved or returned for changes.</p><button class="secondary" type="button" onclick="document.getElementById('goat-art-${safe(x.id)}').dataset.loaded='true';goatLoadJobArtwork('${safe(x.id)}')">LOAD ARTWORK VERSIONS</button><div class="goat-artwork-results" id="goat-art-${safe(x.id)}" data-job-id="${safe(x.id)}"></div></div><div class="goat-order-section"><h4>Order, Invoice &amp; Delivery</h4><p class="muted">Read-only order and shipping details from your linked GOAT Sports job.</p><button class="secondary" type="button" onclick="goatLoadJobOrderDetails('${safe(x.id)}')">LOAD ORDER &amp; SHIPPING DETAILS</button><div id="goat-order-${safe(x.id)}" class="goat-order-results"></div></div></details></div>`).join('');
 }
 function adminDirectory(){
  if(!lockerIdentity||(lockerIdentity.adminRole!=='master_admin'&&!lockerIdentity.organizationAccess?.length))return '';
