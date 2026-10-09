@@ -160,7 +160,13 @@ function adminDirectory(){
  if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;sessionStorage.removeItem('goat_locker_selected_org');render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
  return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Read-only Client CRM connection · MNTR INC test</p>${contents}</div>`;
 }
-function show(id){if(!tabs.some(t=>t[0]===id))id='dashboard';active=id;render();window.scrollTo({top:0,behavior:'instant'});}
+function show(id){
+ if(!tabs.some(t=>t[0]===id))id='dashboard';
+ active=id;render();window.scrollTo({top:0,behavior:'instant'});
+ if(id==='quotes')autoLoadQuotes(true);
+ else if(id==='timeline')autoLoadJobs();
+ else if(id==='dashboard')autoLoadDirectory();
+}
 function renderNav(){for(const target of ['side','mobile'])document.getElementById(target).innerHTML=tabs.map(([id,label])=>`<button type="button" class="${id===active?'active':''}" onclick="show('${id}')" aria-current="${id===active?'page':'false'}">${label}</button>`).join('');}
 function authMessage(){
  if(lockerError)return `<div class="notice error"><strong>Account connection issue</strong><p class="muted">${safe(lockerError)}</p><button class="secondary" onclick="customerLogin()">Try signing in again</button></div>`;
@@ -415,9 +421,44 @@ function render(){
  else if(active==='quotes')el.innerHTML=renderQuotes();
  else el.innerHTML=section(active);
 }
+
+let autoQuoteRefreshRunning=false;
+async function autoLoadQuotes(force=false){
+ if(!customerToken()||!lockerIdentity||active!=='quotes'||String(directoryState.selected?.mondayItemId)!=='13227365382')return;
+ if(autoQuoteRefreshRunning||(!force&&document.activeElement?.matches('input,textarea,select')))return;
+ autoQuoteRefreshRunning=true;
+ try{
+  if(lockerIdentity.adminRole==='master_admin'){
+   if(quoteState.loading)return;
+   const data=await qapi({action:'list'});
+   quoteState.quotes=Array.isArray(data.quotes)?data.quotes:[];
+   quoteState.error='';
+  }else{
+   if(customerQuotes.loading)return;
+   const data=await quoteReviewAPI({action:'list'});
+   customerQuotes.quotes=Array.isArray(data.quotes)?data.quotes:[];
+   customerQuotes.loaded=true;customerQuotes.error='';
+  }
+  if(active==='quotes'&&!document.activeElement?.matches('input,textarea,select'))render();
+ }catch(e){console.warn('Automatic quote refresh:',e.message);}
+ finally{autoQuoteRefreshRunning=false;}
+}
+function autoLoadJobs(){if(directoryState.selected&&!jobState.loading)loadOrganizationJobs();}
+function autoLoadDirectory(){if(lockerIdentity&&!directoryState.loading&&!directoryState.loaded)loadAdminDirectory();}
+function autoRefreshCurrent(){
+ if(document.hidden||!customerToken()||!lockerIdentity)return;
+ if(active==='quotes')autoLoadQuotes();
+ else if(active==='timeline')autoLoadJobs();
+ else if(active==='dashboard')autoLoadDirectory();
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoRefreshCurrent();});
+window.addEventListener('focus',()=>autoRefreshCurrent());
+setInterval(autoRefreshCurrent,30000);
+
 async function initializeLocker(){
  render();await handleCustomerCallback();
  if(customerToken()&&!lockerError){await loadLockerIdentity();if(lockerIdentity?.adminRole==='master_admin'||lockerIdentity?.organizationAccess?.length)await loadAdminDirectory();}else render();
+ if(active==='quotes')autoLoadQuotes(true);
 }
 initializeLocker();
 </script>
