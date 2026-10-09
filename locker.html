@@ -686,5 +686,51 @@ function customerArtworkPanel(){
 const previousRenderDesigns=renderDesigns;
 renderDesigns=function(){return customerArtworkPanel()+previousRenderDesigns();};
 </script>
+<script>
+/* GOAT Locker Phase 4 — Customer artwork decisions. Load after the existing locker scripts. */
+(function(){
+  if(typeof customerArtworkPanel!=='function'||typeof customerArtworkApi!=='function')return;
+  const oldPanel=customerArtworkPanel;
+  const esc=customerArtworkEsc;
+  const busy=new Set();
+  window.goatArtworkDecision=async function(id,decision){
+    const artwork=(customerArtworkState.artworks||[]).find(x=>String(x.id)===String(id));
+    if(!artwork||String(artwork.status).toLowerCase()!=='sent for review')return;
+    const feedback=decision==='changes'?String(document.getElementById('goat-feedback-'+id)?.value||'').trim():'';
+    if(decision==='changes'&&(feedback.length<5||feedback.length>2000)){
+      alert('Please enter 5–2000 characters describing the requested changes.');return;
+    }
+    if(!confirm(decision==='approve'?'Approve artwork version '+artwork.version+'? This decision will be recorded in Monday.com.':'Send these revision instructions for artwork version '+artwork.version+'?'))return;
+    if(busy.has(id))return;
+    busy.add(id);
+    document.querySelectorAll('[data-goat-decision="'+id+'"]').forEach(b=>b.disabled=true);
+    try{
+      await customerArtworkApi('decision',{organizationId:String(directoryState.selected.mondayItemId),artworkId:String(id),decision,feedback});
+      alert('Artwork decision recorded. The artwork history will refresh.');
+      await loadCustomerArtwork(true);
+    }catch(e){alert('Decision was not saved: '+String(e?.message||e));}
+    finally{busy.delete(id);document.querySelectorAll('[data-goat-decision="'+id+'"]').forEach(b=>b.disabled=false);}
+  };
+  customerArtworkPanel=function(){
+    let html=oldPanel();
+    const a=customerArtworkState;
+    if(!a.loaded||!Array.isArray(a.artworks))return html;
+    // Insert controls into each exact artwork card, never into a different job/version.
+    for(const art of a.artworks){
+      if(String(art.status).toLowerCase()!=='sent for review'||!/^\d+$/.test(String(art.id)))continue;
+      const id=String(art.id),title=esc(art.title||'Artwork');
+      const marker='<h3>'+title+'</h3>';
+      const position=html.indexOf(marker);
+      if(position<0)continue;
+      const end=html.indexOf('</article>',position);
+      if(end<0)continue;
+      const controls='<div class="proof-area" style="margin-top:14px"><strong>Review this version</strong><p class="muted">Confirm you have opened the artwork before making a decision.</p><div class="linkrow"><button type="button" class="primary" data-goat-decision="'+id+'" onclick="goatArtworkDecision(\''+id+'\',\'approve\')">Approve this version</button></div><label for="goat-feedback-'+id+'" style="display:block;margin-top:12px">Revision instructions</label><textarea id="goat-feedback-'+id+'" rows="3" maxlength="2000" placeholder="Describe the changes needed for this artwork version"></textarea><div class="linkrow"><button type="button" class="secondary" data-goat-decision="'+id+'" onclick="goatArtworkDecision(\''+id+'\',\'changes\')">Request changes</button></div></div>';
+      html=html.slice(0,end)+controls+html.slice(end);
+    }
+    return html;
+  };
+})();
+
+</script>
 </body>
 </html>
