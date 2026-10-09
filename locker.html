@@ -113,12 +113,21 @@ async function loadAdminDirectory(){
  if(!lockerIdentity||!customerToken()||!(lockerIdentity.adminRole==='master_admin'||lockerIdentity.organizationAccess?.length))return;
  directoryState.loading=true;directoryState.error='';render();
  try{
-  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-directory',{
+  const isMaster=lockerIdentity.adminRole==='master_admin';
+  const response=await fetch(SUPABASE_URL+'/functions/v1/'+(isMaster?'goat-artwork-library':'goat-locker-directory'),{
    method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
-   body:JSON.stringify({action:'list_test'})
+   body:JSON.stringify({action:isMaster?'list':'list_test'})
   });
   const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load organizations');
-  directoryState.organizations=Array.isArray(data.organizations)?data.organizations:[];directoryState.loaded=true;
+  if(isMaster){
+   directoryState.organizations=(Array.isArray(data.clients)?data.clients:[]).map(c=>({
+    mondayItemId:String(c.id),name:c.name,clientId:c.clientId,
+    liveJobs:Array.isArray(c.jobs)?c.jobs:[]
+   }));
+  }else{
+   directoryState.organizations=Array.isArray(data.organizations)?data.organizations:[];
+  }
+  directoryState.loaded=true;
   const savedId=sessionStorage.getItem('goat_locker_selected_org');
   if(savedId&&!directoryState.selected){const saved=directoryState.organizations.find(x=>String(x.mondayItemId)===savedId);if(saved){directoryState.selected=saved;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:savedId};loadOrganizationJobs();}else{sessionStorage.removeItem('goat_locker_selected_org');}}
  }catch(e){directoryState.error=e.message||'Directory unavailable';}
@@ -133,6 +142,14 @@ async function loadOrganizationJobs(){
  if(!o||!lockerIdentity||!customerToken()||!(lockerIdentity.adminRole==='master_admin'||lockerIdentity.organizationAccess?.some(x=>String(x.organization_monday_id)===String(o.mondayItemId))))return;
  const id=String(o.mondayItemId);
  jobState.loading=true;jobState.error='';jobState.organizationId=id;render();
+ if(lockerIdentity.adminRole==='master_admin'&&Array.isArray(o.liveJobs)){
+  jobState.jobs=o.liveJobs.map(j=>({
+   id:j.id,jobId:j.jobCode||j.id,name:j.name,status:'See job record',
+   artworkStatus:(j.artworks||[]).length+' artwork versions',
+   mondayUrl:j.url
+  }));
+  jobState.loaded=true;jobState.loading=false;render();return;
+ }
  try{
   const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-jobs',{
    method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
@@ -158,9 +175,9 @@ function adminDirectory(){
  if(!lockerIdentity||(lockerIdentity.adminRole!=='master_admin'&&!lockerIdentity.organizationAccess?.length))return '';
  const isMaster=lockerIdentity.adminRole==='master_admin';
  const d=directoryState;
- let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">MNTR INC was not found in the Client CRM.</p>':'<p class="muted">The first test will load MNTR INC from the existing Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD TEST ORGANIZATION</button>';
+ let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">No clients found in the Client CRM.</p>':'<p class="muted">Load your organizations from the Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD ORGANIZATIONS</button>';
  if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;sessionStorage.removeItem('goat_locker_selected_org');render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
- return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Read-only Client CRM connection · MNTR INC test</p>${isMaster?'<div class="linkrow"><button type="button" class="primary" onclick="openGoatArtworkLibrary()">CLIENT ARTWORK LIBRARY</button></div>':''}${contents}</div>`;
+ return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Live Client CRM directory</p>${isMaster?'<div class="linkrow"><button type="button" class="primary" onclick="openGoatArtworkLibrary()">CLIENT ARTWORK LIBRARY</button></div>':''}${contents}</div>`;
 }
 function show(id){
  if(!tabs.some(t=>t[0]===id))id='dashboard';
