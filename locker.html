@@ -664,7 +664,7 @@ initializeLocker();
 <script>// GOAT Locker master-admin artwork library (uses existing Locker login).
 let goatArtworkData=null,goatArtworkSelected=null;
 function goatArtworkEsc(x){return safe(x??'');}
-async function goatArtworkRequest(action,extra={}){
+async function goatAdminArtworkRequest(action,extra={}){
  const token=customerToken();if(!token)throw Error('Sign in to GOAT Locker first.');
  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-artwork-library',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+token},body:JSON.stringify({action,...extra})});
  const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Artwork library service unavailable');return data;
@@ -673,7 +673,7 @@ async function openGoatArtworkLibrary(){
  if(lockerIdentity?.adminRole!=='master_admin'){alert('Master admin access is required.');return;}
  const modal=document.getElementById('goat-artwork-overlay');modal.hidden=false;
  document.getElementById('goat-artwork-content').innerHTML='<p>Loading client artwork…</p>';
- try{goatArtworkData=await goatArtworkRequest('list');goatArtworkSelected=null;goatArtworkRender();}
+ try{goatArtworkData=await goatAdminArtworkRequest('list');goatArtworkSelected=null;goatArtworkRender();}
  catch(e){document.getElementById('goat-artwork-content').innerHTML='<div class="notice error"><strong>Could not load artwork library</strong><p>'+goatArtworkEsc(e.message)+'</p><button class="secondary" onclick="openGoatArtworkLibrary()">Retry</button></div>';}
 }
 function closeGoatArtworkLibrary(){document.getElementById('goat-artwork-overlay').hidden=true;}
@@ -696,7 +696,7 @@ function goatArtworkRender(term=''){
  function filter(){list.replaceChildren();const q=input.value.toLowerCase().trim();for(const c of clients.filter(c=>String(c.name||'').toLowerCase().includes(q)||String(c.clientId||'').toLowerCase().includes(q)||(c.jobs||[]).some(j=>String(j.name||'').toLowerCase().includes(q)||String(j.jobCode||'').toLowerCase().includes(q)))){const b=document.createElement('button');b.className='card';const strong=document.createElement('strong');strong.textContent=c.name||'Unnamed client';b.appendChild(strong);const p=document.createElement('span');p.className='muted';p.textContent=(c.jobs||[]).length+' jobs · '+(c.artworks||[]).length+' artwork versions';b.appendChild(p);b.onclick=()=>{goatArtworkSelected=String(c.id);goatArtworkRender()};list.appendChild(b);}if(!list.children.length)list.textContent='No matching clients.';}
  input.addEventListener('input',filter);filter();
 }
-async function goatArtworkDownload(assetId){const popup=window.open('about:blank','_blank');try{const data=await goatArtworkRequest('file',{assetId:String(assetId)});if(!data.url)throw Error('No download URL returned');if(popup)popup.location.href=data.url;else alert('Please allow popups for artwork downloads.');}catch(e){popup?.close();alert(e.message);}}
+async function goatArtworkDownload(assetId){const popup=window.open('about:blank','_blank');try{const data=await goatAdminArtworkRequest('file',{assetId:String(assetId)});if(!data.url)throw Error('No download URL returned');if(popup)popup.location.href=data.url;else alert('Please allow popups for artwork downloads.');}catch(e){popup?.close();alert(e.message);}}
 </script>
 <script>
 /* Phase 3: organization-scoped Monday artwork history, read-only */
