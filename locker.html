@@ -160,7 +160,7 @@ function adminDirectory(){
  const d=directoryState;
  let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">MNTR INC was not found in the Client CRM.</p>':'<p class="muted">The first test will load MNTR INC from the existing Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD TEST ORGANIZATION</button>';
  if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;sessionStorage.removeItem('goat_locker_selected_org');render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
- return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Read-only Client CRM connection · MNTR INC test</p>${isMaster?'<div class="linkrow"><button type="button" class="primary" onclick="openGoatArtworkLibrary()">CLIENT ARTWORK LIBRARY</button></div>':''}${contents}</div>;
+ return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Read-only Client CRM connection · MNTR INC test</p>${isMaster?'<div class="linkrow"><button type="button" class="primary" onclick="openGoatArtworkLibrary()">CLIENT ARTWORK LIBRARY</button></div>':''}${contents}</div>`;
 }
 function show(id){
  if(!tabs.some(t=>t[0]===id))id='dashboard';
@@ -574,6 +574,46 @@ async function initializeLocker(){
 }
 initializeLocker();
 </script>
-<script src="goat-artwork-library.js" defer></script>
+<style>
+#goat-artwork-overlay[hidden]{display:none!important}#goat-artwork-overlay{position:fixed;inset:0;z-index:10000;background:#171925bd;padding:20px;display:flex;justify-content:center;align-items:center}#goat-artwork-window{background:#f5f6f9;width:min(1100px,100%);max-height:92vh;overflow:auto;border-radius:16px;box-shadow:0 12px 60px #0004}#goat-artwork-top{position:sticky;top:0;background:#683695;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}#goat-artwork-content{padding:24px}#goat-artwork-content .cards{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}@media(max-width:750px){#goat-artwork-content .cards{grid-template-columns:1fr}}
+</style>
+<div id="goat-artwork-overlay" hidden><section id="goat-artwork-window" role="dialog" aria-modal="true" aria-label="Client Artwork Library"><div id="goat-artwork-top"><strong>GOAT SPORTS · CLIENT ARTWORK LIBRARY</strong><button class="secondary" onclick="closeGoatArtworkLibrary()">CLOSE ✕</button></div><div id="goat-artwork-content"></div></section></div>
+<script>// GOAT Locker master-admin artwork library (uses existing Locker login).
+let goatArtworkData=null,goatArtworkSelected=null;
+function goatArtworkEsc(x){return safe(x??'');}
+async function goatArtworkRequest(action,extra={}){
+ const token=customerToken();if(!token)throw Error('Sign in to GOAT Locker first.');
+ const response=await fetch(SUPABASE_URL+'/functions/v1/goat-artwork-library',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+token},body:JSON.stringify({action,...extra})});
+ const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Artwork library service unavailable');return data;
+}
+async function openGoatArtworkLibrary(){
+ if(lockerIdentity?.adminRole!=='master_admin'){alert('Master admin access is required.');return;}
+ const modal=document.getElementById('goat-artwork-overlay');modal.hidden=false;
+ document.getElementById('goat-artwork-content').innerHTML='<p>Loading client artwork…</p>';
+ try{goatArtworkData=await goatArtworkRequest('list');goatArtworkSelected=null;goatArtworkRender();}
+ catch(e){document.getElementById('goat-artwork-content').innerHTML='<div class="notice error"><strong>Could not load artwork library</strong><p>'+goatArtworkEsc(e.message)+'</p><button class="secondary" onclick="openGoatArtworkLibrary()">Retry</button></div>';}
+}
+function closeGoatArtworkLibrary(){document.getElementById('goat-artwork-overlay').hidden=true;}
+function goatArtworkRender(term=''){
+ const el=document.getElementById('goat-artwork-content');const clients=Array.isArray(goatArtworkData?.clients)?goatArtworkData.clients:[];
+ if(goatArtworkSelected!==null){const client=clients.find(c=>String(c.id)===String(goatArtworkSelected));if(!client){goatArtworkSelected=null;return goatArtworkRender();}
+ const jobs=client.jobs||[];
+ el.innerHTML='<button class="secondary" onclick="goatArtworkSelected=null;goatArtworkRender()">← All clients</button><h2 style="margin-top:16px">'+goatArtworkEsc(client.name)+'</h2><p class="muted">'+jobs.length+' linked jobs</p>';
+ // Build job cards with artwork versions and secure file actions.
+ const container=document.createElement('div');
+ for(const job of jobs){const card=document.createElement('section');card.className='job-item';const h=document.createElement('h3');h.textContent=(job.jobCode?job.jobCode+' · ':'')+(job.name||'Job');card.appendChild(h);
+ const art=Array.isArray(job.artworks)?job.artworks:[];
+ if(!art.length){const p=document.createElement('p');p.className='muted';p.textContent='No artwork versions linked to this job.';card.appendChild(p);}
+ for(const a of art){const box=document.createElement('div');box.className='design-job';const title=document.createElement('strong');title.textContent=a.title||'Artwork';box.appendChild(title);const meta=document.createElement('p');meta.className='muted';meta.textContent='Version '+(a.version||'—')+' · '+(a.status||'Not set')+(a.uploaded?' · '+a.uploaded:'');box.appendChild(meta);
+ for(const f of a.files||[]){const btn=document.createElement('button');btn.className='secondary';btn.style.margin='5px';btn.textContent='Download '+(f.name||'file');btn.onclick=()=>goatArtworkDownload(f.id);box.appendChild(btn);}
+ if(a.url&&/^https:\/\//.test(a.url)){const link=document.createElement('a');link.href=a.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=' Open in Monday.com ↗';box.appendChild(link);}card.appendChild(box);}
+ container.appendChild(card);}el.appendChild(container);return;}
+ el.innerHTML='<h2>Client Artwork Library</h2><p class="muted">'+clients.length+' CRM clients</p><input id="goat-artwork-search" type="search" placeholder="Search clients or jobs" style="width:100%;padding:13px;border:1px solid #ddd;border-radius:8px;margin:12px 0"><div id="goat-artwork-clients" class="cards"></div>';
+ const list=document.getElementById('goat-artwork-clients');const input=document.getElementById('goat-artwork-search');
+ function filter(){list.replaceChildren();const q=input.value.toLowerCase().trim();for(const c of clients.filter(c=>String(c.name||'').toLowerCase().includes(q)||String(c.clientId||'').toLowerCase().includes(q)||(c.jobs||[]).some(j=>String(j.name||'').toLowerCase().includes(q)||String(j.jobCode||'').toLowerCase().includes(q)))){const b=document.createElement('button');b.className='card';const strong=document.createElement('strong');strong.textContent=c.name||'Unnamed client';b.appendChild(strong);const p=document.createElement('span');p.className='muted';p.textContent=(c.jobs||[]).length+' jobs · '+(c.artworks||[]).length+' artwork versions';b.appendChild(p);b.onclick=()=>{goatArtworkSelected=String(c.id);goatArtworkRender()};list.appendChild(b);}if(!list.children.length)list.textContent='No matching clients.';}
+ input.addEventListener('input',filter);filter();
+}
+async function goatArtworkDownload(assetId){const popup=window.open('about:blank','_blank');try{const data=await goatArtworkRequest('file',{assetId:String(assetId)});if(!data.url)throw Error('No download URL returned');if(popup)popup.location.href=data.url;else alert('Please allow popups for artwork downloads.');}catch(e){popup?.close();alert(e.message);}}
+</script>
 </body>
 </html>
