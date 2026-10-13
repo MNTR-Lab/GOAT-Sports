@@ -198,9 +198,10 @@ async function renderGoatRevenue(){
  const v=$('view');if(goatAccessRole!=='admin'){render('overview');return}
  v.innerHTML='<section class="panel">Loading company-wide financial records…</section>';
  try{
-  const [orders,quotes]=await Promise.all([
+  const [orders,quotes,verifiedPayments]=await Promise.all([
    api('/rest/v1/goat_revenue_orders?select=*&organization_id=eq.'+GOAT_ORG+'&order_date=gte.2026-10-01T04%3A00%3A00Z&order=order_date.desc&limit=5000'),
-   api('/rest/v1/goat_crm_quotes?select=id,amount,status,created_at&organization_id=eq.'+GOAT_ORG+'&created_at=gte.2026-10-01T04%3A00%3A00Z&order=created_at.desc&limit=5000')
+   api('/rest/v1/goat_crm_quotes?select=id,amount,status,created_at&organization_id=eq.'+GOAT_ORG+'&created_at=gte.2026-10-01T04%3A00%3A00Z&order=created_at.desc&limit=5000'),
+   api('/rest/v1/rpc/goat_admin_payment_ledger',{method:'POST',body:'{}'})
   ]);
   const now=new Date(),y=now.getFullYear(),m=now.getMonth(),q=Math.floor(m/3);
   const inPeriod=date=>{const d=new Date(date);return d.getTime()>=Date.parse('2026-10-01T00:00:00-04:00')&&d.getFullYear()===y&&(goatRevenuePeriod==='ytd'||(goatRevenuePeriod==='quarter'?Math.floor(d.getMonth()/3)===q:d.getMonth()===m))};
@@ -242,6 +243,12 @@ async function renderGoatRevenue(){
   v.innerHTML='<div class="rev-head"><span class="rev-pill">GOAT SPORTS · ACCOUNTING</span><h2>Revenue &amp; Tax</h2><p>New ownership reporting · October 1, 2026 onward · older transactions excluded</p></div>'+
    '<div class="rev-tools"><label for="rev-period">Reporting period</label><select id="rev-period"><option value="month">Monthly</option><option value="quarter">Quarterly</option><option value="ytd">Year to date</option></select><button class="btn" id="rev-refresh">Refresh</button><button class="btn" id="rev-payment-sync" type="button">Sync Verified Payments</button><span id="rev-sync-status" class="muted" role="status" aria-live="polite"></span></div>'+
    periodCards+
+   '<h3>Verified Shopify payment ledger</h3><div class="rev-grid">'+
+   '<div class="rev-tile"><small>Successful captures and sales</small><strong>'+goatMoney(verifiedPayments.filter(t=>['capture','sale'].includes(t.transaction_kind)&&inPeriod(t.transaction_date)).reduce((n,t)=>n+Number(t.amount||0),0))+'</strong><span class="rev-note">Gross receipts; may include tax and shipping</span></div>'+
+   '<div class="rev-tile"><small>Successful refunds</small><strong>'+goatMoney(verifiedPayments.filter(t=>t.transaction_kind==='refund'&&inPeriod(t.transaction_date)).reduce((n,t)=>n+Number(t.amount||0),0))+'</strong><span class="rev-note">Refunds on transaction date</span></div>'+
+   '<div class="rev-tile"><small>Net payment receipts</small><strong>'+goatMoney(verifiedPayments.filter(t=>inPeriod(t.transaction_date)).reduce((n,t)=>n+(t.transaction_kind==='refund'?-1:1)*Number(t.amount||0),0))+'</strong><span class="rev-note">Not accounting revenue or profit</span></div>'+
+   '<div class="rev-tile"><small>Payment records</small><strong>'+verifiedPayments.filter(t=>inPeriod(t.transaction_date)).length+'</strong><span class="rev-note">October 1 onward · secure audit ledger</span></div></div>'+
+   '<p class="muted">Payment receipts are tracked separately from sales tax and accounting profit until reconciled.</p>'+
    '<h3>Profit Margin Overview</h3><div class="rev-grid">'+
    '<div class="rev-tile"><small>01 · Subtotal + customer-paid shipping</small><strong>'+goatMoney(subtotal)+'</strong><span class="rev-note">Paid orders only · excludes tax</span></div>'+
    '<div class="rev-tile"><small>02 · Cost of goods sold</small><strong>'+goatMoney(cogs)+'</strong><span class="rev-note">Costs entered across orders</span></div>'+
@@ -259,7 +266,7 @@ async function renderGoatRevenue(){
     try{
      const result=await api('/functions/v1/goat-payment-sync',{method:'POST',body:'{}'});
      const count=Number(result.scanned||0),saved=Number(result.saved||0);
-     status.textContent=(result.message||'Sync returned')+' · '+count+' orders checked · '+saved+' qualifying transactions processed'+(result.complete?' · Complete':' · Not yet complete')+'. Refresh reporting after verified transactions are integrated.';
+     status.textContent=(result.message||'Sync returned')+' · '+count+' orders checked · '+saved+' qualifying transactions processed'+(result.complete?' · Complete':' · Not yet complete')+'. Refreshing ledger…';await renderGoatRevenue();const updated=$('rev-sync-status');if(updated)updated.textContent='Shopify payment sync finished · '+count+' orders checked · '+saved+' qualifying transactions processed · ledger refreshed.';
     }catch(err){status.textContent='Sync unsuccessful: '+err.message+' — existing revenue figures have not been changed.'}
     finally{button.disabled=false}
    };
