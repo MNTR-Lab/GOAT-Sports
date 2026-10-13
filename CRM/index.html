@@ -175,7 +175,7 @@ function render(page){currentPage=page in titles?page:'overview';$('pageTitle').
 // GOAT Jobs & Production — database-backed module
 async function renderGoatJobs(){
   const v=$('view');
-  v.innerHTML='<div class="toolbar"><div><h2 style="margin:0">Jobs &amp; Production</h2><span class="muted">GOAT Sports production jobs</span></div><button class="btn" id="goatAddJob">+ New job</button></div><div id="notice" class="notice hidden"></div><section class="panel"><div id="goatJobsHost">Loading jobs…</div></section>';
+  v.innerHTML='<div class="toolbar"><div><h2 style="margin:0">Jobs &amp; Production</h2><span class="muted">GOAT Sports production jobs</span></div><button class="btn" id="goatAddJob">+ New job</button></div><div id="notice" class="notice hidden"></div><div class="toolbar" style="margin:14px 0"><button class="btn small" id="goatActiveJobs">Active jobs</button><button class="btn small" id="goatArchivedJobs">Archived history</button></div><section class="panel"><div id="goatJobsHost">Loading jobs…</div></section>';
   $('goatAddJob').onclick=async()=>{
     const title=prompt('New job name / description');if(!title?.trim())return;
     try{await api('/rest/v1/goat_crm_jobs',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({organization_id:GOAT_ORG,job_number:'GJ-'+Date.now(),title:title.trim()})});await renderGoatJobs();showMessage('Job created.')}catch(e){showMessage('Could not create job: '+e.message,true)}
@@ -185,11 +185,17 @@ async function renderGoatJobs(){
     if(currentPage!=='jobs')return;
     const tasks=await api('/rest/v1/goat_crm_job_tasks?select=id,job_id,status,due_date,assigned_to&organization_id=eq.'+GOAT_ORG+'&limit=1000');
     if(currentPage!=='jobs')return;
+    const archivedMode=window.goatArchivedMode===true;
+    $('goatActiveJobs').onclick=()=>{window.goatArchivedMode=false;renderGoatJobs()};
+    $('goatArchivedJobs').onclick=()=>{window.goatArchivedMode=true;renderGoatJobs()};
+    $('goatActiveJobs').style.opacity=archivedMode?'.55':'1';
+    $('goatArchivedJobs').style.opacity=archivedMode?'1':'.55';
+    const visibleRows=rows.filter(j=>archivedMode?j.status==='archived':j.status!=='archived');
     const taskCounts=new Map();
     tasks.forEach(t=>{const x=taskCounts.get(t.job_id)||{total:0,done:0,blocked:0,unassigned:0,overdue:0};x.total++;if(t.status==='completed'||t.status==='archived')x.done++;if(t.status==='blocked')x.blocked++;if(!t.assigned_to&&t.status!=='completed'&&t.status!=='archived')x.unassigned++;if(t.due_date&&t.due_date<new Date().toLocaleDateString('en-CA')&&t.status!=='completed'&&t.status!=='archived')x.overdue++;taskCounts.set(t.job_id,x)});
     const attention=Array.from(taskCounts.values()).reduce((a,x)=>({blocked:a.blocked+x.blocked,overdue:a.overdue+x.overdue,unassigned:a.unassigned+x.unassigned}),{blocked:0,overdue:0,unassigned:0});
     const stages=[['pending','Pending'],['in_production','In Production'],['awaiting_approval','Awaiting Approval'],['approved','Approved'],['completed','Completed'],['archived','Archived']];
-    $('goatJobsHost').innerHTML=(attention.blocked||attention.overdue||attention.unassigned?'<div class="goat-production-alert"><strong>Production needs attention</strong><span>'+[attention.blocked?attention.blocked+' blocked task(s)':'',attention.overdue?attention.overdue+' overdue task(s)':'',attention.unassigned?attention.unassigned+' unassigned task(s)':''].filter(Boolean).join(' · ')+'</span></div>':'')+(rows.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Production stage</th><th>Task progress</th><th>Due date</th><th>Review</th></tr></thead><tbody>'+rows.map(j=>'<tr><td><strong>'+escapeHTML(j.job_number||'—')+'</strong></td><td>'+escapeHTML(j.title||j.name||'—')+'</td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-job-status="'+escapeHTML(j.id)+'" aria-label="Production stage for '+escapeHTML(j.job_number||'job')+'">'+stages.map(([value,label])=>'<option value="'+value+'"'+((j.status||'pending')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></span></td><td>'+(()=>{const x=taskCounts.get(j.id)||{total:0,done:0,blocked:0,overdue:0,unassigned:0};return '<div class="goat-progress-caption">'+x.done+' / '+x.total+' completed</div><div class="goat-progress-track"><div style="width:'+(x.total?Math.round(x.done/x.total*100):0)+'%"></div></div>'+(x.blocked||x.overdue?'<small class="goat-progress-warning">'+[x.blocked?x.blocked+' blocked':'',x.overdue?x.overdue+' overdue':''].filter(Boolean).join(' · ')+'</small>':'')})()+'</td><td>'+escapeHTML(j.due_date||'—')+'</td><td>'+(j.status==='awaiting_approval'?'<button class="btn small" data-goat-review="'+escapeHTML(j.id)+'">Review &amp; approve</button>':j.status==='approved'?'<span class="pill">Approved</span>':'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No production jobs yet. Select New job to begin.</p>');
+    $('goatJobsHost').innerHTML=(attention.blocked||attention.overdue||attention.unassigned?'<div class="goat-production-alert"><strong>Production needs attention</strong><span>'+[attention.blocked?attention.blocked+' blocked task(s)':'',attention.overdue?attention.overdue+' overdue task(s)':'',attention.unassigned?attention.unassigned+' unassigned task(s)':''].filter(Boolean).join(' · ')+'</span></div>':'')+(visibleRows.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Production stage</th><th>Task progress</th><th>Due date</th><th>Next action</th></tr></thead><tbody>'+visibleRows.map(j=>'<tr><td><strong>'+escapeHTML(j.job_number||'—')+'</strong></td><td>'+escapeHTML(j.title||j.name||'—')+'</td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-job-status="'+escapeHTML(j.id)+'" aria-label="Production stage for '+escapeHTML(j.job_number||'job')+'">'+stages.map(([value,label])=>'<option value="'+value+'"'+((j.status||'pending')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></span></td><td>'+(()=>{const x=taskCounts.get(j.id)||{total:0,done:0,blocked:0,overdue:0,unassigned:0};return '<div class="goat-progress-caption">'+x.done+' / '+x.total+' completed</div><div class="goat-progress-track"><div style="width:'+(x.total?Math.round(x.done/x.total*100):0)+'%"></div></div>'+(x.blocked||x.overdue?'<small class="goat-progress-warning">'+[x.blocked?x.blocked+' blocked':'',x.overdue?x.overdue+' overdue':''].filter(Boolean).join(' · ')+'</small>':'')})()+'</td><td>'+escapeHTML(j.due_date||'—')+'</td><td>'+(j.status==='awaiting_approval'?'<button class="btn small" data-goat-review="'+escapeHTML(j.id)+'">Review &amp; approve</button>':j.status==='approved'?'<button class="btn small" data-goat-complete="'+escapeHTML(j.id)+'">Mark completed</button>':j.status==='completed'?'<button class="btn small" data-goat-archive="'+escapeHTML(j.id)+'">Archive job</button>':j.status==='archived'?'<button class="btn small" data-goat-restore="'+escapeHTML(j.id)+'">Restore to completed</button>':'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No production jobs yet. Select New job to begin.</p>');
     const ready=rows.filter(j=>j.status==='awaiting_approval');
     if(ready.length){
       const banner=document.createElement('div');
@@ -218,8 +224,26 @@ async function renderGoatJobs(){
         await renderGoatJobs();showMessage('Job approved. It remains available until completed or archived.');
       }catch(e){btn.disabled=false;showMessage('Could not approve job: '+e.message,true)}
     });
+    $('goatJobsHost').querySelectorAll('[data-goat-complete],[data-goat-archive],[data-goat-restore]').forEach(btn=>btn.onclick=async()=>{
+      const id=btn.dataset.goatComplete||btn.dataset.goatArchive||btn.dataset.goatRestore;
+      const job=rows.find(j=>j.id===id);
+      const expected=btn.dataset.goatComplete?'approved':btn.dataset.goatArchive?'completed':'archived';
+      const next=btn.dataset.goatComplete?'completed':btn.dataset.goatArchive?'archived':'completed';
+      if(!job||job.status!==expected)return;
+      if(!confirm((next==='archived'?'Archive':next==='completed'&&expected==='archived'?'Restore':'Mark completed')+' '+(job.job_number||job.title||'this job')+'?\n\nAll associated records will be retained.'))return;
+      btn.disabled=true;
+      try{
+        if(expected==='approved'){
+          const related=await api('/rest/v1/goat_crm_job_tasks?select=status&job_id=eq.'+encodeURIComponent(id)+'&organization_id=eq.'+GOAT_ORG);
+          if(!related.length||related.some(t=>t.status!=='completed'&&t.status!=='archived'))throw new Error('All production tasks must be finished before job completion.');
+        }
+        const updated=await api('/rest/v1/goat_crm_jobs?id=eq.'+encodeURIComponent(id)+'&organization_id=eq.'+GOAT_ORG+'&status=eq.'+expected,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:next})});
+        if(!updated.length)throw new Error('Job status changed elsewhere. Refresh and try again.');
+        await renderGoatJobs();showMessage(next==='archived'?'Job archived. Records retained.':next==='completed'?'Job moved to Completed.':'Job updated.');
+      }catch(e){btn.disabled=false;showMessage('Could not update job: '+e.message,true)}
+    });
     $('goatJobsHost').querySelectorAll('[data-job-status]').forEach(sel=>sel.onchange=async()=>{
-      const previous=rows.find(j=>j.id===sel.dataset.jobStatus)?.status||'pending';sel.disabled=true;
+      const previous=rows.find(j=>j.id===sel.dataset.jobStatus)?.status||'pending';if(['completed','archived'].includes(sel.value)||['approved','completed','archived'].includes(previous)&&sel.value!==previous){sel.value=previous;showMessage('Use the dedicated completion, archive, or restore action to change this stage.',true);return;}sel.disabled=true;
       try{await api('/rest/v1/goat_crm_jobs?id=eq.'+encodeURIComponent(sel.dataset.jobStatus)+'&organization_id=eq.'+GOAT_ORG,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:sel.value})});await renderGoatJobs();showMessage('Production stage updated.')}catch(e){sel.value=previous;sel.disabled=false;showMessage('Could not update production stage: '+e.message,true)}
     });
   }catch(e){showMessage('Could not load jobs: '+e.message,true)}
