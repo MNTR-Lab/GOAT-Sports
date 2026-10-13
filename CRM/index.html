@@ -240,7 +240,7 @@ async function renderGoatRevenue(){
   ].join('')+'</div>';
   const row=o=>'<tr><td>'+escape(o.order_number)+'</td><td>'+escape(o.customer_name||'—')+'</td><td>'+escape(new Date(o.order_date).toLocaleDateString())+'</td><td>'+goatMoney(Number(o.product_subtotal)+Number(o.customer_shipping))+'</td><td><input class="rev-cost" type="number" min="0" step="0.01" data-id="'+escape(o.id)+'" data-field="cogs" value="'+(o.cogs===null?'':o.cogs)+'" placeholder="Enter cost" aria-label="COGS for '+escape(o.order_number)+'"></td><td><input class="rev-cost" type="number" min="0" step="0.01" data-id="'+escape(o.id)+'" data-field="shipping_label_cost" value="'+(o.shipping_label_cost===null?'':o.shipping_label_cost)+'" placeholder="Enter cost" aria-label="Shipping cost for '+escape(o.order_number)+'"></td><td>'+escape(o.financial_status)+'</td></tr>';
   v.innerHTML='<div class="rev-head"><span class="rev-pill">GOAT SPORTS · ACCOUNTING</span><h2>Revenue &amp; Tax</h2><p>New ownership reporting · October 1, 2026 onward · older transactions excluded</p></div>'+
-   '<div class="rev-tools"><label for="rev-period">Reporting period</label><select id="rev-period"><option value="month">Monthly</option><option value="quarter">Quarterly</option><option value="ytd">Year to date</option></select><button class="btn" id="rev-refresh">Refresh</button></div>'+
+   '<div class="rev-tools"><label for="rev-period">Reporting period</label><select id="rev-period"><option value="month">Monthly</option><option value="quarter">Quarterly</option><option value="ytd">Year to date</option></select><button class="btn" id="rev-refresh">Refresh</button><button class="btn" id="rev-payment-sync" type="button">Sync Verified Payments</button><span id="rev-sync-status" class="muted" role="status" aria-live="polite"></span></div>'+
    periodCards+
    '<h3>Profit Margin Overview</h3><div class="rev-grid">'+
    '<div class="rev-tile"><small>01 · Subtotal + customer-paid shipping</small><strong>'+goatMoney(subtotal)+'</strong><span class="rev-note">Paid orders only · excludes tax</span></div>'+
@@ -253,6 +253,16 @@ async function renderGoatRevenue(){
    '<h3>Sales Tax Reporting</h3><div class="rev-grid"><div class="rev-tile"><small>Taxable sales</small><strong>—</strong><span class="rev-note">Classification not connected</span></div><div class="rev-tile"><small>Non-taxable sales</small><strong>—</strong><span class="rev-note">Classification not connected</span></div><div class="rev-tile"><small>Recorded sales tax</small><strong>'+goatMoney(sum('sales_tax'))+'</strong><span class="rev-note">Imported/entered paid-order tax, not tax due</span></div><div class="rev-tile"><small>Sales tax due</small><strong>—</strong><span class="rev-note">Requires tax reconciliation</span></div></div>'+
    '<div class="rev-banner"><strong>Financial reporting note.</strong> Approved quote value ('+goatMoney(approvedValue)+') is excluded from sales. Paid order totals only appear once Shopify orders are imported. Refunds, processor fees, overhead and tax obligations need reconciliation before treating this as final accounting profit.</div>';
   $('rev-period').value=goatRevenuePeriod;$('rev-period').onchange=e=>{goatRevenuePeriod=e.target.value;renderGoatRevenue()};$('rev-refresh').onclick=renderGoatRevenue;
+   $('rev-payment-sync').onclick=async()=>{
+    const button=$('rev-payment-sync'),status=$('rev-sync-status');
+    button.disabled=true;status.textContent='Connecting to Shopify and checking payments…';
+    try{
+     const result=await api('/functions/v1/goat-payment-sync',{method:'POST',body:'{}'});
+     const count=Number(result.scanned||0),saved=Number(result.saved||0);
+     status.textContent=(result.message||'Sync returned')+' · '+count+' orders checked · '+saved+' qualifying transactions processed'+(result.complete?' · Complete':' · Not yet complete')+'. Refresh reporting after verified transactions are integrated.';
+    }catch(err){status.textContent='Sync unsuccessful: '+err.message+' — existing revenue figures have not been changed.'}
+    finally{button.disabled=false}
+   };
   document.querySelectorAll('.rev-cost').forEach(input=>input.onchange=async()=>{
    const value=input.value.trim();if(value!==''&&(!Number.isFinite(Number(value))||Number(value)<0)){input.setCustomValidity('Enter a nonnegative amount');input.reportValidity();return}
    input.setCustomValidity('');input.disabled=true;const status=$('rev-save-status');status.textContent='Saving cost…';
