@@ -175,7 +175,13 @@ document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>rend
 async function refreshGoatTaskAttention(){
   if(!token)return;
   try{
-    const tasks=await api('/rest/v1/goat_crm_job_tasks?select=id,status,assigned_to&organization_id=eq.'+GOAT_ORG+'&assigned_to=not.is.null&status=in.(open,in_progress,blocked)&limit=1000');
+    let extra='&assigned_to=not.is.null';
+    if(goatAccessRole==='employee'){
+      const person=await api('/rest/v1/goat_crm_employees?select=id&organization_id=eq.'+GOAT_ORG+'&auth_user_id=eq.'+encodeURIComponent(user.id)+'&active=eq.true&limit=1');
+      if(!person.length){const dot=$('goatTaskAttentionDot');if(dot)dot.classList.add('hidden');return;}
+      extra='&assigned_to=eq.'+encodeURIComponent(person[0].id);
+    }
+    const tasks=await api('/rest/v1/goat_crm_job_tasks?select=id,status,assigned_to&organization_id=eq.'+GOAT_ORG+extra+'&status=in.(open,in_progress,blocked)&limit=1000');
     const dot=$('goatTaskAttentionDot');
     if(dot){dot.classList.toggle('hidden',!tasks.length);dot.title=tasks.length+' assigned task(s) requiring action';}
   }catch(e){console.warn('Task attention could not be refreshed',e)}
@@ -295,6 +301,7 @@ async function renderGoatTasks(){
     const people=await api('/rest/v1/goat_crm_employees?select=id,full_name,email,active&organization_id=eq.'+GOAT_ORG+'&order=full_name.asc&limit=250');
     return '<option value="">Unassigned</option>'+people.filter(p=>p.active||p.id===selected).map(p=>'<option value="'+escapeHTML(p.id)+'"'+(p.id===selected?' selected':'')+'>'+escapeHTML(p.full_name+(p.active?'':' (inactive)'))+'</option>').join('');
   }
+  if(goatAccessRole!=='admin'){$('goatAddEmployee').classList.add('hidden');$('goatAddTask').classList.add('hidden');}
   $('goatAddEmployee').onclick=async()=>{
     const host=$('goatTasksHost');
     host.innerHTML='<form id="goatEmployeeCreate" style="display:grid;gap:12px;max-width:540px"><h3>Add GOAT employee</h3><label class="goat-task-field">Full name<input id="goatEmployeeName" required maxlength="120"></label><label class="goat-task-field">Email (optional)<input id="goatEmployeeEmail" type="email" maxlength="200"></label><div style="display:flex;gap:8px"><button class="btn" type="submit">Save employee</button><button class="btn ghost" id="goatEmployeeCancel" type="button">Cancel</button></div><p class="muted">This adds an employee to the GOAT task directory; it does not create a login account.</p></form>';
@@ -327,6 +334,11 @@ async function renderGoatTasks(){
     const jobs=await api('/rest/v1/goat_crm_jobs?select=id,job_number,title&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=250');
     if(currentPage!=='employees')return;
     const jobMap=new Map(jobs.map(j=>[j.id,j]));
+    let currentEmployeeId=null;
+    if(goatAccessRole==='employee'){
+      const linked=await api('/rest/v1/goat_crm_employees?select=id&organization_id=eq.'+GOAT_ORG+'&auth_user_id=eq.'+encodeURIComponent(user.id)+'&active=eq.true&limit=1');
+      currentEmployeeId=linked[0]?.id||null;
+    }
     const employees=await api('/rest/v1/goat_crm_employees?select=id,full_name,active&organization_id=eq.'+GOAT_ORG+'&order=full_name.asc&limit=250');
     if(currentPage!=='employees')return;
     const employeeOptions='<option value="">Unassigned</option>'+employees.filter(p=>p.active).map(p=>'<option value="'+escapeHTML(p.id)+'">'+escapeHTML(p.full_name)+'</option>').join('');
@@ -335,7 +347,7 @@ async function renderGoatTasks(){
     const sortedJobs=jobs.filter(j=>rows.some(t=>t.job_id===j.id));
     const otherIds=[...new Set(rows.map(t=>t.job_id).filter(id=>!jobs.some(j=>j.id===id)))];
     const groups=[...sortedJobs,...otherIds.map(id=>({id,job_number:'Other job',title:'Job not in recent list'}))];
-    const renderTaskRow=t=>'<tr data-task-row="'+escapeHTML(t.id)+'" data-job-id="'+escapeHTML(t.job_id||'')+'" data-task-state="'+escapeHTML(t.status||'open')+'"><td>'+escapeHTML(t.title||t.name||'—')+'</td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-task-assignee="'+escapeHTML(t.id)+'" aria-label="Assigned employee">'+employeeOptions.replace('value="'+escapeHTML(t.assigned_to||'')+'"','value="'+escapeHTML(t.assigned_to||'')+'" selected')+'</select></span></td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-task-status="'+escapeHTML(t.id)+'" aria-label="Task status">'+[['open','Open'],['in_progress','In Progress'],['blocked','Blocked'],['completed','Completed'],['archived','Archived']].map(([value,label])=>'<option value="'+value+'"'+((t.status||'open')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></span></td><td><input type="date" data-task-due="'+escapeHTML(t.id)+'" aria-label="Task due date" value="'+escapeHTML(t.due_date||'')+'" style="min-width:145px;border:1px solid #ddd6e8;border-radius:10px;padding:9px"></td><td>'+(t.status==='completed'||t.status==='archived'?'—':'<button class="btn ghost small" data-complete-task="'+escapeHTML(t.id)+'">Complete</button>')+'</td></tr>';
+    const renderTaskRow=t=>'<tr data-task-row="'+escapeHTML(t.id)+'" data-job-id="'+escapeHTML(t.job_id||'')+'" data-task-state="'+escapeHTML(t.status||'open')+'"><td>'+escapeHTML(t.title||t.name||'—')+'</td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-task-assignee="'+escapeHTML(t.id)+'" aria-label="Assigned employee"'+(goatAccessRole!=='admin'?' disabled':'')+'>'+employeeOptions.replace('value="'+escapeHTML(t.assigned_to||'')+'"','value="'+escapeHTML(t.assigned_to||'')+'" selected')+'</select></span></td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-task-status="'+escapeHTML(t.id)+'" aria-label="Task status"'+(goatAccessRole==='employee'&&t.assigned_to!==currentEmployeeId?' disabled':'')+'>'+[['open','Open'],['in_progress','In Progress'],['blocked','Blocked'],['completed','Completed'],['archived','Archived']].map(([value,label])=>'<option value="'+value+'"'+((t.status||'open')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></span></td><td><input type="date" data-task-due="'+escapeHTML(t.id)+'" aria-label="Task due date" '+(goatAccessRole!=='admin'?'disabled ':'')+'value="'+escapeHTML(t.due_date||'')+'" style="min-width:145px;border:1px solid #ddd6e8;border-radius:10px;padding:9px"></td><td>'+(t.status==='completed'||t.status==='archived'||(goatAccessRole==='employee'&&t.assigned_to!==currentEmployeeId)?'—':'<button class="btn ghost small" data-complete-task="'+escapeHTML(t.id)+'">Complete</button>')+'</td></tr>';
     host.innerHTML=rows.length?'<div class="toolbar"><span class="muted">Select a job to expand its production checklist.</span><label class="goat-task-field">Show <select id="goatTaskStatusFilter" class="goat-workflow-select"><option value="active">Active tasks</option><option value="all">All tasks</option><option value="completed">Completed</option><option value="archived">Archived</option></select></label></div>'+groups.map(j=>{
       const jobTasks=rows.filter(t=>t.job_id===j.id).sort((a,b)=>{const ai=taskStages.indexOf(a.title),bi=taskStages.indexOf(b.title);return (ai<0?100:ai)-(bi<0?100:bi)||String(a.created_at||'').localeCompare(String(b.created_at||''))});
       const done=jobTasks.filter(t=>['completed','archived'].includes(t.status)).length;
