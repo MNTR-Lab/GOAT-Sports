@@ -62,6 +62,10 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
  .quote-dialog .field{margin:11px 0}.quote-dialog textarea{min-height:82px}
  @media(max-width:1050px){.quote-dialog .quote-body{grid-template-columns:1fr}.qb-column{width:100%}}
  @media(max-width:650px){.quote-dialog{width:100vw;max-height:100vh;border-radius:0}.quote-dialog .quote-body{padding:12px}.qb-panel{padding:14px}.qb-items{min-width:590px}.qb-table-wrap{overflow:auto}.quote-progress{padding:12px}}
+</style><style>
+.quote-click{cursor:pointer}.quote-click:hover{background:#f8f5fc}.quote-click:focus-visible{outline:3px solid #109488;outline-offset:-3px}.quote-click strong{color:#683695;text-decoration:underline;text-underline-offset:3px}
+.review-preview{border:0;border-radius:18px;padding:0;width:min(780px,96vw);max-height:92vh;box-shadow:0 24px 80px #18132955;color:#20212a}.review-preview::backdrop{background:#171426a8}.review-preview-head{background:#683695;color:white;padding:23px 28px;display:flex;justify-content:space-between;gap:18px;align-items:start}.review-preview-head h2{margin:4px 0 0;color:white}.review-preview-head button{border:0;background:#ffffff24;color:white;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:20px}.review-preview-body{padding:24px 28px;overflow:auto;max-height:62vh}.review-preview-body .preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}.preview-field{background:#f7f7f9;padding:13px;border-radius:10px;overflow-wrap:anywhere}.preview-field small{display:block;color:#737783;margin-bottom:5px}.review-preview table{width:100%;border-collapse:collapse}.review-preview th,.review-preview td{text-align:left;padding:11px 8px;border-bottom:1px solid #ecebf1}.review-preview th:last-child,.review-preview td:last-child{text-align:right}.review-preview-total{font-size:24px;text-align:right;font-weight:800;margin:18px 0;color:#683695}.review-preview-foot{padding:17px 28px;border-top:1px solid #e6e5ed;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.review-preview-foot button:disabled{opacity:.5}.review-preview-error{color:#b42318;margin-top:10px}.review-preview-art{margin:18px 0}.review-preview-art a{display:inline-block;margin:4px 9px 4px 0;color:#683695;font-weight:600}.review-preview-art img{display:block;max-width:100%;max-height:200px;object-fit:contain;margin:8px 0;border:1px solid #ddd;border-radius:8px}
+@media(max-width:600px){.review-preview-body .preview-grid{grid-template-columns:1fr}.review-preview-head,.review-preview-body,.review-preview-foot{padding:17px}}
 </style></head><body>
 <section id="login" class="login"><div class="intro"><img src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/goat-sports-horizontal.png?v=1763467297" alt="GOAT Sports"><div><h1>Built for the business<br>behind the game.</h1><p>One secure operations workspace for clients, quotes, production, artwork and team collaboration.</p></div><small>GOAT Sports · Operations CRM</small></div>
 <div class="login-right"><form class="login-card" id="loginForm"><div class="eyebrow">Secure workspace</div><h2>Welcome back.</h2><p class="muted">Sign in to your GOAT Sports operations account.</p><label class="field"><span>Email address</span><input id="email" type="email" autocomplete="username" required></label><label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password" required></label><p class="error" id="loginError" role="alert"></p><button class="btn" type="submit">Sign in to GOAT CRM</button><p class="muted" style="font-size:12px">Access is restricted to authorized GOAT Sports administrators.</p></form></div></section>
@@ -117,6 +121,7 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
 </div>
 <div class="quote-foot"><p class="error" id="quoteError" role="alert"></p><div class="modal-actions"><button class="btn ghost" type="button" id="cancelQuote">Cancel</button><button class="btn" type="submit" id="saveQuote">Save quote</button></div></div>
 </form></dialog>
+<dialog id="reviewPreview" class="review-preview"><div class="review-preview-head"><div><small>GOAT SPORTS · FINAL QUOTE REVIEW</small><h2 id="reviewPreviewTitle">Review quote</h2></div><button type="button" id="closeReviewPreview" aria-label="Close preview">×</button></div><div class="review-preview-body" id="reviewPreviewBody"></div><div class="review-preview-foot"><button class="btn ghost" type="button" id="reviewPreviewEdit">Edit quote</button><button class="btn" type="button" id="reviewPreviewSend">Send for Review / Approval</button></div></dialog>
 <script>
 'use strict';
 const SB_URL='https://lbheezjanvalalinqxcd.supabase.co';
@@ -143,18 +148,54 @@ $('clientForm').addEventListener('submit',async e=>{e.preventDefault();const btn
 
 async function loadQuotes(){const r=await api('/rest/v1/goat_crm_quotes?select=id,quote_number,customer_name,customer_email,description,amount,status,business_client_id,locker_eligible,line_items,project_details,artwork_notes,discount_amount,tax_rate,created_at&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=500');if(!Array.isArray(r))throw Error('Unexpected quotes response');quotes=r}
 async function renderQuotes(){$('view').innerHTML='<div class="toolbar"><div><h2 style="margin:0 0 4px">Quotes</h2><span class="muted">Business assignment controls Locker eligibility</span></div><button class="btn" id="newQuote">+ New quote</button></div><div id="notice" class="notice hidden"></div><section class="panel"><div class="table-wrap" id="quoteTable">Loading quotes...</div></section>';$('newQuote').onclick=()=>openQuote();try{await Promise.all([loadClients(),loadQuotes()]);if(currentPage==='quotes')drawQuotes()}catch(err){showMessage('Could not load quotes: '+err.message,true)}}
-function drawQuotes(){$('quoteTable').innerHTML=quotes.length?'<table><thead><tr><th>Quote</th><th>Customer</th><th>Business account</th><th>Status</th><th>Locker eligibility</th><th>Action</th></tr></thead><tbody>'+quotes.map(q=>{const business=clients.find(c=>c.id===q.business_client_id);return '<tr><td><strong>'+escapeHTML(q.quote_number)+'</strong><br><small>'+escapeHTML(q.description||'')+'</small></td><td>'+escapeHTML(q.customer_name)+'</td><td>'+escapeHTML(business?.name||'Personal / unassigned')+'</td><td><span class="pill">'+escapeHTML(q.status)+'</span></td><td><span class="pill'+(q.locker_eligible?'':' pending')+'">'+(q.locker_eligible?'Eligible':'Not eligible')+'</span></td><td><div class="actions"><button class="btn ghost small" data-quote="'+escapeHTML(q.id)+'">Edit</button><button class="btn small" data-review="'+escapeHTML(q.id)+'">Copy review link</button></div></td></tr>'}).join('')+'</tbody></table>':'<p class="muted">No quotes yet. Create a personal quote or explicitly assign a business account.</p>';$('quoteTable').querySelectorAll('[data-quote]').forEach(b=>b.onclick=()=>openQuote(quotes.find(q=>q.id===b.dataset.quote)));$('quoteTable').querySelectorAll('[data-review]').forEach(b=>b.onclick=()=>createReviewLink(b.dataset.review,b))}
+function drawQuotes(){$('quoteTable').innerHTML=quotes.length?'<table><thead><tr><th>Quote</th><th>Customer</th><th>Business account</th><th>Status</th><th>Locker eligibility</th><th>Action</th></tr></thead><tbody>'+quotes.map(q=>{const business=clients.find(c=>c.id===q.business_client_id);return '<tr><td class="quote-click" tabindex="0" role="button" aria-label="Review quote '+escapeHTML(q.quote_number)+'" data-openquote="'+escapeHTML(q.id)+'"><strong>'+escapeHTML(q.quote_number)+'</strong><br><small>'+escapeHTML(q.description||'')+'</small></td><td>'+escapeHTML(q.customer_name)+'</td><td>'+escapeHTML(business?.name||'Personal / unassigned')+'</td><td><span class="pill">'+escapeHTML(q.status)+'</span></td><td><span class="pill'+(q.locker_eligible?'':' pending')+'">'+(q.locker_eligible?'Eligible':'Not eligible')+'</span></td><td><div class="actions"><button class="btn ghost small" data-quote="'+escapeHTML(q.id)+'">Edit</button><button class="btn small" data-review="'+escapeHTML(q.id)+'">Review &amp; Send</button></div></td></tr>'}).join('')+'</tbody></table>':'<p class="muted">No quotes yet. Create a personal quote or explicitly assign a business account.</p>';
+ $('quoteTable').querySelectorAll('[data-quote]').forEach(b=>b.onclick=()=>openQuote(quotes.find(q=>q.id===b.dataset.quote)));
+ $('quoteTable').querySelectorAll('[data-review]').forEach(b=>b.onclick=()=>openReviewPreview(b.dataset.review));
+ $('quoteTable').querySelectorAll('[data-openquote]').forEach(b=>{b.onclick=()=>openReviewPreview(b.dataset.openquote);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openReviewPreview(b.dataset.openquote)}}});
+}
+let reviewPreviewId=null;
+$('closeReviewPreview').onclick=()=>$('reviewPreview').close();
+$('reviewPreviewEdit').onclick=()=>{const q=quotes.find(x=>x.id===reviewPreviewId);$('reviewPreview').close();if(q)openQuote(q)};
+$('reviewPreviewSend').onclick=async()=>{const id=reviewPreviewId,btn=$('reviewPreviewSend');if(!id)return;await createReviewLink(id,btn);};
+async function openReviewPreview(id){
+ const q=quotes.find(x=>x.id===id);if(!q)return;reviewPreviewId=id;
+ $('reviewPreviewTitle').textContent=q.quote_number||'Review quote';
+ const rows=Array.isArray(q.line_items)?q.line_items:[];
+ const sub=rows.reduce((n,r)=>n+(Number(r.qty)||0)*(Number(r.price)||0),0);
+ const discount=Math.max(0,Number(q.discount_amount)||0),taxRate=Math.max(0,Number(q.tax_rate)||0);
+ const total=Number(q.amount)||0;
+ const business=clients.find(c=>c.id===q.business_client_id);
+ $('reviewPreviewBody').innerHTML='<div class="preview-grid"><div class="preview-field"><small>Customer</small><strong>'+escapeHTML(q.customer_name||'—')+'</strong><div>'+escapeHTML(q.customer_email||'No customer email on file')+'</div></div><div class="preview-field"><small>Quote details</small><strong>'+escapeHTML(q.description||'—')+'</strong><div>Status: '+escapeHTML(q.status||'draft')+'</div></div><div class="preview-field"><small>Account type</small>'+escapeHTML(business?.name||'Personal / unassigned')+'</div><div class="preview-field"><small>Customer review link</small>'+escapeHTML(q.customer_email?'Ready to generate':'Customer email required before sending')+'</div></div><h3>Items &amp; Pricing</h3><div style="overflow:auto"><table><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>Total</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+escapeHTML(r.name||'Item')+'</td><td>'+escapeHTML(r.qty||0)+'</td><td>'+qbMoney(Number(r.price)||0)+'</td><td>'+qbMoney((Number(r.qty)||0)*(Number(r.price)||0))+'</td></tr>').join('')+'</tbody></table></div><div style="text-align:right;margin-top:12px;color:#555">Subtotal: '+qbMoney(sub)+' · Discount: '+qbMoney(discount)+' · Tax: '+escapeHTML(taxRate)+'%</div><div class="review-preview-total">Total: '+qbMoney(total)+'</div><h3>Artwork &amp; Mockups</h3><div class="review-preview-art" id="reviewPreviewArtwork">Loading attached artwork…</div><div class="preview-field"><small>Artwork instructions</small>'+escapeHTML(q.artwork_notes||'No artwork notes')+'</div><p class="review-preview-error" id="reviewPreviewError" role="alert"></p>';
+ $('reviewPreviewSend').disabled=!q.customer_email||!rows.length;
+ $('reviewPreviewSend').textContent='Send for Review / Approval';
+ $('reviewPreview').showModal();
+ try{
+  const files=await api('/rest/v1/goat_quote_artwork?select=file_name,storage_path,content_type&organization_id=eq.'+GOAT_ORG+'&quote_id=eq.'+encodeURIComponent(id));
+  if(reviewPreviewId!==id||!$('reviewPreview').open)return;
+  const host=$('reviewPreviewArtwork');host.innerHTML=files.length?files.map((f,i)=>'<div id="reviewArt'+i+'">'+escapeHTML(f.file_name)+'</div>').join(''):'<p>No artwork attached to this quote.</p>';
+  for(let i=0;i<files.length;i++){
+   const f=files[i];try{
+    const res=await fetch(SB_URL+'/storage/v1/object/sign/'+QB_BUCKET+'/'+f.storage_path,{method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:300})});const data=await res.json();if(!res.ok||!data.signedURL)continue;
+    if(reviewPreviewId!==id||!$('reviewPreview').open)return;
+    const url=new URL(data.signedURL,SB_URL+'/storage/v1/').href;
+    const box=$('reviewArt'+i);if(!box)continue;
+    const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='View '+f.file_name;box.replaceChildren(link);
+    if((f.content_type||'').startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=f.file_name;img.loading='lazy';box.append(img)}
+   }catch{}
+  }
+ }catch(e){if(reviewPreviewId===id&&$('reviewPreview').open)$('reviewPreviewArtwork').textContent='Could not load artwork: '+e.message}
+}
 
 async function createReviewLink(id,button){
  const q=quotes.find(x=>x.id===id);if(!q)return;
- if(!q.customer_email){showMessage('Add a customer email to this quote before generating its review link.',true);return}
- if(!confirm('Generate a new customer review link for '+q.quote_number+'? Any previous unanswered review link for this quote will be replaced.'))return;
+ if(!q.customer_email){const el=$('reviewPreviewError');if(el)el.textContent='Add a customer email before sending for review.';return}
+ if(!confirm('Confirm this is the final version of '+q.quote_number+' and generate the customer approval link? Previous unanswered links will be replaced.'))return;
  button.disabled=true;const previous=button.textContent;button.textContent='Creating…';
  try{
   const r=await fetch(SB_URL+'/functions/v1/goat-quote-review?action=create',{method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({quote_id:id})});
   const data=await r.json();if(!r.ok)throw Error(data.error||'Unable to generate review link');
   try{await navigator.clipboard.writeText(data.url);showMessage('Review link copied! Send it to '+q.customer_email+'. Link expires in 14 days.')}catch{prompt('Copy this customer review link:',data.url);showMessage('Review link generated. Copy it from the dialog and send it to '+q.customer_email+'.')}
-  await loadQuotes();if(currentPage==='quotes')drawQuotes();
+  $('reviewPreview').close();await loadQuotes();if(currentPage==='quotes')drawQuotes();
  }catch(e){showMessage('Review link could not be created: '+e.message,true)}finally{button.disabled=false;button.textContent=previous}
 }
 
