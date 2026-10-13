@@ -146,7 +146,58 @@ async function verify(){const me=await api('/auth/v1/user');if(!me?.id)throw Err
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginError').textContent='';const btn=e.currentTarget.querySelector('button');btn.disabled=true;try{const s=await api('/auth/v1/token?grant_type=password',{method:'POST',body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});token=s.access_token;expires=Date.now()+(s.expires_in||3600)*1000;sessionStorage.setItem('goat_crm_session',JSON.stringify({access_token:token,expires_at:expires}));await verify()}catch(err){clean();$('loginError').textContent=err.message}finally{btn.disabled=false}});
 $('signout').addEventListener('click',async()=>{try{await api('/auth/v1/logout',{method:'POST'})}catch{}clean()});
 document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>render(b.dataset.page)));
-function render(page){currentPage=page in titles?page:'overview';$('pageTitle').textContent=titles[currentPage];document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===currentPage));if(currentPage==='clients'){renderClients();return}if(currentPage==='quotes'){renderQuotes();return}if(currentPage==='overview'){$('view').innerHTML='<div class="cards"><div class="card"><span class="muted">Organization</span><strong>GOAT</strong><span class="pill">Configured</span></div><div class="card"><span class="muted">Administrator</span><strong>1</strong><span class="pill">Access assigned</span></div><div class="card"><span class="muted">Clients</span><strong>Live</strong><span class="pill">Database connected</span></div><div class="card"><span class="muted">GOAT Locker</span><strong>—</strong><span class="pill pending">Final phase</span></div></div><section class="panel"><div class="eyebrow">GOAT Sports</div><h2>Operations dashboard</h2><p class="muted">GOAT organization access is configured. Client records are managed securely in Supabase. Additional workflow modules will be connected in phases.</p><button class="btn" id="goClients">Manage clients</button></section>';$('goClients').onclick=()=>render('clients');return}const desc={leads:'Lead intake and pipeline will be connected next.',quotes:'Quotes are managed in their own section.',jobs:'Job and production workflows are pending integration.',artwork:'Artwork and proof workflows are pending integration.',employees:'Staff assignments and task notifications are pending integration.',revenue:'Revenue and tax reporting will be connected after the existing accounting workflow is verified.',locker:'GOAT Locker integration will be the final phase. The current Locker remains unchanged.'};$('view').innerHTML='<section class="panel"><span class="pill pending">Integration pending</span><h2>'+escapeHTML(titles[currentPage])+'</h2><p class="muted">'+escapeHTML(desc[currentPage])+'</p></section>'}
+function render(page){currentPage=page in titles?page:'overview';$('pageTitle').textContent=titles[currentPage];document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('active',b.dataset.page===currentPage));if(currentPage==='clients'){renderClients();return}if(currentPage==='quotes'){renderQuotes();return}if(currentPage==='jobs'){renderGoatJobs();return}if(currentPage==='employees'){renderGoatTasks();return}if(currentPage==='overview'){$('view').innerHTML='<div class="cards"><div class="card"><span class="muted">Organization</span><strong>GOAT</strong><span class="pill">Configured</span></div><div class="card"><span class="muted">Administrator</span><strong>1</strong><span class="pill">Access assigned</span></div><div class="card"><span class="muted">Clients</span><strong>Live</strong><span class="pill">Database connected</span></div><div class="card"><span class="muted">GOAT Locker</span><strong>—</strong><span class="pill pending">Final phase</span></div></div><section class="panel"><div class="eyebrow">GOAT Sports</div><h2>Operations dashboard</h2><p class="muted">GOAT organization access is configured. Client records are managed securely in Supabase. Additional workflow modules will be connected in phases.</p><button class="btn" id="goClients">Manage clients</button></section>';$('goClients').onclick=()=>render('clients');return}const desc={leads:'Lead intake and pipeline will be connected next.',quotes:'Quotes are managed in their own section.',jobs:'Job and production workflows are pending integration.',artwork:'Artwork and proof workflows are pending integration.',employees:'Staff assignments and task notifications are pending integration.',revenue:'Revenue and tax reporting will be connected after the existing accounting workflow is verified.',locker:'GOAT Locker integration will be the final phase. The current Locker remains unchanged.'};$('view').innerHTML='<section class="panel"><span class="pill pending">Integration pending</span><h2>'+escapeHTML(titles[currentPage])+'</h2><p class="muted">'+escapeHTML(desc[currentPage])+'</p></section>'}
+
+// GOAT Jobs & Production — database-backed module
+async function renderGoatJobs(){
+  const v=$('view');
+  v.innerHTML='<div class="toolbar"><div><h2 style="margin:0">Jobs &amp; Production</h2><span class="muted">GOAT Sports production jobs</span></div><button class="btn" id="goatAddJob">+ New job</button></div><div id="notice" class="notice hidden"></div><section class="panel"><div id="goatJobsHost">Loading jobs…</div></section>';
+  $('goatAddJob').onclick=async()=>{
+    const title=prompt('New job name / description');
+    if(!title?.trim())return;
+    try{
+      await api('/rest/v1/goat_crm_jobs',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({organization_id:GOAT_ORG,job_number:'GJ-'+Date.now(),title:title.trim()})});
+      await renderGoatJobs();showMessage('Job created.');
+    }catch(e){showMessage('Could not create job: '+e.message,true)}
+  };
+  try{
+    const rows=await api('/rest/v1/goat_crm_jobs?select=*&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=250');
+    if(currentPage!=='jobs')return;
+    $('goatJobsHost').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Status</th><th>Due date</th></tr></thead><tbody>'+rows.map(j=>'<tr><td><strong>'+escapeHTML(j.job_number||'—')+'</strong></td><td>'+escapeHTML(j.title||j.name||'—')+'</td><td><span class="pill">'+escapeHTML(j.status||'Pending')+'</span></td><td>'+escapeHTML(j.due_date||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No production jobs yet. Select New job to begin.</p>';
+  }catch(e){showMessage('Could not load jobs: '+e.message,true)}
+}
+// GOAT employee tasks — database-backed module
+async function renderGoatTasks(){
+  const v=$('view');
+  v.innerHTML='<div class="toolbar"><div><h2 style="margin:0">Employees &amp; Tasks</h2><span class="muted">Tasks linked to production jobs</span></div><button class="btn" id="goatAddTask">+ New task</button></div><div id="notice" class="notice hidden"></div><section class="panel"><div id="goatTasksHost">Loading tasks…</div></section>';
+  $('goatAddTask').onclick=async()=>{
+    try{
+      const jobs=await api('/rest/v1/goat_crm_jobs?select=id,job_number,title&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=100');
+      if(!jobs.length){showMessage('Create a job before adding a task.',true);return}
+      const title=prompt('Task name');if(!title?.trim())return;
+      const number=prompt('Enter the job number for this task:\n'+jobs.map(j=>j.job_number+' — '+j.title).join('\n'));
+      if(number===null)return;
+      const job=jobs.find(j=>j.job_number===number.trim());
+      if(!job){showMessage('Job number not found.',true);return}
+      await api('/rest/v1/goat_crm_job_tasks',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({organization_id:GOAT_ORG,job_id:job.id,title:title.trim()})});
+      await renderGoatTasks();showMessage('Task created.');
+    }catch(e){showMessage('Could not create task: '+e.message,true)}
+  };
+  try{
+    const rows=await api('/rest/v1/goat_crm_job_tasks?select=*&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=250');
+    if(currentPage!=='employees')return;
+    $('goatTasksHost').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Task</th><th>Status</th><th>Due date</th><th>Action</th></tr></thead><tbody>'+rows.map(t=>'<tr><td>'+escapeHTML(t.title||t.name||'—')+'</td><td>'+escapeHTML(t.status||'Pending')+'</td><td>'+escapeHTML(t.due_date||'—')+'</td><td>'+(t.status==='completed'||t.status==='archived'?'—':'<button class="btn ghost small" data-complete-task="'+escapeHTML(t.id)+'">Complete</button>')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No employee tasks yet. Create a job, then add its first task.</p>';
+    $('goatTasksHost').querySelectorAll('[data-complete-task]').forEach(b=>b.onclick=async()=>{
+      if(!confirm('Mark this task complete?'))return;
+      b.disabled=true;
+      try{
+        await api('/rest/v1/goat_crm_job_tasks?id=eq.'+encodeURIComponent(b.dataset.completeTask)+'&organization_id=eq.'+GOAT_ORG,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:'completed'})});
+        await renderGoatTasks();showMessage('Task completed.');
+      }catch(e){b.disabled=false;showMessage('Could not complete task: '+e.message,true)}
+    });
+  }catch(e){showMessage('Could not load tasks: '+e.message,true)}
+}
+
 async function loadClients(){const query='/rest/v1/goat_crm_clients?select=id,client_number,name,contact_name,email,phone,address,notes,inactive,created_at&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=500';const result=await api(query);if(!Array.isArray(result))throw Error('Unexpected client response');clients=result}
 async function renderClients(){const view=$('view');view.innerHTML='<div class="toolbar"><div><h2 style="margin:0 0 4px">Client directory</h2><span class="muted">Live GOAT Sports customer records</span></div><button class="btn" id="newClient">+ New client</button></div><div id="notice" class="notice hidden"></div><section class="panel"><div class="toolbar"><input id="searchClients" placeholder="Search clients, contacts, or email" value="'+escapeHTML(filterText)+'"><span class="muted" id="clientCount">Loading...</span></div><div class="table-wrap" id="clientTable">Loading client records...</div></section>';$('newClient').onclick=()=>openClient();$('searchClients').oninput=e=>{filterText=e.target.value;drawClientRows()};try{await loadClients();if(currentPage==='clients')drawClientRows()}catch(err){if(currentPage==='clients')showMessage('Could not load client records: '+err.message,true)}}
 function drawClientRows(){const term=filterText.trim().toLowerCase();const rows=clients.filter(c=>[c.name,c.client_number,c.contact_name,c.email,c.phone].some(v=>String(v||'').toLowerCase().includes(term)));$('clientCount').textContent=rows.length+' client'+(rows.length===1?'':'s');$('clientTable').innerHTML=rows.length?'<table><thead><tr><th>Client</th><th>Contact</th><th>Email / Phone</th><th>Status</th><th>Action</th></tr></thead><tbody>'+rows.map(c=>'<tr><td><strong>'+escapeHTML(c.name)+'</strong><br><small class="muted">'+escapeHTML(c.client_number)+'</small></td><td>'+escapeHTML(c.contact_name||'—')+'</td><td>'+escapeHTML(c.email||'—')+'<br><small>'+escapeHTML(c.phone||'')+'</small></td><td><span class="pill'+(c.inactive?' pending':'')+'">'+(c.inactive?'Inactive':'Active')+'</span></td><td><button class="btn ghost small" data-edit="'+escapeHTML(c.id)+'">Edit</button></td></tr>').join('')+'</tbody></table>':'<p class="muted">No matching clients yet. Use “New client” to add the first record.</p>';$('clientTable').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openClient(clients.find(c=>c.id===b.dataset.edit)))}
