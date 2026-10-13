@@ -42,6 +42,7 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
  .quote-progress{display:flex;gap:14px;padding:15px 28px;background:white;border-bottom:1px solid #e5e7eb;flex-wrap:wrap}
  .quote-progress span{font-size:12px;color:#6d7180;font-weight:700}.quote-progress b{display:inline-grid;place-items:center;width:24px;height:24px;background:#151719;color:white;border-radius:50%;margin-right:6px}
  .quote-dialog .quote-body{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(350px,1fr);gap:18px;padding:20px 24px;align-items:start}
+ .catalog-search{display:flex;gap:9px;align-items:center;margin:12px 0}.catalog-search input{flex:1;min-width:0}.catalog-results{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin:12px 0;max-height:370px;overflow:auto}.catalog-product{border:1px solid #e4e5e9;border-radius:10px;padding:10px;background:#fff}.catalog-product img{width:100%;height:105px;object-fit:contain;background:#f8f8f9;border-radius:7px}.catalog-product h4{font-size:13px;margin:9px 0 4px}.catalog-product select{font-size:12px;padding:7px}.catalog-product button{width:100%;margin-top:8px}.catalog-product small{display:block;color:#767781;margin:4px 0}.catalog-message{font-size:12px;color:#666a77;padding:8px 0}.catalog-message.error{color:#a32832}
  .qb-column{min-width:0;display:grid;gap:16px}.qb-panel{background:white;border:1px solid #e6e7ec;border-radius:13px;padding:20px}
  .qb-panel.dark{background:#191b1d;color:white}.qb-panel h3{font-size:18px;margin:0 0 5px;letter-spacing:-.02em}.qb-panel>p{margin:0 0 14px;font-size:13px;color:#7b7e8a}
  .qb-panel.dark>p{color:#d0d0d0}.qb-sub{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
@@ -82,8 +83,10 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
 <input id="quoteId" type="hidden">
 <div class="quote-body">
 <div class="qb-column">
-<section class="qb-panel"><div class="qb-sub"><div><h3>1. Add Products</h3><p style="margin:4px 0;color:#737783;font-size:13px">Add items, quantities and estimated unit prices.</p></div><span class="pill pending">Catalog sync pending</span></div>
-<p class="qb-muted">Shopify product search will be connected separately. For now, enter custom products or services below; they are saved with the quote.</p>
+<section class="qb-panel"><div class="qb-sub"><div><h3>1. Add Products</h3><p style="margin:4px 0;color:#737783;font-size:13px">Add items, quantities and estimated unit prices.</p></div><span class="pill">Shopify catalog search</span></div>
+<div class="catalog-search"><input id="catalogQuery" type="search" placeholder="Search Shopify by item name or SKU (e.g. hoodie, jersey, GS-123)" autocomplete="off"><button class="btn small" type="button" id="catalogSearch">Search</button></div>
+<div id="catalogMessage" class="catalog-message">Search your GOAT Sports storefront catalog, or add a custom item below.</div>
+<div id="catalogResults" class="catalog-results" aria-live="polite"></div>
 <div class="qb-table-wrap"><table class="qb-items"><thead><tr><th>Product / service</th><th>Qty</th><th>Unit price</th><th>Total</th><th></th></tr></thead><tbody id="qbItems"></tbody></table></div>
 <div style="margin-top:15px" class="qb-add"><button class="btn small" type="button" id="qbAddItem">+ Add product or service</button></div>
 </section>
@@ -145,7 +148,7 @@ let qbLines=[];
 const qbMoney=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n||0);
 function qbDrawLines(){
  $('qbItems').innerHTML=qbLines.map((r,i)=>'<tr><td><input class="name-input" data-qi="'+i+'" data-qfield="name" maxlength="200" placeholder="Item description" value="'+escapeHTML(r.name)+'"></td><td><input type="number" min="1" max="100000" step="1" data-qi="'+i+'" data-qfield="qty" value="'+r.qty+'"></td><td><input type="number" min="0" max="100000000" step=".01" data-qi="'+i+'" data-qfield="price" value="'+r.price+'"></td><td><strong id="qbLineTotal'+i+'">'+qbMoney(r.qty*r.price)+'</strong></td><td><button type="button" class="qb-delete" data-qremove="'+i+'" aria-label="Remove item">×</button></td></tr>').join('');
- $('qbItems').querySelectorAll('[data-qi]').forEach(el=>el.addEventListener('input',()=>{const i=Number(el.dataset.qi),f=el.dataset.qfield;qbLines[i][f]=f==='name'?el.value:Number(el.value)||0;qbRecalculate()}));
+ $('qbItems').querySelectorAll('[data-qi]').forEach(el=>el.addEventListener('input',()=>{const i=Number(el.dataset.qi),f=el.dataset.qfield;qbLines[i][f]=f==='name'?el.value:Number(el.value)||0;if(f==='name'){qbLines[i].shopify_product_id=null;qbLines[i].shopify_variant_id=null;qbLines[i].sku=''}qbRecalculate()}));
  $('qbItems').querySelectorAll('[data-qremove]').forEach(el=>el.onclick=()=>{qbLines.splice(Number(el.dataset.qremove),1);qbDrawLines()});
  qbRecalculate();
 }
@@ -158,15 +161,31 @@ function qbRecalculate(){
  $('qbSummaryItems').innerHTML=qbLines.length?qbLines.map(r=>'<div class="qb-summary-row"><span>'+escapeHTML(r.name||'Unnamed item')+' <small class="muted">× '+escapeHTML(r.qty)+'</small></span><strong>'+qbMoney((Number(r.qty)||0)*(Number(r.price)||0))+'</strong></div>').join(''):'<p class="qb-muted">No items added yet.</p>';
 }
 $('qbAddItem').onclick=()=>{qbLines.push({name:'',qty:1,price:0});qbDrawLines()};
+let catalogProducts=[];
+async function searchCatalog(){
+ const q=$('catalogQuery').value.trim();const btn=$('catalogSearch');
+ if(q.length<2){$('catalogMessage').textContent='Enter at least 2 characters.';return}
+ btn.disabled=true;$('catalogMessage').classList.remove('error');$('catalogMessage').textContent='Searching Shopify catalog…';$('catalogResults').innerHTML='';
+ try{
+  const res=await fetch(SB_URL+'/functions/v1/goat-catalog-search?q='+encodeURIComponent(q),{headers:{apikey:SB_ANON,authorization:'Bearer '+token}});
+  const data=await res.json();if(!res.ok)throw Error(data.error||'Catalog search unavailable');
+  catalogProducts=data.products||[];
+  $('catalogMessage').textContent=catalogProducts.length?catalogProducts.length+' matching products found. Choose a variant and add it to the quote.':'No matching products found. Try another name or SKU, or add a custom item.';
+  $('catalogResults').innerHTML=catalogProducts.map((p,i)=>'<div class="catalog-product">'+(p.image?'<img src="'+escapeHTML(p.image)+'" alt="'+escapeHTML(p.title)+'" loading="lazy">':'<div style="height:105px;background:#f6f6f7;border-radius:7px;display:grid;place-items:center;color:#aaa">No image</div>')+'<h4>'+escapeHTML(p.title)+'</h4><select aria-label="Variant for '+escapeHTML(p.title)+'" data-variant="'+i+'">'+p.variants.map((v,j)=>'<option value="'+j+'">'+escapeHTML(v.title==='Default Title'?'Standard':v.title)+' · '+qbMoney(v.price)+(v.sku?' · '+escapeHTML(v.sku):'')+'</option>').join('')+'</select><button class="btn small" type="button" data-addcatalog="'+i+'">+ Add to quote</button></div>').join('');
+  $('catalogResults').querySelectorAll('[data-addcatalog]').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.addcatalog),p=catalogProducts[i],sel=$('catalogResults').querySelector('[data-variant="'+i+'"]'),v=p.variants[Number(sel.value)];if(!v)return;qbLines=qbLines.filter(r=>r.name.trim()||r.price>0);qbLines.push({name:p.title+(v.title&&v.title!=='Default Title'?' — '+v.title:''),qty:1,price:v.price,shopify_product_id:String(p.id),shopify_variant_id:String(v.id),sku:v.sku||''});qbDrawLines();$('catalogMessage').textContent='Added '+p.title+' to the quote. You can adjust its quantity or price below.'});
+ }catch(err){$('catalogMessage').classList.add('error');$('catalogMessage').textContent='Catalog search could not connect: '+err.message+'. You can still add custom items.'}finally{btn.disabled=false}
+}
+$('catalogSearch').onclick=searchCatalog;$('catalogQuery').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchCatalog()}});
+
 $('qbDiscount').oninput=qbRecalculate;$('qbTaxRate').oninput=qbRecalculate;
 function updateQuoteType(){const business=$('quoteBusinessType').checked;$('quoteBusinessWrap').classList.toggle('hidden',!business);$('quoteBusiness').required=business;const approved=$('quoteStatus').value==='approved';const assigned=!!$('quoteBusiness').value;const eligible=business&&assigned&&approved;$('quoteLockerPreview').textContent=eligible?'Approved business quote · Eligible for GOAT Locker':business?(assigned?'Business assigned · Approval required for Locker':'Select a business account · Not eligible for Locker'):'Personal quote · Not eligible for GOAT Locker';$('quoteLockerPreview').classList.toggle('eligible',eligible)}
 $('quotePersonal').onchange=updateQuoteType;$('quoteBusinessType').onchange=updateQuoteType;$('quoteBusiness').onchange=updateQuoteType;$('quoteStatus').onchange=updateQuoteType;
 $('closeQuote').onclick=()=>$('quoteDialog').close();
-function openQuote(q){$('quoteForm').reset();
+function openQuote(q){$('quoteForm').reset();$('catalogResults').innerHTML='';$('catalogMessage').textContent='Search your GOAT Sports storefront catalog, or add a custom item below.';
  const details=q?.project_details||{};
  $('qbPhone').value=details.phone||'';$('qbOrgType').value=details.organization_type||'';$('qbSeason').value=details.season||'';$('qbNeededBy').value=details.needed_by||'';$('qbArtworkNotes').value=q?.artwork_notes||'';
  $('qbDiscount').value=q?.discount_amount??0;$('qbTaxRate').value=q?.tax_rate??0;
- qbLines=Array.isArray(q?.line_items)?q.line_items.map(r=>({name:String(r.name||''),qty:Number(r.qty)||1,price:Number(r.price)||0})):[];
+ qbLines=Array.isArray(q?.line_items)?q.line_items.map(r=>({name:String(r.name||''),qty:Number(r.qty)||1,price:Number(r.price)||0,shopify_product_id:r.shopify_product_id||null,shopify_variant_id:r.shopify_variant_id||null,sku:r.sku||''})):[];
  if(!qbLines.length&&q?.amount!=null)qbLines=[{name:q.description||'Existing quote estimate',qty:1,price:Number(q.amount)||0}];
  if(!qbLines.length)qbLines=[{name:'',qty:1,price:0}];qbDrawLines();
 $('quoteError').textContent='';$('quoteDialogTitle').textContent=q?'Edit quote':'Create a quote';$('quoteId').value=q?.id||'';$('quoteCustomer').value=q?.customer_name||'';$('quoteEmail').value=q?.customer_email||'';$('quoteDescription').value=q?.description||'';$('quoteAmount').value=q?.amount??'';$('quoteStatus').value=q?.status||'draft';$('quoteBusiness').innerHTML='<option value="">Select a business account</option>'+clients.filter(c=>!c.inactive||c.id===q?.business_client_id).map(c=>'<option value="'+escapeHTML(c.id)+'">'+escapeHTML(c.name)+' ('+escapeHTML(c.client_number)+')</option>').join('');$('quoteBusiness').value=q?.business_client_id||'';$('quoteBusinessType').checked=!!q?.business_client_id;$('quotePersonal').checked=!q?.business_client_id;updateQuoteType();$('quoteDialog').showModal()}
