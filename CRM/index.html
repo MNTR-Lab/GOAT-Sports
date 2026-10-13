@@ -174,14 +174,20 @@ async function renderGoatTasks(){
     try{
       const jobs=await api('/rest/v1/goat_crm_jobs?select=id,job_number,title&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=100');
       if(!jobs.length){showMessage('Create a job before adding a task.',true);return}
-      const title=prompt('Task name');if(!title?.trim())return;
-      const number=prompt('Enter the job number for this task:\n'+jobs.map(j=>j.job_number+' — '+j.title).join('\n'));
-      if(number===null)return;
-      const job=jobs.find(j=>j.job_number===number.trim());
-      if(!job){showMessage('Job number not found.',true);return}
-      await api('/rest/v1/goat_crm_job_tasks',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({organization_id:GOAT_ORG,job_id:job.id,title:title.trim()})});
-      await renderGoatTasks();showMessage('Task created.');
-    }catch(e){showMessage('Could not create task: '+e.message,true)}
+      const host=$('goatTasksHost');
+      host.innerHTML='<form id="goatTaskCreate" style="display:grid;gap:12px;max-width:540px"><h3 style="margin:0">New employee task</h3><label>Task name<input id="goatTaskTitle" required placeholder="e.g. Artwork Approval"></label><label>Production job<select id="goatTaskJob" required><option value="">Select a job…</option>'+jobs.map(j=>'<option value="'+escapeHTML(j.id)+'">'+escapeHTML(j.job_number+' — '+j.title)+'</option>').join('')+'</select></label><div style="display:flex;gap:8px"><button class="btn" type="submit">Save task</button><button class="btn ghost" type="button" id="goatCancelTask">Cancel</button></div></form>';
+      $('goatCancelTask').onclick=()=>renderGoatTasks();
+      $('goatTaskCreate').onsubmit=async e=>{
+        e.preventDefault();
+        const title=$('goatTaskTitle').value.trim(),jobId=$('goatTaskJob').value;
+        if(!title||!jobs.some(j=>j.id===jobId)){showMessage('Choose a job and enter a task name.',true);return}
+        const save=e.submitter;save.disabled=true;
+        try{
+          await api('/rest/v1/goat_crm_job_tasks',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({organization_id:GOAT_ORG,job_id:jobId,title})});
+          await renderGoatTasks();showMessage('Task created.');
+        }catch(err){save.disabled=false;showMessage('Could not create task: '+err.message,true)}
+      };
+    }catch(e){showMessage('Could not load jobs: '+e.message,true)}
   };
   try{
     const rows=await api('/rest/v1/goat_crm_job_tasks?select=*&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=250');
