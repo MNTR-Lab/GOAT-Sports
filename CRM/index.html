@@ -266,7 +266,7 @@ async function renderGoatJobs(){
 }
 // GOAT Shipping / Delivery — job-linked, organization-scoped workflow
 async function renderGoatShipping(){
- const v=$('view');v.innerHTML='<div class="toolbar"><div><h2 style="margin:0">Shipping / Delivery</h2><span class="muted">Completed production jobs awaiting shipment or pickup</span></div></div><div id="notice" class="notice hidden"></div><section class="panel"><div id="goatShippingHost">Loading delivery queue…</div></section>';
+ const v=$('view');v.innerHTML='<div class="toolbar"><div><h2 style="margin:0">Shipping / Delivery</h2><span class="muted">Completed jobs and linked store fulfillment tracking</span></div></div><div id="notice" class="notice hidden"></div><section class="panel"><div id="goatShippingHost">Loading delivery queue…</div></section>';
  try{
   const [shipments,jobs]=await Promise.all([
    api('/rest/v1/goat_crm_shipments?select=*&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=500'),
@@ -275,15 +275,16 @@ async function renderGoatShipping(){
   if(currentPage!=='shipping')return;
   const jobMap=new Map(jobs.map(j=>[j.id,j]));
   const esc=escapeHTML;
-  $('goatShippingHost').innerHTML=shipments.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Delivery status</th><th>Carrier / method</th><th>Tracking number</th><th>Action</th></tr></thead><tbody>'+shipments.map(x=>{
+  $('goatShippingHost').innerHTML=shipments.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Delivery status</th><th>Carrier / method</th><th>Tracking number</th><th>Store order ID</th><th>Action</th></tr></thead><tbody>'+shipments.map(x=>{
    const j=jobMap.get(x.job_id)||{};
    const options=[['ready_to_ship','Ready to ship'],['packed','Packed'],['shipped','Shipped'],['delivered','Delivered'],['pickup_ready','Ready for pickup'],['picked_up','Picked up']];
    return '<tr><td><strong>'+esc(j.job_number||'—')+'</strong></td><td>'+esc(j.title||'—')+'</td><td><select class="goat-workflow-select" data-shipping-status="'+esc(x.id)+'">'+options.map(([id,label])=>'<option value="'+id+'"'+(x.status===id?' selected':'')+'>'+label+'</option>').join('')+'</select></td><td><input style="min-width:130px" maxlength="120" data-shipping-carrier="'+esc(x.id)+'" value="'+esc(x.carrier||'')+'" placeholder="Carrier or pickup"></td><td><input style="min-width:150px" maxlength="200" data-shipping-tracking="'+esc(x.id)+'" value="'+esc(x.tracking_number||'')+'" placeholder="Optional"></td><td><button class="btn small" data-shipping-save="'+esc(x.id)+'">Save</button></td></tr>'
   }).join('')+'</tbody></table></div>':'<p class="muted">No completed production jobs in the shipping queue yet. When a job is marked Completed, it will appear here automatically.</p>';
   $('goatShippingHost').querySelectorAll('[data-shipping-save]').forEach(btn=>btn.onclick=async()=>{
-   const id=btn.dataset.shippingSave,row=btn.closest('tr'),status=row.querySelector('[data-shipping-status]').value,carrier=row.querySelector('[data-shipping-carrier]').value.trim(),tracking_number=row.querySelector('[data-shipping-tracking]').value.trim();
+   const id=btn.dataset.shippingSave,row=btn.closest('tr'),status=row.querySelector('[data-shipping-status]').value,carrier=row.querySelector('[data-shipping-carrier]').value.trim(),tracking_number=row.querySelector('[data-shipping-tracking]').value.trim(),shopify_order_id=row.querySelector('[data-shipping-order]').value.trim();
+   if(shopify_order_id&&!/^\\d+$/.test(shopify_order_id)){showMessage('Enter the numeric Shopify order ID, not the order number shown with #.',true);return;}
    const previous=shipments.find(x=>x.id===id);
-   const payload={status,carrier:carrier||null,tracking_number:tracking_number||null,updated_at:new Date().toISOString()};
+   const payload={status,carrier:carrier||null,tracking_number:tracking_number||null,shopify_order_id:shopify_order_id||null,updated_at:new Date().toISOString()};
    if(status==='shipped'&&!previous.shipped_at)payload.shipped_at=new Date().toISOString();
    if(['delivered','picked_up'].includes(status)&&!previous.delivered_at)payload.delivered_at=new Date().toISOString();
    btn.disabled=true;
