@@ -77,6 +77,12 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
 #goatTaskCreate #goatTaskJob:hover{border-color:#9d79bc;background:#fefcff}
 #goatTaskCreate #goatTaskJob:focus-visible,#goatTaskCreate .goat-task-field input:focus-visible{outline:none;border-color:#683695;box-shadow:0 0 0 4px #6836951c}
 #goatTaskCreate .goat-task-hint{font-size:12px;font-weight:450;color:#858198}
+
+/* GOAT production workflow controls */
+.goat-workflow-select{appearance:none;-webkit-appearance:none;min-width:165px;max-width:230px;min-height:40px;padding:9px 36px 9px 13px;border:1px solid #ddd6e8;border-radius:12px;background:#faf8fd;color:#302447;font:inherit;font-weight:600;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.goat-workflow-select:hover{border-color:#9d79bc;background:#fefcff}
+.goat-workflow-select:focus-visible{outline:none;border-color:#683695;box-shadow:0 0 0 4px rgba(104,54,149,.12)}
+.goat-workflow-select:disabled{opacity:.55;cursor:wait}
 </style><style>
 .quote-click{cursor:pointer}.quote-click:hover{background:#f8f5fc}.quote-click:focus-visible{outline:3px solid #109488;outline-offset:-3px}.quote-click strong{color:#683695;text-decoration:underline;text-underline-offset:3px}
 .review-preview{border:0;border-radius:18px;padding:0;width:min(780px,96vw);max-height:92vh;box-shadow:0 24px 80px #18132955;color:#20212a}.review-preview::backdrop{background:#171426a8}.review-preview-head{background:#683695;color:white;padding:23px 28px;display:flex;justify-content:space-between;gap:18px;align-items:start}.review-preview-head h2{margin:4px 0 0;color:white}.review-preview-head button{border:0;background:#ffffff24;color:white;border-radius:8px;padding:7px 12px;cursor:pointer;font-size:20px}.review-preview-body{padding:24px 28px;overflow:auto;max-height:62vh}.review-preview-body .preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}.preview-field{background:#f7f7f9;padding:13px;border-radius:10px;overflow-wrap:anywhere}.preview-field small{display:block;color:#737783;margin-bottom:5px}.review-preview table{width:100%;border-collapse:collapse}.review-preview th,.review-preview td{text-align:left;padding:11px 8px;border-bottom:1px solid #ecebf1}.review-preview th:last-child,.review-preview td:last-child{text-align:right}.review-preview-total{font-size:24px;text-align:right;font-weight:800;margin:18px 0;color:#683695}.review-preview-foot{padding:17px 28px;border-top:1px solid #e6e5ed;display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.review-preview-foot button:disabled{opacity:.5}.review-preview-error{color:#b42318;margin-top:10px}.review-preview-art{margin:18px 0}.review-preview-art a{display:inline-block;margin:4px 9px 4px 0;color:#683695;font-weight:600}.review-preview-art img{display:block;max-width:100%;max-height:200px;object-fit:contain;margin:8px 0;border:1px solid #ddd;border-radius:8px}
@@ -164,17 +170,18 @@ async function renderGoatJobs(){
   const v=$('view');
   v.innerHTML='<div class="toolbar"><div><h2 style="margin:0">Jobs &amp; Production</h2><span class="muted">GOAT Sports production jobs</span></div><button class="btn" id="goatAddJob">+ New job</button></div><div id="notice" class="notice hidden"></div><section class="panel"><div id="goatJobsHost">Loading jobs…</div></section>';
   $('goatAddJob').onclick=async()=>{
-    const title=prompt('New job name / description');
-    if(!title?.trim())return;
-    try{
-      await api('/rest/v1/goat_crm_jobs',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({organization_id:GOAT_ORG,job_number:'GJ-'+Date.now(),title:title.trim()})});
-      await renderGoatJobs();showMessage('Job created.');
-    }catch(e){showMessage('Could not create job: '+e.message,true)}
+    const title=prompt('New job name / description');if(!title?.trim())return;
+    try{await api('/rest/v1/goat_crm_jobs',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify({organization_id:GOAT_ORG,job_number:'GJ-'+Date.now(),title:title.trim()})});await renderGoatJobs();showMessage('Job created.')}catch(e){showMessage('Could not create job: '+e.message,true)}
   };
   try{
     const rows=await api('/rest/v1/goat_crm_jobs?select=*&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=250');
     if(currentPage!=='jobs')return;
-    $('goatJobsHost').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Status</th><th>Due date</th></tr></thead><tbody>'+rows.map(j=>'<tr><td><strong>'+escapeHTML(j.job_number||'—')+'</strong></td><td>'+escapeHTML(j.title||j.name||'—')+'</td><td><span class="pill">'+escapeHTML(j.status||'Pending')+'</span></td><td>'+escapeHTML(j.due_date||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No production jobs yet. Select New job to begin.</p>';
+    const stages=[['pending','Pending'],['in_production','In Production'],['awaiting_approval','Awaiting Approval'],['approved','Approved'],['completed','Completed'],['archived','Archived']];
+    $('goatJobsHost').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Production stage</th><th>Due date</th></tr></thead><tbody>'+rows.map(j=>'<tr><td><strong>'+escapeHTML(j.job_number||'—')+'</strong></td><td>'+escapeHTML(j.title||j.name||'—')+'</td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-job-status="'+escapeHTML(j.id)+'" aria-label="Production stage for '+escapeHTML(j.job_number||'job')+'">'+stages.map(([value,label])=>'<option value="'+value+'"'+((j.status||'pending')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></span></td><td>'+escapeHTML(j.due_date||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No production jobs yet. Select New job to begin.</p>';
+    $('goatJobsHost').querySelectorAll('[data-job-status]').forEach(sel=>sel.onchange=async()=>{
+      const previous=rows.find(j=>j.id===sel.dataset.jobStatus)?.status||'pending';sel.disabled=true;
+      try{await api('/rest/v1/goat_crm_jobs?id=eq.'+encodeURIComponent(sel.dataset.jobStatus)+'&organization_id=eq.'+GOAT_ORG,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:sel.value})});await renderGoatJobs();showMessage('Production stage updated.')}catch(e){sel.value=previous;sel.disabled=false;showMessage('Could not update production stage: '+e.message,true)}
+    });
   }catch(e){showMessage('Could not load jobs: '+e.message,true)}
 }
 // GOAT employee tasks — database-backed module
@@ -203,7 +210,11 @@ async function renderGoatTasks(){
   try{
     const rows=await api('/rest/v1/goat_crm_job_tasks?select=*&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=250');
     if(currentPage!=='employees')return;
-    $('goatTasksHost').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Task</th><th>Status</th><th>Due date</th><th>Action</th></tr></thead><tbody>'+rows.map(t=>'<tr><td>'+escapeHTML(t.title||t.name||'—')+'</td><td>'+escapeHTML(t.status||'Pending')+'</td><td>'+escapeHTML(t.due_date||'—')+'</td><td>'+(t.status==='completed'||t.status==='archived'?'—':'<button class="btn ghost small" data-complete-task="'+escapeHTML(t.id)+'">Complete</button>')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No employee tasks yet. Create a job, then add its first task.</p>';
+    $('goatTasksHost').innerHTML=rows.length?'<div class="table-wrap"><table><thead><tr><th>Task</th><th>Status</th><th>Due date</th><th>Action</th></tr></thead><tbody>'+rows.map(t=>'<tr><td>'+escapeHTML(t.title||t.name||'—')+'</td><td><span class="goat-select-wrap"><select class="goat-workflow-select" data-task-status="'+escapeHTML(t.id)+'" aria-label="Task status">'+[['open','Open'],['in_progress','In Progress'],['blocked','Blocked'],['completed','Completed'],['archived','Archived']].map(([value,label])=>'<option value="'+value+'"'+((t.status||'open')===value?' selected':'')+'>'+label+'</option>').join('')+'</select></span></td><td>'+escapeHTML(t.due_date||'—')+'</td><td>'+(t.status==='completed'||t.status==='archived'?'—':'<button class="btn ghost small" data-complete-task="'+escapeHTML(t.id)+'">Complete</button>')+'</td></tr>').join('')+'</tbody></table></div>':'<p class="muted">No employee tasks yet. Create a job, then add its first task.</p>';
+    $('goatTasksHost').querySelectorAll('[data-task-status]').forEach(sel=>sel.onchange=async()=>{
+      const previous=rows.find(t=>t.id===sel.dataset.taskStatus)?.status||'open';sel.disabled=true;
+      try{await api('/rest/v1/goat_crm_job_tasks?id=eq.'+encodeURIComponent(sel.dataset.taskStatus)+'&organization_id=eq.'+GOAT_ORG,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:sel.value})});await renderGoatTasks();showMessage('Task status updated.')}catch(e){sel.value=previous;sel.disabled=false;showMessage('Could not update task: '+e.message,true)}
+    });
     $('goatTasksHost').querySelectorAll('[data-complete-task]').forEach(b=>b.onclick=async()=>{
       if(!confirm('Mark this task complete?'))return;
       b.disabled=true;
