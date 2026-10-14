@@ -714,7 +714,7 @@ async function submitCrmLockerDecision(quoteId,decision){
  crmQuoteDecisionBusy=true;render();
  try{
   const response=await fetch('https://lbheezjanvalalinqxcd.supabase.co/functions/v1/goat-crm-locker-decision',{
-   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken()},
    body:JSON.stringify({quoteId,organizationMondayId:org,decision,notes})
   });
   const data=await response.json().catch(()=>({}));
