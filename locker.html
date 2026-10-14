@@ -203,7 +203,7 @@ async function loadAdminDirectory(){
 }
 function selectAdminOrganization(id){
  const o=directoryState.organizations.find(x=>String(x.mondayItemId)===String(id));
- if(!o)return;directoryState.selected=o;sessionStorage.setItem('goat_locker_selected_org',String(o.mondayItemId));jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};crmLockerQuotes={organizationId:null,loading:false,loaded:false,quotes:[],error:''};render();loadOrganizationJobs();if(active==='quotes')loadCrmLockerQuotes(true);
+ if(!o)return;directoryState.selected=o;sessionStorage.setItem('goat_locker_selected_org',String(o.mondayItemId));jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};crmLockerQuotes={organizationId:null,loading:false,loaded:false,quotes:[],error:''};goatInvoiceState={organizationId:null,loading:false,loaded:false,invoices:[],error:''};render();loadOrganizationJobs();if(active==='quotes')loadCrmLockerQuotes(true);
 }
 async function loadOrganizationJobs(){
  const o=directoryState.selected;
@@ -368,6 +368,7 @@ function show(id){
  if(id==='quotes'){autoLoadQuotes(true);loadCrmLockerQuotes(true);}
  else if(id==='designs'){artLoad();loadCrmCustomerLibrary();}
  else if(id==='timeline')autoLoadJobs();
+ else if(id==='invoices')window.goatLoadInvoices?.();
  else if(id==='dashboard')autoLoadDirectory();
 }
 function renderNav(){for(const target of ['side','mobile'])document.getElementById(target).innerHTML=tabs.map(([id,label])=>`<button type="button" class="${id===active?'active':''}" onclick="show('${id}')" aria-current="${id===active?'page':'false'}">${label}</button>`).join('');}
@@ -1037,7 +1038,34 @@ function jobCard(j){const s=String(j.status||'Status pending');let step=/complet
 function timeline(){const j=jobs(),open=j.filter(x=>!isComplete(x.status)),closed=j.filter(x=>isComplete(x.status));const shown=timelineFilter==='completed'?closed:timelineFilter==='active'?open:j;return `${header('PRODUCTION TRACKING','Production Timeline','Follow every active order from design to delivery.') }<div class="goat-grid">${stats([['Active Jobs',open.length,'In progress','#683695'],['Awaiting Approval',open.filter(x=>/await|review/i.test(x.status||'')).length,'Needs review','#e68a28'],['Shipping Soon',open.filter(x=>/ship|ready/i.test(x.status||'')).length,'Final stages','#387ce0'],['Completed Jobs',closed.length,'Historical jobs','#109488']])}</div><div class="goat-tabs"><button class="${timelineFilter==='all'?'selected':''}" onclick="goatTimelineFilter('all')">All Jobs (${j.length})</button><button class="${timelineFilter==='active'?'selected':''}" onclick="goatTimelineFilter('active')">Active (${open.length})</button><button class="${timelineFilter==='completed'?'selected':''}" onclick="goatTimelineFilter('completed')">Completed (${closed.length})</button><button onclick="loadOrganizationJobs()">Refresh</button></div>${!customerToken()||!lockerIdentity?authMessage():!directoryState.selected?'<div class="panel">Choose an organization from Dashboard to view its jobs.</div>':!jobState.loaded?'<div class="panel">Loading jobs…</div>':shown.length?shown.map(jobCard).join(''):'<div class="panel">No jobs in this category.</div>'}<details class="goat-collapse"><summary>Completed Jobs (${closed.length})</summary>${closed.map(jobCard).join('')||'<p>No completed jobs yet.</p>'}</details>`;}
 window.goatTimelineFilter=function(f){timelineFilter=f;render()};
 function orders(){const j=jobs(),open=j.filter(x=>!isComplete(x.status)),closed=j.filter(x=>isComplete(x.status));return `${header('ORDERS','Orders','Track current orders and revisit completed jobs.')}<h3 class="goat-sectiontitle">Active Orders (${open.length})</h3>${open.map(jobCard).join('')||'<div class="panel"><p class="goat-muted">No active orders are currently linked.</p></div>'}<details class="goat-collapse"><summary>Completed Jobs (${closed.length})</summary>${closed.map(jobCard).join('')||'<p>No completed jobs yet.</p>'}</details>`;}
-function invoices(){return `${header('INVOICES & PAYMENTS','Invoices & Payments','Review balances, current invoices and paid history.') }<div class="goat-grid">${stats([['Total Outstanding','—','Not yet connected','#683695'],['Past Due','—','Not yet connected','#be5927'],['Upcoming Due','—','Not yet connected','#109488'],['Paid This Year','—','Not yet connected','#868e92']])}</div><div class="panel"><h3>Current Invoices</h3><p class="goat-muted">Invoice data and PDF generation require the verified GOAT CRM invoice connection. No amounts are estimated.</p></div><details class="goat-collapse"><summary>Archived / Paid Invoices</summary><p>Historical invoices will appear here when connected.</p></details>`;}
+let goatInvoiceState={organizationId:null,loading:false,loaded:false,invoices:[],error:''};
+async function goatLoadInvoices(force=false){
+ const org=String(directoryState.selected?.mondayItemId||'');
+ if(!org||!customerToken()){goatInvoiceState={organizationId:org,loading:false,loaded:false,invoices:[],error:'Sign in and select an organization.'};if(active==='invoices')render();return;}
+ if(goatInvoiceState.loading||(!force&&goatInvoiceState.loaded&&goatInvoiceState.organizationId===org))return;
+ goatInvoiceState={organizationId:org,loading:true,loaded:false,invoices:[],error:''};if(active==='invoices')render();
+ try{const r=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-invoices',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+customerToken()},body:JSON.stringify({organizationId:org})});const d=await r.json();if(!r.ok)throw Error(d.error||'Invoice connection unavailable');if(org!==String(directoryState.selected?.mondayItemId||''))return;goatInvoiceState={organizationId:org,loading:false,loaded:true,invoices:d.invoices||[],error:''};}
+ catch(e){goatInvoiceState={organizationId:org,loading:false,loaded:false,invoices:[],error:e.message||'Invoice connection unavailable'};}
+ finally{if(active==='invoices')render();}
+}
+window.goatLoadInvoices=goatLoadInvoices;
+window.goatRefreshInvoices=()=>goatLoadInvoices(true);
+function invoices(){
+ const state=goatInvoiceState,org=String(directoryState.selected?.mondayItemId||'');
+ const valid=state.loaded&&state.organizationId===org;
+ const inv=valid?state.invoices:[];
+ const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
+ const open=inv.filter(x=>x.status!=='paid'),paid=inv.filter(x=>x.status==='paid');
+ const outstanding=open.reduce((n,x)=>n+Number(x.amount||0),0);
+ const year=new Date().getFullYear();const paidYtd=paid.filter(x=>x.paidAt&&new Date(x.paidAt).getFullYear()===year).reduce((n,x)=>n+Number(x.amount||0),0);
+ const card=x=>`<div class="goat-activity"><span><strong>${esc(x.number)}</strong><br><small>${x.status==='paid'?'Paid':'Outstanding'} · ${x.sentAt?'Sent '+new Date(x.sentAt).toLocaleDateString():'Date unavailable'}</small></span><span style="text-align:right"><strong>${money(x.amount)}</strong><br>${x.url&&/^https:\/\//i.test(x.url)?`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">View invoice ↗</a>`:'<small>Invoice link unavailable</small>'}</span></div>`;
+ return `${header('INVOICES & PAYMENTS','Invoices & Payments','Your organization’s invoices and payment history.')}
+ <div class="goat-grid">${stats([['Total Outstanding',valid?money(outstanding):'—',valid?'Unpaid invoice totals':'Waiting for connection','#683695'],['Past Due','—','Due dates not available','#be5927'],['Current Invoices',valid?open.length:'—','Outstanding invoices','#109488'],['Paid This Year',valid?money(paidYtd):'—','Confirmed paid invoices','#868e92']])}</div>
+ <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h3>Current Invoices</h3><button class="secondary" onclick="goatRefreshInvoices()">Refresh Invoices</button></div>
+ ${state.loading?'<p class="goat-muted">Loading invoices securely…</p>':state.error?`<p class="goat-muted">${esc(state.error)}</p>`:!valid?'<p class="goat-muted">Select your organization to load invoices.</p>':open.length?open.map(card).join(''):'<p class="goat-muted">No outstanding invoices for this organization.</p>'}</div>
+ <details class="goat-collapse"><summary>Archived / Paid Invoices (${paid.length})</summary>${valid?(paid.map(card).join('')||'<p>No paid invoices yet.</p>'):'<p>Load invoices to view paid history.</p>'}</details>
+ <p class="goat-muted" style="margin:14px 0">Balances reflect recorded invoice totals; partial payments and due-date aging are not yet available from this source. Use View invoice for the original hosted invoice.</p>`;
+}
 let goatProfile={organizationId:null,loaded:false,loading:false,data:{},logo:null,error:''};
 function goatProfileOrg(){return String(directoryState.selected?.mondayItemId||'');}
 async function goatProfileApi(action,extra={}){const token=customerToken(),organizationMondayId=goatProfileOrg();if(!token||!organizationMondayId)throw Error('Sign in and select an organization first.');const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-organization-profile',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+token},body:JSON.stringify({action,organizationMondayId,...extra})});const data=await response.json();if(!response.ok)throw Error(data.error||'Could not update organization');return data;}
