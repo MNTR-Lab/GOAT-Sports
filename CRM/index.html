@@ -259,7 +259,7 @@ async function goatLockerOrganizations(){
   <div id="lkNewFields" class="form-grid"><label class="field"><span>Organization Name *</span><input id="lkNewName" maxlength="180" required></label><label class="field"><span>Primary Contact</span><input id="lkNewContact" maxlength="180"></label><label class="field"><span>Email</span><input id="lkNewEmail" type="email" maxlength="254"></label><label class="field"><span>Phone</span><input id="lkNewPhone" maxlength="60"></label><label class="field wide"><span>Address</span><input id="lkNewAddress" maxlength="400"></label></div>
   <div id="lkExistingFields" class="hidden"><label class="field"><span>Existing CRM Customer *</span><select id="lkClient" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px"><option value="">Choose customer</option>${options.map(x=>'<option value="'+escapeHTML(x.id)+'">'+escapeHTML(x.name)+'</option>').join('')}</select></label></div>
   <label class="field"><span>Existing GOAT Locker Organization ID (Monday)</span><input id="lkMonday" inputmode="numeric" pattern="[0-9]+" placeholder="Optional for a new organization"></label><p id="lkModeHelp" class="muted"></p><p class="error" id="lkError" role="alert"></p><div class="actions"><button class="btn" type="submit" id="lkSaveOrg">Save Organization</button><button class="btn ghost" type="button" id="lkCancel">Cancel</button></div></form>`;
-  const sync=()=>{const n=document.querySelector('input[name="lkMode"]:checked').value==='new';$('lkNewFields').classList.toggle('hidden',!n);$('lkExistingFields').classList.toggle('hidden',n);$('lkNewName').required=n;$('lkClient').required=!n;$('lkMonday').required=!n;$('lkModeHelp').textContent=n?'Creates a CRM customer. Enter its real Monday organization ID if one exists; otherwise the Locker connection must be completed later.':'Links an existing CRM customer to a real Monday organization. Connection starts Pending.';};
+  const sync=()=>{const n=document.querySelector('input[name="lkMode"]:checked').value==='new';$('lkNewFields').classList.toggle('hidden',!n);$('lkExistingFields').classList.toggle('hidden',n);$('lkNewName').required=n;$('lkClient').required=!n;$('lkMonday').required=!n;$('lkModeHelp').textContent=n?'Creates a CRM customer. If you leave the Monday ID blank, the system will create a new organization in Monday and return its ID automatically.':'Links an existing CRM customer to a real Monday organization. Connection starts Pending.';};
   document.querySelectorAll('input[name="lkMode"]').forEach(r=>r.onchange=sync);sync();
   $('lkCancel').onclick=()=>{$('lkAddArea').innerHTML=''};
   $('lkAddForm').onsubmit=async e=>{e.preventDefault();const b=$('lkSaveOrg');b.disabled=true;$('lkError').textContent='';const n=document.querySelector('input[name="lkMode"]:checked').value==='new',monday=$('lkMonday').value.trim();
@@ -268,9 +268,15 @@ async function goatLockerOrganizations(){
      const payload={organization_id:GOAT_ORG,name,contact_name:$('lkNewContact').value.trim(),email:$('lkNewEmail').value.trim(),phone:$('lkNewPhone').value.trim(),address:$('lkNewAddress').value.trim(),notes:'Created from GOAT Locker setup; Locker connection pending.',inactive:false,client_number:'G-'+Math.random().toString(36).slice(2,9).toUpperCase(),updated_at:new Date().toISOString()};
      const created=await api('/rest/v1/goat_crm_clients',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});
      clientId=created?.[0]?.id;if(!clientId)throw Error('CRM customer may have been created. Check Clients before retrying.');}
+    let lockerId=monday;
     if(monday){if(!/^\d+$/.test(monday))throw Error('Monday organization ID must be numeric.');await api('/rest/v1/rpc/goat_locker_admin_add_organization',{method:'POST',body:JSON.stringify({p_client:clientId,p_locker_id:monday})});}
-    else if(!n)throw Error('Monday organization ID is required.');
-    await goatLockerOrganizations();alert(monday?'Organization saved; Locker connection Pending verification.':'CRM organization saved. A real Monday organization ID is still needed to connect its Locker.');
+    else if(n){
+      const createdLocker=await api('/functions/v1/goat-crm-create-locker-organization',{method:'POST',body:JSON.stringify({clientId})});
+      lockerId=String(createdLocker.mondayId||'');
+      if(!lockerId)throw Error('No Monday organization ID was returned.');
+    }
+    else throw Error('Monday organization ID is required.');
+    await goatLockerOrganizations();alert('Organization saved successfully. GOAT Locker Organization ID: '+lockerId+'. Connection status: Pending verification.');
    }catch(err){$('lkError').textContent='Save failed: '+err.message;b.disabled=false;}
   };
  };
