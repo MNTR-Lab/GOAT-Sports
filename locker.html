@@ -729,35 +729,23 @@ function crmLockerQuotePanel(){
  }).join('');
  return '<div class="panel"><div class="eyebrow">LIVE CRM QUOTES</div><h2>Quotes from GOAT Sports CRM</h2><button class="secondary" type="button" onclick="loadCrmLockerQuotes(true)">Refresh CRM Quotes</button>'+body+'</div>';
 }
-const originalRenderQuotes=renderQuotes;
-renderQuotes=function(){return crmLockerQuotePanel()+originalRenderQuotes();};
+// Only CRM quotes are presented to customers. The older quote-builder code
+// remains available internally for compatibility but is no longer rendered.
+renderQuotes=function(){
+ if(!customerToken()||!lockerIdentity)return '<div class="panel"><h2>Quotes &amp; Approvals</h2>'+authMessage()+'</div>';
+ if(!directoryState.selected)return '<div class="panel"><h2>Quotes &amp; Approvals</h2><p class="muted">Select your organization on the Dashboard to view quotes.</p><button class="primary" onclick="show(\'dashboard\')">Choose organization</button></div>';
+ return crmLockerQuotePanel();
+};
 
-let autoQuoteRefreshRunning=false;
+// Refresh only the real CRM quotes; never load legacy test quotes.
 async function autoLoadQuotes(force=false){
- if(!customerToken()||!lockerIdentity||active!=='quotes'||String(directoryState.selected?.mondayItemId)!=='13227365382')return;
- if(autoQuoteRefreshRunning||(!force&&document.activeElement?.matches('input,textarea,select')))return;
- autoQuoteRefreshRunning=true;
- try{
-  if(lockerIdentity.adminRole==='master_admin'){
-   if(quoteState.loading)return;
-   const data=await qapi({action:'list'});
-   quoteState.quotes=Array.isArray(data.quotes)?data.quotes:[];
-   quoteState.error='';
-  }else{
-   if(customerQuotes.loading)return;
-   const data=await quoteReviewAPI({action:'list'});
-   customerQuotes.quotes=Array.isArray(data.quotes)?data.quotes:[];
-   customerQuotes.loaded=true;customerQuotes.error='';
-  }
-  if(active==='quotes'&&!document.activeElement?.matches('input,textarea,select'))render();
- }catch(e){console.warn('Automatic quote refresh:',e.message);}
- finally{autoQuoteRefreshRunning=false;}
+ if(active==='quotes')await loadCrmLockerQuotes(force);
 }
 function autoLoadJobs(){if(directoryState.selected&&!jobState.loading)loadOrganizationJobs();}
 function autoLoadDirectory(){if(lockerIdentity&&!directoryState.loading&&!directoryState.loaded)loadAdminDirectory();}
 function autoRefreshCurrent(){
  if(document.hidden||!customerToken()||!lockerIdentity)return;
- if(active==='quotes'){autoLoadQuotes();loadCrmLockerQuotes(true);}
+ if(active==='quotes')loadCrmLockerQuotes(true);
  else if(active==='timeline')autoLoadJobs();
  else if(active==='dashboard')autoLoadDirectory();
 }
@@ -768,7 +756,7 @@ setInterval(autoRefreshCurrent,30000);
 async function initializeLocker(){
  render();await handleCustomerCallback();
  if(customerToken()&&!lockerError){await loadLockerIdentity();if(lockerIdentity?.adminRole==='master_admin'||lockerIdentity?.organizationAccess?.length)await loadAdminDirectory();}else render();
- if(active==='quotes'){autoLoadQuotes(true);loadCrmLockerQuotes(true);}
+ if(active==='quotes')loadCrmLockerQuotes(true);
 }
 initializeLocker();
 </script>
