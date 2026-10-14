@@ -307,7 +307,7 @@ function show(id){
  if(!tabs.some(t=>t[0]===id))id='dashboard';
  active=id;render();window.scrollTo({top:0,behavior:'instant'});
  if(id==='quotes'){autoLoadQuotes(true);loadCrmLockerQuotes(true);}
- else if(id==='designs')artLoad();
+ else if(id==='designs'){artLoad();loadCrmCustomerLibrary();}
  else if(id==='timeline')autoLoadJobs();
  else if(id==='dashboard')autoLoadDirectory();
 }
@@ -462,6 +462,26 @@ async function artDecide(id,decision){
  if(!confirm(decision==='approve'?'Approve this artwork version?':'Submit your revision request?'))return;
  try{await artAPI('decide',{proofId:id,decision,comments});await artLoad();alert('Artwork decision recorded.');}
  catch(error){alert(error.message||'Unable to record decision');}
+}
+
+
+let crmCustomerLibrary={loaded:false,loading:false,error:'',files:[]};
+async function loadCrmCustomerLibrary(){
+ if(crmCustomerLibrary.loading)return;
+ const org=directoryState.selected||null;
+ const id=org?.mondayItemId||lockerIdentity?.organizationAccess?.[0]?.organization_monday_id;
+ if(!id||!customerToken()){crmCustomerLibrary={loaded:true,loading:false,error:'Select an organization to view its library.',files:[]};if(active==='designs')render();return}
+ crmCustomerLibrary.loading=true;crmCustomerLibrary.error='';if(active==='designs')render();
+ try{
+  const r=await fetch('https://lbheezjanvalalinqxcd.supabase.co/functions/v1/goat-crm-customer-library',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({organizationMondayId:String(id)})});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'Artwork library unavailable');
+  crmCustomerLibrary.files=j.files||[];crmCustomerLibrary.loaded=true;
+ }catch(e){crmCustomerLibrary.error=e.message;crmCustomerLibrary.loaded=true}
+ finally{crmCustomerLibrary.loading=false;if(active==='designs')render()}
+}
+function crmCustomerLibraryHtml(){
+ const x=crmCustomerLibrary;
+ return `<section class="panel" style="margin-bottom:20px"><div class="eyebrow">GOAT LOCKER / YOUR SAVED ARTWORK</div><h2>Design &amp; Artwork Library</h2><p class="muted">Your organization's reusable logos, designs and mockups, securely shared from GOAT Sports.</p><button class="secondary" type="button" onclick="loadCrmCustomerLibrary()">REFRESH ARTWORK LIBRARY</button>${x.loading?'<p class="muted">Loading artwork...</p>':x.error?`<p class="notice error">${safe(x.error)}</p>`:!x.loaded?'<p class="muted">Select Refresh Artwork Library to load your designs.</p>':!x.files.length?'<p class="muted">No artwork has been shared with this organization yet.</p>':`<div class="job-list">${x.files.map(a=>`<article class="job-item"><strong>${safe(a.title)}</strong><p class="muted">${safe(a.artwork_type)} · ${safe(a.file_name)}</p><a class="secondary" target="_blank" rel="noopener noreferrer" href="${safe(a.url)}">VIEW / DOWNLOAD</a></article>`).join('')}</div>`}</section>`;
 }
 
 function renderDesigns(){
@@ -670,7 +690,7 @@ function render(){
  if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div><div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
  else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
  else if(active==='timeline')el.innerHTML=renderProjectTimeline();
- else if(active==='designs')el.innerHTML=renderDesigns();
+ else if(active==='designs')el.innerHTML=crmCustomerLibraryHtml()+renderDesigns();
  else if(active==='quotes')el.innerHTML=renderQuotes();
  else el.innerHTML=section(active);
 }
