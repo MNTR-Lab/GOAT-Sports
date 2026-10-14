@@ -150,7 +150,7 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
 <div class="qb-summary-row"><span>Estimated total</span><span class="qb-total" id="qbGrandTotal">$0.00</span></div>
 <input id="quoteAmount" type="hidden"><label class="field"><span>Quote status</span><select id="quoteStatus"><option value="draft">Draft</option><option value="sent">Sent</option><option value="approved">Approved</option><option value="declined">Declined</option><option value="cancelled">Cancelled</option></select></label>
 <div id="quoteLockerPreview" class="qb-eligibility">Personal quote · Not eligible for GOAT Locker</div>
-<p class="qb-muted">Locker eligibility requires an approved quote with an explicitly selected business account. Saving an eligible quote does not transfer it to the Locker.</p>
+<p class="qb-muted">Locker delivery requires a verified business account and a sent quote. Eligible quotes are queued for automatic Locker delivery.</p>
 </section></div>
 </div>
 <div class="quote-foot"><p class="error" id="quoteError" role="alert"></p><div class="modal-actions"><button class="btn ghost" type="button" id="cancelQuote">Cancel</button><button class="btn" type="submit" id="saveQuote">Save quote</button></div></div>
@@ -163,7 +163,7 @@ const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJl
 const GOAT_ORG='c8746565-e4e4-438a-b7a1-2a5ea015e0b3';
 const $=id=>document.getElementById(id);
 const titles={overview:'Overview',clients:'Clients',leads:'Leads & Pipeline',quotes:'Quotes',jobs:'Jobs & Production',employees:'Employees & Tasks',shipping:'Shipping / Delivery',revenue:'Revenue & Tax',locker:'GOAT Locker'};
-let goatAccessRole=null,reviewResponses={},reviewSeen={},token=null,expires=0,user=null,clients=[],quotes=[],currentPage='overview',filterText='';
+let lockerDecisions={},goatAccessRole=null,reviewResponses={},reviewSeen={},token=null,expires=0,user=null,clients=[],quotes=[],currentPage='overview',filterText='';
 function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function showMessage(message,bad=false){const v=$('notice');if(v){v.textContent=message;v.className='notice'+(bad?' bad':'');v.classList.remove('hidden')}}
 function clean(){token=null;user=null;goatAccessRole=null;expires=0;sessionStorage.removeItem('goat_crm_session');$('app').classList.add('hidden');$('login').classList.remove('hidden')}
@@ -489,17 +489,19 @@ $('clientForm').addEventListener('submit',async e=>{e.preventDefault();const btn
 async function loadQuotes(){
  const r=await api('/rest/v1/goat_crm_quotes?select=id,quote_number,customer_name,customer_email,description,amount,status,business_client_id,locker_eligible,line_items,project_details,artwork_notes,discount_amount,tax_rate,created_at&organization_id=eq.'+GOAT_ORG+'&order=created_at.desc&limit=500');
  if(!Array.isArray(r))throw Error('Unexpected quotes response');quotes=r;
- const [responses,seen]=await Promise.all([
+ const [responses,seen,lockerFeed]=await Promise.all([
   api('/rest/v1/rpc/goat_quote_review_status',{method:'POST',body:JSON.stringify({p_org:GOAT_ORG})}),
-  api('/rest/v1/goat_quote_review_seen?select=quote_id,seen_at&organization_id=eq.'+GOAT_ORG+'&user_id=eq.'+encodeURIComponent(user.id))
+  api('/rest/v1/goat_quote_review_seen?select=quote_id,seen_at&organization_id=eq.'+GOAT_ORG+'&user_id=eq.'+encodeURIComponent(user.id)),
+  api('/rest/v1/rpc/goat_crm_locker_decision_feed',{method:'POST',body:JSON.stringify({p_org:GOAT_ORG})})
  ]);
+ lockerDecisions=Object.fromEntries((lockerFeed||[]).map(x=>[x.quote_id,x]));
  reviewResponses=Object.fromEntries((responses||[]).map(x=>[x.quote_id,x]));
  reviewSeen=Object.fromEntries((seen||[]).map(x=>[x.quote_id,x.seen_at]));
  updateQuoteDots();
 }
-function quoteHasUnread(q){const r=reviewResponses[q.id];return !!(r&&r.responded_at&&(!reviewSeen[q.id]||new Date(r.responded_at)>new Date(reviewSeen[q.id])))}
+function quoteHasUnread(q){const r=reviewResponses[q.id],d=lockerDecisions[q.id];return !!((r&&r.responded_at&&(!reviewSeen[q.id]||new Date(r.responded_at)>new Date(reviewSeen[q.id])))||(d&&d.decided_at&&(!d.seen_at||new Date(d.decided_at)>new Date(d.seen_at))))}
 function updateQuoteDots(){const n=quotes.filter(quoteHasUnread).length;const nav=document.querySelector('[data-page="quotes"]');if(nav){nav.querySelectorAll('.quote-new-dot').forEach(e=>e.remove());if(n)nav.insertAdjacentHTML('beforeend',' <span class="quote-new-dot" title="'+n+' new customer quote response(s)" aria-label="'+n+' new quote responses"></span>')}}
-async function markQuoteReviewed(id){const r=reviewResponses[id];if(!r?.responded_at||!quoteHasUnread({id}))return;
+async function markQuoteReviewed(id){const d=lockerDecisions[id];if(d?.decided_at&&(!d.seen_at||new Date(d.decided_at)>new Date(d.seen_at))){try{d.seen_at=await api('/rest/v1/rpc/goat_crm_mark_locker_decision_seen',{method:'POST',body:JSON.stringify({p_quote_id:id})});updateQuoteDots();if(currentPage==='quotes')drawQuotes()}catch(e){console.warn('Locker response read tracking failed',e)}}const r=reviewResponses[id];if(!r?.responded_at||!(!reviewSeen[id]||new Date(r.responded_at)>new Date(reviewSeen[id])))return;
  try{const markedAt=await api('/rest/v1/rpc/goat_mark_quote_review_seen',{method:'POST',body:JSON.stringify({p_quote_id:id})});reviewSeen[id]=markedAt;updateQuoteDots();if(currentPage==='quotes')drawQuotes()}catch(e){console.warn('Could not mark quote reviewed',e)}
 }
 
@@ -522,6 +524,11 @@ async function openReviewPreview(id){
  const total=Number(q.amount)||0;
  const business=clients.find(c=>c.id===q.business_client_id);
  $('reviewPreviewBody').innerHTML='<div class="preview-grid"><div class="preview-field"><small>Customer</small><strong>'+escapeHTML(q.customer_name||'—')+'</strong><div>'+escapeHTML(q.customer_email||'No customer email on file')+'</div></div><div class="preview-field"><small>Quote details</small><strong>'+escapeHTML(q.description||'—')+'</strong><div>Status: '+escapeHTML(q.status||'draft')+'</div></div><div class="preview-field"><small>Account type</small>'+escapeHTML(business?.name||'Personal / unassigned')+'</div><div class="preview-field"><small>Customer review link</small>'+escapeHTML(q.customer_email?'Ready to generate':'Customer email required before sending')+'</div></div><h3>Items &amp; Pricing</h3><div style="overflow:auto"><table><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>Total</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+escapeHTML(r.name||'Item')+'</td><td>'+escapeHTML(r.qty||0)+'</td><td>'+qbMoney(Number(r.price)||0)+'</td><td>'+qbMoney((Number(r.qty)||0)*(Number(r.price)||0))+'</td></tr>').join('')+'</tbody></table></div><div style="text-align:right;margin-top:12px;color:#555">Subtotal: '+qbMoney(sub)+' · Discount: '+qbMoney(discount)+' · Tax: '+escapeHTML(taxRate)+'%</div><div class="review-preview-total">Total: '+qbMoney(total)+'</div><h3>Artwork &amp; Mockups</h3><div class="review-preview-art" id="reviewPreviewArtwork">Loading attached artwork…</div><div class="preview-field"><small>Artwork instructions</small>'+escapeHTML(q.artwork_notes||'No artwork notes')+'</div><p class="review-preview-error" id="reviewPreviewError" role="alert"></p>';
+ const lockerResponse=lockerDecisions[id];
+ if(lockerResponse){const note=document.createElement('div');note.className='quote-response-note';const title=document.createElement('strong');title.textContent=lockerResponse.decision==='changes_requested'?'GOAT Locker — Customer requested changes':'GOAT Locker — Customer approved quote';note.append(title);const when=document.createElement('small');when.textContent=' · '+new Date(lockerResponse.decided_at).toLocaleString();note.append(when);const p=document.createElement('p');p.textContent=lockerResponse.notes||'No additional instructions provided.';note.append(p);$('reviewPreviewBody').prepend(note)}
+ const history=document.createElement('section');history.className='quote-response-note';history.innerHTML='<strong>GOAT Locker response history</strong><p>Loading…</p>';$('reviewPreviewBody').append(history);
+ try{const entries=await api('/rest/v1/rpc/goat_crm_locker_decision_history',{method:'POST',body:JSON.stringify({p_quote_id:id})});if(reviewPreviewId===id){history.innerHTML='<strong>GOAT Locker response history</strong>';if(!entries.length)history.insertAdjacentHTML('beforeend','<p>No Locker responses yet.</p>');for(const entry of entries){const item=document.createElement('div');item.style.cssText='border-top:1px solid #e4d4c4;padding:10px 0;margin-top:10px';const head=document.createElement('strong');head.textContent=(entry.decision==='changes_requested'?'Changes requested':'Approved')+' · '+new Date(entry.decided_at).toLocaleString();item.append(head);const body=document.createElement('p');body.textContent=entry.notes||'No additional instructions.';item.append(body);history.append(item)}}}catch(e){history.innerHTML='<strong>Response history unavailable</strong><p>'+escapeHTML(e.message)+'</p>'}
+ if(lockerResponse)markQuoteReviewed(id);
  const response=reviewResponses[id];
  if(response?.responded_at){
   const note=document.createElement('div');note.className='quote-response-note';
