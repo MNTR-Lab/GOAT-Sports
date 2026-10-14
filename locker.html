@@ -129,7 +129,14 @@ async function loadAdminDirectory(){
   }else{
    directoryState.organizations=Array.isArray(data.organizations)?data.organizations:[];
   }
-  directoryState.loaded=true;
+   directoryState.loaded=true;
+   // Select the only assigned organization without exposing the internal directory.
+   if(!directoryState.selected&&directoryState.organizations.length===1){
+    directoryState.selected=directoryState.organizations[0];
+    sessionStorage.setItem('goat_locker_selected_org',String(directoryState.selected.mondayItemId));
+    loadOrganizationJobs();
+   }
+
   const savedId=sessionStorage.getItem('goat_locker_selected_org');
   if(savedId&&!directoryState.selected){const saved=directoryState.organizations.find(x=>String(x.mondayItemId)===savedId);if(saved){directoryState.selected=saved;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:savedId};loadOrganizationJobs();}else{sessionStorage.removeItem('goat_locker_selected_org');}}
  }catch(e){directoryState.error=e.message||'Directory unavailable';}
@@ -145,7 +152,7 @@ async function loadOrganizationJobs(){
  const id=String(o.mondayItemId);
  jobState.loading=true;jobState.error='';jobState.organizationId=id;render();
  if(lockerIdentity.adminRole==='master_admin'&&Array.isArray(o.liveJobs)){
-  jobState.jobs=o.liveJobs.map(j=>({
+  jobState.jobs=o.liveJobs.filter(j=>!isLockerTestJob(j)).map(j=>({
    id:j.id,jobId:j.jobCode||j.id,name:j.name,
    status:j.status||'View full status in Monday.com',
    productionStatus:j.productionStatus||'View in Monday.com',
@@ -165,7 +172,7 @@ async function loadOrganizationJobs(){
   });
   const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load jobs');
   if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id){
-   jobState.jobs=Array.isArray(data.jobs)?data.jobs:[];jobState.loaded=true;
+   jobState.jobs=(Array.isArray(data.jobs)?data.jobs:[]).filter(j=>!isLockerTestJob(j));jobState.loaded=true;
   }
  }catch(e){if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id)jobState.error=e.message||'Jobs unavailable';}
  finally{jobState.loading=false;render();}
@@ -273,6 +280,12 @@ async function goatArtworkDecision(artworkId,decision){
   for(const panel of panels)if(panel.dataset.loaded==='true')await goatLoadJobArtwork(panel.dataset.jobId);
  }catch(e){alert(e.message||'Could not submit artwork decision');}
 }
+// Production presentation: legacy pilot jobs are excluded from customer screens.
+// Records remain untouched in the source system.
+function isLockerTestJob(job){
+ const label=String(job?.name||'')+' '+String(job?.jobCode||job?.jobId||'');
+ return /(^|[\s—:_-])TEST(?:[\s—:_-]|$)|TEST-LOCKER|GOAT Locker Job Visibility/i.test(label);
+}
 function organizationJobs(){
  const j=jobState;
  if(!directoryState.selected)return '';
@@ -304,7 +317,7 @@ function authMessage(){
  if(!customerToken())return `<div class="notice"><strong>Sign in to GOAT Locker</strong><p class="muted">Use your existing GOAT Sports account.</p><button class="primary" onclick="customerLogin()">SIGN IN TO GOAT LOCKER</button></div>`;
  if(checking||!lockerIdentity)return `<div class="notice"><strong>Verifying organization access…</strong><p class="muted">Your account permissions are being checked securely.</p>${checking?'':'<button class="secondary" onclick="loadLockerIdentity()">Retry verification</button>'}</div>`;
  const a=lockerIdentity,admin=a.adminRole?safe(a.adminRole.replace(/_/g,' ').toUpperCase()):'';
- return `<div class="notice"><strong>Signed in${admin?' · '+admin:''}</strong><p class="muted">${a.adminRole?'Administrator access verified.':(a.lockerAccess.length||a.organizationAccess?.length)?'Organization access verified.':'No Locker organization has been assigned to this account yet.'} Assigned Lockers: ${a.lockerAccess.length+(a.organizationAccess?.length||0)}.</p><p class="muted">Your private project records are not connected to this standalone page yet.</p><button class="secondary" onclick="lockerSignOut()">Sign out of this website</button></div>`;
+ return `<div class="notice"><strong>Signed in${admin?' · '+admin:''}</strong><p class="muted">${a.adminRole?'Administrator access verified.':(a.lockerAccess.length||a.organizationAccess?.length)?'Organization access verified.':'No Locker organization has been assigned to this account yet.'} Assigned Lockers: ${a.lockerAccess.length+(a.organizationAccess?.length||0)}.</p><button class="secondary" onclick="lockerSignOut()">Sign out of this website</button></div>`;
 }
 const timelineStages=[['New','New'],['Artwork / Design','Design'],['Awaiting Customer','Customer Review'],['Approved','Approved'],['Quoting','Quote'],['Quote Approved','Quote Approved'],['Invoiced','Invoiced'],['Paid','Paid'],['Production','Production'],['Ready / Shipping','Ready / Shipping'],['Completed','Completed']];
 function renderProjectTimeline(){
@@ -654,7 +667,7 @@ function renderQuotes(){
 function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
 function render(){
  renderNav();const el=document.getElementById('content');
- if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div>${adminDirectory()}<div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
+ if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div><div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
  else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
  else if(active==='timeline')el.innerHTML=renderProjectTimeline();
  else if(active==='designs')el.innerHTML=renderDesigns();
