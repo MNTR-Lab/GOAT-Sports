@@ -61,6 +61,29 @@ button.secondary,.secondary{border-radius:10px!important}
 @media(max-width:980px){.goat-grid{grid-template-columns:repeat(2,1fr)}.goat-cols{grid-template-columns:1fr}.hero{margin-left:20px!important}.layout{grid-template-columns:1fr!important}.side{min-height:auto!important}.goat-form{grid-template-columns:1fr}}
 @media(max-width:550px){.goat-grid{grid-template-columns:1fr 1fr}.goat-job{grid-template-columns:1fr}.main{padding:14px!important}.hero{margin:12px!important}}
 </style>
+<style id="goat-account-polish">
+.ga-page{max-width:1050px;margin:0 auto}.ga-card{padding:28px!important;margin-bottom:18px!important}
+.ga-section-heading{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:23px}
+.ga-section-heading h3{font-size:21px;letter-spacing:-.03em;color:#19203b;margin:5px 0 7px}
+.ga-kicker{font-size:10px;letter-spacing:.16em;font-weight:900;color:#109488}
+.ga-pill{font-size:10px;font-weight:800;color:#683695;background:#f3edfa;border-radius:20px;padding:8px 12px}
+.ga-brand-row{display:flex;gap:24px;align-items:center;background:#fafbfe;border:1px solid #eceaf3;border-radius:16px;padding:22px}
+.ga-logo-preview{width:150px;height:120px;flex:none;display:flex;align-items:center;justify-content:center;background:#fff;border:1px dashed #c9c5d8;border-radius:14px;overflow:hidden}
+.ga-logo-preview img{max-width:90%;max-height:90%;object-fit:contain}
+.ga-placeholder{font-size:16px;text-align:center;letter-spacing:.12em;font-weight:900;color:#c0b5d1}
+.ga-brand-actions{flex:1;min-width:0}.ga-brand-actions strong{font-size:18px}.ga-brand-actions p{margin:9px 0 16px}
+.ga-buttons{display:flex;flex-wrap:wrap;gap:10px}.ga-button{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:11px 17px;font-weight:800;font-size:13px;cursor:pointer}
+.ga-button-outline{border:1px solid #683695;color:#683695;background:white}.ga-button-plain{border:1px solid #e1dce8;background:white;color:#6b6673}
+.ga-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px}
+.ga-field{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;font-weight:800;color:#404861}.ga-wide{grid-column:span 2}
+.ga-field input,.ga-field textarea{display:block;box-sizing:border-box;width:100%;min-width:0;border:1px solid #dfe3ec;border-radius:10px;padding:13px 14px;background:#fff;color:#1c2440;font:inherit;font-size:14px;font-weight:500;outline:none;resize:vertical}
+.ga-field input:focus,.ga-field textarea:focus{border-color:#683695;box-shadow:0 0 0 3px #6836951c}
+.ga-field input[readonly]{background:#f5f6fa;color:#667085}
+.ga-save-row{display:flex;align-items:center;justify-content:space-between;gap:15px;border-top:1px solid #eceef4;margin-top:25px;padding-top:21px}
+.ga-save-button{min-width:150px;padding:13px 20px!important;cursor:pointer}.ga-save-button:disabled{opacity:.5;cursor:not-allowed}
+.ga-error{color:#a72d2d;font-size:13px}.ga-support a{font-weight:800}
+@media(max-width:640px){.ga-card{padding:18px!important}.ga-form{grid-template-columns:1fr}.ga-wide{grid-column:auto}.ga-brand-row{flex-direction:column;align-items:flex-start}.ga-save-row{align-items:stretch;flex-direction:column}.ga-save-button{width:100%}}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -1024,7 +1047,41 @@ function goatAccountVal(field){return esc(goatProfile.data?.[field]||'');}
 window.goatSaveAccount=async function(){const btn=document.getElementById('goat-account-save');if(btn)btn.disabled=true;try{const payload={};for(const field of ['contact_name','email','phone','billing_address','shipping_address'])payload[field]=document.getElementById('goat-account-'+field)?.value.trim()||'';await goatProfileApi('save',payload);goatProfile.data={...goatProfile.data,...payload};alert('Organization information saved successfully.');}catch(e){alert('Could not save: '+e.message)}finally{if(btn)btn.disabled=false;}};
 window.goatPreviewOrgLogo=async function(input){const file=input.files?.[0];if(!file)return;if(!/^image\/(png|jpeg|webp)$/.test(file.type)){alert('Select a PNG, JPG or WEBP image.');return;}if(file.size>6*1024*1024){alert('Please select an image under 6 MB.');return;}try{const bitmap=await createImageBitmap(file);const ratio=Math.min(1,640/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*ratio));canvas.height=Math.max(1,Math.round(bitmap.height*ratio));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);const logo_data=canvas.toDataURL('image/png');if(logo_data.length>350000)throw Error('Image is too detailed; use a simpler or smaller logo.');const fields={};for(const field of ['contact_name','email','phone','billing_address','shipping_address'])fields[field]=document.getElementById('goat-account-'+field)?.value.trim()||goatProfile.data?.[field]||'';await goatProfileApi('save',{...fields,logo_data});goatProfile.logo=logo_data;goatProfile.data={...goatProfile.data,...fields};goatUpdateHeader();render();alert('Organization logo saved.');}catch(e){alert('Logo upload failed: '+e.message)}finally{input.value='';}};
 window.goatRemoveOrgLogo=async function(){if(!confirm('Remove this organization logo?'))return;try{const fields={};for(const field of ['contact_name','email','phone','billing_address','shipping_address'])fields[field]=document.getElementById('goat-account-'+field)?.value.trim()||goatProfile.data?.[field]||'';await goatProfileApi('save',{...fields,logo_data:null});goatProfile.logo=null;goatUpdateHeader();render();}catch(e){alert('Could not remove logo: '+e.message)}};
-function account(){if(goatProfile.organizationId!==goatProfileOrg()||(!goatProfile.loaded&&!goatProfile.loading&&!goatProfile.error))queueMicrotask(()=>goatLoadProfile());const logo=goatProfile.organizationId===goatProfileOrg()?goatProfile.logo:null;return `${header('ACCOUNT','Account & Organization Settings','Manage your organization information and branding.') }<div class="panel"><h3>Organization Information</h3>${goatProfile.error?`<p class="goat-muted">${esc(goatProfile.error)} <button class="secondary" onclick="goatLoadProfile(true)">Retry</button></p>`:''}<div class="goat-form"><label>Organization<input readonly value="${esc(directoryState.selected?.name||'')}" /></label><label>Contact Name<input id="goat-account-contact_name" value="${goatAccountVal('contact_name')}" /></label><label>Contact Email<input type="email" id="goat-account-email" value="${goatAccountVal('email')}" /></label><label>Phone<input type="tel" id="goat-account-phone" value="${goatAccountVal('phone')}" /></label><label>Billing Address<textarea id="goat-account-billing_address" rows="3">${goatAccountVal('billing_address')}</textarea></label><label>Shipping Address<textarea id="goat-account-shipping_address" rows="3">${goatAccountVal('shipping_address')}</textarea></label></div><button id="goat-account-save" class="primary" onclick="goatSaveAccount()" ${!goatProfile.loaded?'disabled':''}>Save Changes</button></div><div class="panel"><h3>Organization Branding</h3><p class="goat-muted">Your organization's logo will appear beside Private Customer Workspace.</p><div class="goat-brand-preview">${logo?`<img src="${logo}" alt="Organization logo" style="max-width:240px;max-height:130px;object-fit:contain"/>`:'<span class="goat-muted">No logo uploaded</span>'}</div><div class="linkrow"><label class="secondary" style="cursor:pointer">${logo?'Replace Logo':'Upload Logo'}<input type="file" accept="image/png,image/jpeg,image/webp" onchange="goatPreviewOrgLogo(this)" style="display:none" ${!goatProfile.loaded?'disabled':''}/></label>${logo?'<button type="button" class="secondary" onclick="goatRemoveOrgLogo()">Remove Logo</button>':''}</div><p class="goat-muted" style="font-size:12px">Saved securely to your organization profile.</p></div><div class="panel"><h3>GOAT Sports Support</h3><div class="goat-links"><a href="https://www.begoativated.com/account" target="_blank" rel="noopener">Open GOAT Sports Customer Account ↗</a><a href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener">Contact GOAT Sports ↗</a></div></div>`;}
+function account(){
+if(goatProfile.organizationId!==goatProfileOrg()||(!goatProfile.loaded&&!goatProfile.loading&&!goatProfile.error))queueMicrotask(()=>goatLoadProfile());
+const logo=goatProfile.organizationId===goatProfileOrg()?goatProfile.logo:null;
+const org=esc(directoryState.selected?.name||'Your Organization');
+const field=(label,id,type='text',wide=false)=>`<label class="ga-field ${wide?'ga-wide':''}"><span>${label}</span><input type="${type}" id="goat-account-${id}" value="${goatAccountVal(id)}" placeholder="Enter ${label.toLowerCase()}" autocomplete="off"></label>`;
+return `${header('ACCOUNT','Account Settings','Manage your organization profile, contact details and branding.')}
+<div class="ga-page">
+ <section class="panel ga-card ga-brand-card">
+  <div class="ga-section-heading"><div><div class="ga-kicker">YOUR ORGANIZATION</div><h3>Organization Branding</h3><p class="goat-muted">Your saved logo appears beside Private Customer Workspace in the top header.</p></div><span class="ga-pill">BRANDING</span></div>
+  <div class="ga-brand-row">
+   <div class="ga-logo-preview">${logo?`<img src="${logo}" alt="Organization logo">`:'<span class="ga-placeholder">YOUR<br>LOGO</span>'}</div>
+   <div class="ga-brand-actions"><strong>${org}</strong><p class="goat-muted">Upload a PNG, JPG or WEBP image. Your logo will retain its proportions.</p>
+   <div class="ga-buttons"><label class="ga-button ga-button-outline" for="goat-account-logo-input">${logo?'Replace Logo':'Upload Logo'}</label><input id="goat-account-logo-input" type="file" accept="image/png,image/jpeg,image/webp" onchange="goatPreviewOrgLogo(this)" style="display:none" ${!goatProfile.loaded?'disabled':''}>
+   ${logo?'<button type="button" class="ga-button ga-button-plain" onclick="goatRemoveOrgLogo()">Remove Logo</button>':''}</div></div>
+  </div>
+ </section>
+ <section class="panel ga-card">
+  <div class="ga-section-heading"><div><div class="ga-kicker">ACCOUNT DETAILS</div><h3>Organization Information</h3><p class="goat-muted">Keep your contact and delivery information current.</p></div></div>
+  ${goatProfile.error?`<p class="ga-error">${esc(goatProfile.error)} <button class="secondary" onclick="goatLoadProfile(true)">Retry</button></p>`:''}
+  <div class="ga-form">
+    <label class="ga-field"><span>Organization</span><input value="${org}" readonly aria-label="Organization name"></label>
+    ${field('Contact Name','contact_name')}
+    ${field('Email Address','email','email')}
+    ${field('Phone Number','phone','tel')}
+    <label class="ga-field ga-wide"><span>Billing Address</span><textarea id="goat-account-billing_address" rows="3" placeholder="Enter billing address">${goatAccountVal('billing_address')}</textarea></label>
+    <label class="ga-field ga-wide"><span>Shipping Address</span><textarea id="goat-account-shipping_address" rows="3" placeholder="Enter shipping address">${goatAccountVal('shipping_address')}</textarea></label>
+  </div>
+  <div class="ga-save-row"><span id="goat-account-status" class="goat-muted">Changes are saved securely to your organization profile.</span><button type="button" id="goat-account-save" class="primary ga-save-button" onclick="goatSaveAccount()" ${!goatProfile.loaded?'disabled':''}>Save Changes</button></div>
+ </section>
+ <section class="panel ga-card">
+  <div class="ga-section-heading"><div><div class="ga-kicker">HERE TO HELP</div><h3>GOAT Sports Support</h3><p class="goat-muted">Manage your customer account or contact our team.</p></div></div>
+  <div class="goat-links ga-support"><a href="https://www.begoativated.com/account" target="_blank" rel="noopener">Open GOAT Sports Customer Account ↗</a><a href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener">Contact GOAT Sports ↗</a></div>
+ </section>
+</div>`;
+}
 function cleanDesigns(){const root=document.getElementById('content');const panels=[...root.querySelectorAll('.panel')];const library=panels.find(p=>/Design & Artwork Library/i.test(p.querySelector('h2')?.textContent||''));const history=panels.find(p=>/Artwork Versions/i.test(p.querySelector('h2')?.textContent||''));if(!library||!history)return;const detail=document.createElement('details');detail.className='goat-collapse';detail.innerHTML='<summary>Previous Artwork Versions</summary>';while(history.firstChild)detail.appendChild(history.firstChild);library.appendChild(detail);history.remove();}
 
 function cleanQuotes(){const root=document.getElementById('content');const labels=[...root.querySelectorAll('h2,h3,strong')];for(const e of labels){if(/Quote History/i.test(e.textContent||'')){const parent=e.closest('.panel')||e.parentElement;if(parent&&parent!==root&&!parent.closest('details')){const d=document.createElement('details');d.className='goat-collapse';d.innerHTML='<summary>Quote History — click to expand</summary>';parent.parentNode.insertBefore(d,parent);d.appendChild(parent);}}}}
