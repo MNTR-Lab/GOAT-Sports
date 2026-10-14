@@ -137,7 +137,7 @@ async function loadAdminDirectory(){
 }
 function selectAdminOrganization(id){
  const o=directoryState.organizations.find(x=>String(x.mondayItemId)===String(id));
- if(!o)return;directoryState.selected=o;sessionStorage.setItem('goat_locker_selected_org',String(o.mondayItemId));jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};render();loadOrganizationJobs();
+ if(!o)return;directoryState.selected=o;sessionStorage.setItem('goat_locker_selected_org',String(o.mondayItemId));jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};crmLockerQuotes={organizationId:null,loading:false,loaded:false,quotes:[],error:''};render();loadOrganizationJobs();if(active==='quotes')loadCrmLockerQuotes(true);
 }
 async function loadOrganizationJobs(){
  const o=directoryState.selected;
@@ -293,7 +293,7 @@ function adminDirectory(){
 function show(id){
  if(!tabs.some(t=>t[0]===id))id='dashboard';
  active=id;render();window.scrollTo({top:0,behavior:'instant'});
- if(id==='quotes')autoLoadQuotes(true);
+ if(id==='quotes'){autoLoadQuotes(true);loadCrmLockerQuotes(true);}
  else if(id==='designs')artLoad();
  else if(id==='timeline')autoLoadJobs();
  else if(id==='dashboard')autoLoadDirectory();
@@ -662,6 +662,46 @@ function render(){
  else el.innerHTML=section(active);
 }
 
+// CRM customer quotes are separate from the legacy Locker/Monday quote pilot.
+// This feed is read-only until the CRM approval bridge is deployed and verified.
+let crmLockerQuotes={organizationId:null,loading:false,loaded:false,quotes:[],error:''};
+async function loadCrmLockerQuotes(force=false){
+ const org=String(directoryState.selected?.mondayItemId||'');
+ if(!customerToken()||!lockerIdentity||!org)return;
+ if(crmLockerQuotes.loading||(!force&&crmLockerQuotes.loaded&&crmLockerQuotes.organizationId===org))return;
+ crmLockerQuotes={organizationId:org,loading:true,loaded:false,quotes:[],error:''};
+ if(active==='quotes')render();
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-crm-quotes',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({organizationMondayId:org})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)throw Error(data.error||'CRM quotes are unavailable');
+  if(String(directoryState.selected?.mondayItemId)!==org)return;
+  crmLockerQuotes={organizationId:org,loading:false,loaded:true,quotes:Array.isArray(data.quotes)?data.quotes:[],error:''};
+ }catch(e){if(String(directoryState.selected?.mondayItemId)===org)crmLockerQuotes={organizationId:org,loading:false,loaded:false,quotes:[],error:e.message||'Could not load CRM quotes'};}
+ finally{if(active==='quotes')render();}
+}
+function crmLockerQuotePanel(){
+ const org=String(directoryState.selected?.mondayItemId||'');
+ if(!org)return '';
+ const state=crmLockerQuotes;
+ let body='';
+ if(state.organizationId!==org||!state.loaded){
+  body=state.error?'<div class="notice error">'+safe(state.error)+'</div>':state.loading?'<p class="muted">Loading CRM quotes…</p>':'<p class="muted">Select Refresh CRM Quotes to load your current quotes.</p>';
+ }else if(!state.quotes.length){body='<p class="muted">No CRM quotes have been sent to this organization.</p>';}
+ else body=state.quotes.map(q=>{
+  const items=Array.isArray(q.items)?q.items:[];
+  const rows=items.map(i=>'<div style="padding:7px 0;border-bottom:1px solid #eee">'+safe(i.name||'Item')+' · '+Number(i.qty||0)+' × $'+Number(i.price||0).toFixed(2)+'</div>').join('');
+  const status=q.status==='sent'?'Awaiting Customer Approval':q.status==='approved'?'Approved':q.status==='changes_requested'?'Changes Requested':q.status;
+  return '<div class="panel" style="margin:12px 0;background:#fafbfc"><div class="eyebrow">GOAT SPORTS CRM QUOTE</div><h3>'+safe(q.quote_number)+'</h3><p><strong>'+safe(status)+'</strong> · <strong>$'+Number(q.total||0).toFixed(2)+'</strong></p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+rows+(q.status==='sent'?'<p class="muted">Your quote is available to review. Approval and change requests will be enabled here after the secure CRM response connection is verified. Your original review link remains available.</p>':'')+'</div>';
+ }).join('');
+ return '<div class="panel"><div class="eyebrow">LIVE CRM QUOTES</div><h2>Quotes from GOAT Sports CRM</h2><button class="secondary" type="button" onclick="loadCrmLockerQuotes(true)">Refresh CRM Quotes</button>'+body+'</div>';
+}
+const originalRenderQuotes=renderQuotes;
+renderQuotes=function(){return crmLockerQuotePanel()+originalRenderQuotes();};
+
 let autoQuoteRefreshRunning=false;
 async function autoLoadQuotes(force=false){
  if(!customerToken()||!lockerIdentity||active!=='quotes'||String(directoryState.selected?.mondayItemId)!=='13227365382')return;
@@ -687,7 +727,7 @@ function autoLoadJobs(){if(directoryState.selected&&!jobState.loading)loadOrgani
 function autoLoadDirectory(){if(lockerIdentity&&!directoryState.loading&&!directoryState.loaded)loadAdminDirectory();}
 function autoRefreshCurrent(){
  if(document.hidden||!customerToken()||!lockerIdentity)return;
- if(active==='quotes')autoLoadQuotes();
+ if(active==='quotes'){autoLoadQuotes();loadCrmLockerQuotes(true);}
  else if(active==='timeline')autoLoadJobs();
  else if(active==='dashboard')autoLoadDirectory();
 }
@@ -698,7 +738,7 @@ setInterval(autoRefreshCurrent,30000);
 async function initializeLocker(){
  render();await handleCustomerCallback();
  if(customerToken()&&!lockerError){await loadLockerIdentity();if(lockerIdentity?.adminRole==='master_admin'||lockerIdentity?.organizationAccess?.length)await loadAdminDirectory();}else render();
- if(active==='quotes')autoLoadQuotes(true);
+ if(active==='quotes'){autoLoadQuotes(true);loadCrmLockerQuotes(true);}
 }
 initializeLocker();
 </script>
