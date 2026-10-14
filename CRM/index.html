@@ -704,21 +704,19 @@ async function qbLoadLibrary(){
  }catch(e){host.textContent='Artwork library unavailable: '+e.message}
 }
 async function qbAttachLibraryArtwork(quoteId,client){
- for(const a of qbLibrarySelected.values()){
+ const selected=Array.from(qbLibrarySelected.values());
+ for(const a of selected){
   if(!client||$('quoteBusiness').value!==client)throw Error('Artwork customer changed; reselect the library files.');
-  const signed=await api('/storage/v1/object/sign/goat-customer-artwork/'+a.storage_path,{method:'POST',body:JSON.stringify({expiresIn:120})});
-  const source=new URL(signed.signedURL,SB_URL+'/storage/v1/');
-  const downloaded=await fetch(source.href);
-  if(!downloaded.ok)throw Error('Unable to read '+a.file_name);
-  const blob=await downloaded.blob();
-  const path=GOAT_ORG+'/'+quoteId+'/'+crypto.randomUUID()+'-'+a.file_name.replace(/[^a-zA-Z0-9._-]/g,'_').slice(-90);
-  const type=blob.type||'application/octet-stream';
-  const response=await fetch(SB_URL+'/storage/v1/object/'+QB_BUCKET+'/'+path,{method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':type,'x-upsert':'false'},body:blob});
-  if(!response.ok){const j=await response.json().catch(()=>({}));throw Error('Quote artwork copy failed: '+(j.message||response.status))}
-  await api('/rest/v1/goat_quote_artwork',{method:'POST',body:JSON.stringify({organization_id:GOAT_ORG,quote_id:quoteId,storage_path:path,file_name:a.file_name,content_type:type,size_bytes:blob.size,uploaded_by:user.id})});
+  const response=await fetch(SB_URL+'/functions/v1/goat-crm-attach-library-artwork',{
+   method:'POST',headers:{'Content-Type':'application/json','apikey':SB_ANON,'Authorization':'Bearer '+token},
+   body:JSON.stringify({quoteId,artworkId:a.id})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)throw Error('Artwork attachment failed for '+a.file_name+': '+(data.error||response.status));
+  qbLibrarySelected.delete(a.id);
  }
- qbLibrarySelected.clear();
 }
+
 $('qbChooseLibrary').onclick=qbLoadLibrary;
 
 let qbArtworkList=[];
