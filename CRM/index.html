@@ -962,5 +962,105 @@ renderDesigns=function(){return customerArtworkPanel()+previousRenderDesigns();}
 })();
 
 </script>
+
+<style id="goat-locker-modern-theme">
+:root{--purple:#683695;--teal:#109488;--orange:#be5927;--silver:#868e92;--bg:#f4f6fa;--line:#e8eaf1}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:#f4f6fa}
+.shell{max-width:none;min-height:100vh;padding-left:238px}
+.top{position:sticky;top:0;z-index:12;height:80px;padding:12px 30px;background:#fff;box-shadow:0 2px 20px #18152b08}
+.brand .goat-logo{width:160px;max-height:44px}.brand .locker-wordmark{font-size:21px}
+.topright{gap:16px}.topright .eyebrow{font-size:10px}
+.layout{display:block;padding:24px 30px 45px}.side{position:fixed;left:0;top:0;bottom:0;width:238px;padding:140px 13px 24px;background:linear-gradient(175deg,#27103e,#180a2a 85%);z-index:11;gap:7px;overflow-y:auto}
+.side button{color:#e4d9ef;font-weight:600;border-radius:11px;padding:14px 15px;transition:background .15s}
+.side button:hover{background:#ffffff12;color:#fff}.side button.active{background:#ffffff1c;color:#fff;box-shadow:inset 3px 0 var(--teal)}
+.side button .nav-icon{font-size:19px;display:inline-block;width:30px;color:#bfb0d0}
+.side button.active .nav-icon{color:#1cc3b6}
+.hero{margin:22px 30px 0;border-radius:15px;padding:34px 42px;min-height:190px;background:linear-gradient(105deg,#45206e 0%,#683695 48%,#087e79 100%);box-shadow:0 12px 28px #24123b15;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-30px;top:-90px;width:370px;height:370px;border:2px solid #ffffff20;border-radius:50%;box-shadow:0 0 0 60px #ffffff08,0 0 0 120px #ffffff07;pointer-events:none}
+.hero h1{font-size:clamp(34px,4vw,52px);line-height:1.1;letter-spacing:-1.4px}.hero p{font-size:15px}
+.panel{border:1px solid #e9eaf0;border-radius:16px;box-shadow:0 8px 28px #2b24420a;padding:24px}
+.panel h2{letter-spacing:-.6px}.cards{gap:14px}.card{border:1px solid #ebeaf1;box-shadow:0 6px 20px #261c3809;border-radius:14px;min-height:116px;padding:18px}
+.card:hover{transform:translateY(-2px);box-shadow:0 12px 25px #28174114}
+.card strong{font-size:16px}.primary{box-shadow:0 5px 12px #68369525}
+.job-item,.timeline-job,.design-job,.artwork-version{background:#fff;border:1px solid #e8eaf0;border-radius:14px;box-shadow:0 5px 16px #21163107}
+.timeline-step{border-radius:10px}.timeline-step.done{background:#e5f6f3}.timeline-step.current{background:var(--purple)}
+.footer{padding-left:238px}.modern-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 18px}
+.modern-metric{background:#fff;border:1px solid #e8eaf0;border-left:4px solid var(--purple);border-radius:13px;padding:17px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 5px 18px #21163108}
+.modern-metric:nth-child(2){border-left-color:var(--teal)}.modern-metric:nth-child(3){border-left-color:var(--orange)}
+.modern-metric strong{font-size:27px;display:block;line-height:1.2}.modern-metric small{color:#69717e;font-weight:600}
+.modern-dashboard-title{font-size:23px;margin:0 0 15px;letter-spacing:-.6px}
+.org-avatar{width:42px;height:42px;border-radius:50%;object-fit:contain;background:#f1edf7;border:1px solid #e7e1ef;padding:3px}
+.org-profile{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;max-width:260px}
+.org-profile span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logo-preview{width:100px;height:100px;border:1px dashed #cfc8db;border-radius:16px;display:grid;place-items:center;background:#f8f7fa;margin:14px 0;overflow:hidden}
+.logo-preview img{width:100%;height:100%;object-fit:contain}
+.logo-note{font-size:12px;color:#69717e;max-width:580px}
+@media(max-width:950px){.shell{padding-left:190px}.side{width:190px}.layout{padding:20px}.hero{margin:18px 20px 0}.footer{padding-left:190px}.modern-overview{grid-template-columns:1fr 1fr}}
+@media(max-width:750px){.shell{padding-left:0}.side{display:none}.top{height:auto;min-height:65px;padding:10px 14px}.brand .goat-logo{width:120px}.brand .locker-wordmark{font-size:15px}.topright .eyebrow{display:none}.org-profile span{display:none}.org-avatar{width:34px;height:34px}.hero{margin:12px 12px 0;padding:26px 20px;min-height:145px}.hero:after{width:180px;height:180px}.layout{padding:14px 12px 90px}.modern-overview{grid-template-columns:1fr}.footer{padding-left:0}.mobile-nav{box-shadow:0 -5px 20px #22132d10}}
+</style>
+
+
+<script id="goat-locker-modern-presentation">
+/* Presentation layer only. Existing authentication, approvals and CRM handlers are untouched. */
+(function(){
+ const icons={dashboard:'⌂',designs:'▧',timeline:'◷',quotes:'▤',orders:'▣',invoices:'＄',account:'⚙'};
+ const originalNav=renderNav;
+ renderNav=function(){
+   originalNav();
+   for(const id of ['side','mobile']){
+     const node=document.getElementById(id);
+     if(!node)continue;
+     node.querySelectorAll('button').forEach((b,i)=>{
+       const tab=tabs[i];if(!tab)return;
+       if(id==='side')b.innerHTML='<span class="nav-icon" aria-hidden="true">'+(icons[tab[0]]||'•')+'</span>'+safe(tab[1]);
+     });
+   }
+ };
+ function orgId(){return String(directoryState.selected?.mondayItemId||'');}
+ function orgName(){return directoryState.selected?.name||'Your Organization';}
+ function localLogoKey(){return 'goat_locker_logo_preview_'+orgId();}
+ function logo(){if(!orgId()||!customerToken())return '';try{return localStorage.getItem(localLogoKey())||''}catch{return '';}}
+ function profile(){
+   const top=document.querySelector('.topright');if(!top)return;
+   let item=document.getElementById('goat-modern-profile');
+   if(!item){item=document.createElement('div');item.id='goat-modern-profile';item.className='org-profile';top.prepend(item);}
+   const img=logo();
+   item.innerHTML='<img class="org-avatar" alt="Organization logo" src="'+(img||'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="#683695"/><text x="50" y="60" fill="white" font-size="25" text-anchor="middle" font-family="Arial" font-weight="bold">GOAT</text></svg>'))+'"><span>'+safe(orgName())+'</span>';
+ }
+ function logoSettings(){
+   if(!customerToken()||!lockerIdentity||!orgId())return '<p class="muted">Sign in and select an organization to preview its logo.</p>';
+   return '<div class="logo-preview" id="goat-logo-preview">'+(logo()?'<img alt="Logo preview" src="'+logo()+'">':'<span class="muted">No logo</span>')+'</div>'+
+   '<label for="goat-logo-file"><strong>Choose organization logo</strong></label><p><input id="goat-logo-file" type="file" accept="image/png,image/jpeg,image/webp" onchange="goatPreviewOrganizationLogo(this)"></p>'+
+   '<button class="secondary" type="button" onclick="goatClearOrganizationLogo()">Clear local preview</button>'+
+   '<p class="logo-note">This is a browser-only preview on this device. It does not upload the image to Supabase or share it with other organization users. A secured server upload endpoint is required before enabling permanent organization logos.</p>';
+ }
+ window.goatPreviewOrganizationLogo=function(input){
+   const file=input.files?.[0];if(!file)return;
+   if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>300000){alert('Use PNG, JPG or WebP smaller than 300 KB for this local preview.');return;}
+   const reader=new FileReader();
+   reader.onload=()=>{try{localStorage.setItem(localLogoKey(),reader.result);profile();render();}catch{alert('This image could not be saved to browser preview storage.');}};
+   reader.readAsDataURL(file);
+ };
+ window.goatClearOrganizationLogo=function(){try{localStorage.removeItem(localLogoKey())}catch{}profile();render();};
+ const originalRender=render;
+ render=function(){
+   originalRender();
+   profile();
+   const main=document.getElementById('content');if(!main)return;
+   if(active==='dashboard'&&customerToken()&&lockerIdentity){
+     const jobs=jobState.loaded&&jobState.organizationId===orgId()?jobState.jobs.filter(x=>!isLockerTestJob(x)):[];
+     const quotes=crmLockerQuotes.loaded&&crmLockerQuotes.organizationId===orgId()?crmLockerQuotes.quotes:[];
+     const awaiting=quotes.filter(x=>['sent','sent_for_review'].includes(String(x.status||''))).length;
+     const pendingArt=jobs.filter(x=>/sent for review|changes requested/i.test(x.artworkStatus||'')).length;
+     const metrics='<div class="modern-overview"><div class="modern-metric"><div><strong>'+awaiting+'</strong><small>Quotes awaiting review</small></div><span aria-hidden="true">▤</span></div><div class="modern-metric"><div><strong>'+jobs.length+'</strong><small>Organization projects</small></div><span aria-hidden="true">▣</span></div><div class="modern-metric"><div><strong>'+pendingArt+'</strong><small>Artwork requiring attention</small></div><span aria-hidden="true">▧</span></div></div>';
+     main.insertAdjacentHTML('afterbegin',metrics+'<h2 class="modern-dashboard-title">Your GOAT Locker workspace</h2>');
+   }
+   if(active==='account'){
+     main.insertAdjacentHTML('beforeend','<div class="panel"><div class="eyebrow">ORGANIZATION BRANDING</div><h2>Your Organization Logo</h2><p class="muted">Keep GOAT Locker colors and customize only the logo beside your organization name.</p>'+logoSettings()+'</div>');
+   }
+ };
+})();
+</script>
+
 </body>
 </html>
