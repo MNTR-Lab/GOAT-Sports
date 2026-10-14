@@ -755,13 +755,18 @@ function crmLockerQuotePanel(){
  let body='';
  if(state.organizationId!==org||!state.loaded){
   body=state.error?'<div class="notice error">'+safe(state.error)+'</div>':state.loading?'<p class="muted">Loading CRM quotes…</p>':'<p class="muted">Select Refresh CRM Quotes to load your current quotes.</p>';
- }else if(!state.quotes.length){body='<p class="muted">No CRM quotes have been sent to this organization.</p>';}
- else body=state.quotes.map(q=>{
-  const items=Array.isArray(q.items)?q.items:[];
-  const rows=items.map(i=>'<div style="padding:7px 0;border-bottom:1px solid #eee">'+safe(i.name||'Item')+' · '+Number(i.qty||0)+' × $'+Number(i.price||0).toFixed(2)+'</div>').join('');
-  const status=q.status==='sent'?'Awaiting Customer Approval':q.status==='approved'?'Approved':q.status==='changes_requested'?'Changes Requested':q.status;
-  return '<div class="panel" style="margin:12px 0;background:#fafbfc"><div class="eyebrow">GOAT SPORTS CRM QUOTE</div><h3>'+safe(q.quote_number)+'</h3><p><strong>'+safe(status)+'</strong> · <strong>$'+Number(q.total||0).toFixed(2)+'</strong></p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+rows+crmArtworkHtml(q.crm_quote_id)+(q.status==='sent'?'<div class="linkrow"><button type="button" class="primary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'approved\')">Approve Quote</button><button type="button" class="secondary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'changes_requested\')">Request Changes</button></div>':'')+'</div>';
- }).join('');
+ }else{
+  const pending=state.quotes.filter(q=>q.status==='sent'||q.status==='changes_requested');
+  const history=state.quotes.filter(q=>q.status!=='sent'&&q.status!=='changes_requested');
+  const renderRows=q=>(Array.isArray(q.items)?q.items:[]).map(i=>'<div style="padding:7px 0;border-bottom:1px solid #eee">'+safe(i.name||'Item')+' · '+Number(i.qty||0)+' × $'+Number(i.price||0).toFixed(2)+'</div>').join('');
+  body='<h3 style="margin-top:20px">Awaiting Your Response</h3>';
+  body+=pending.length?pending.map(q=>{
+   const status=q.status==='sent'?'Awaiting Customer Approval':'Changes Requested';
+   return '<div class="panel" style="margin:12px 0;background:#fafbfc"><div class="eyebrow">GOAT SPORTS CRM QUOTE</div><h3>'+safe(q.quote_number)+'</h3><p><strong>'+safe(status)+'</strong> · <strong>$'+Number(q.total||0).toFixed(2)+'</strong></p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+renderRows(q)+crmArtworkHtml(q.crm_quote_id)+(q.status==='sent'?'<div class="linkrow"><button type="button" class="primary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'approved\')">Approve Quote</button><button type="button" class="secondary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'changes_requested\')">Request Changes</button></div>':'')+'</div>';
+  }).join(''):'<p class="muted">No quotes currently need your approval.</p>';
+  body+='<h3 style="margin-top:28px">Quote History</h3>';
+  body+=history.length?history.map(q=>'<details class="panel" style="margin:10px 0;padding:16px;background:#fafbfc"><summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span><strong>'+safe(q.quote_number)+'</strong> · '+safe(q.status==='approved'?'Approved':q.status)+'</span><strong>$'+Number(q.total||0).toFixed(2)+'</strong></summary><div style="padding-top:16px"><p class="muted">Last updated: '+safe(q.published_at?new Date(q.published_at).toLocaleString():'Not available')+'</p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+renderRows(q)+crmArtworkHtml(q.crm_quote_id)+'</div></details>').join(''):'<p class="muted">No completed quotes yet.</p>';
+ }
  return '<div class="panel"><div class="eyebrow">LIVE CRM QUOTES</div><h2>Quotes from GOAT Sports CRM</h2><button class="secondary" type="button" onclick="loadCrmLockerQuotes(true)">Refresh CRM Quotes</button>'+body+'</div>';
 }
 // Only CRM quotes are presented to customers. The older quote-builder code
