@@ -663,7 +663,7 @@ function render(){
 }
 
 // CRM customer quotes are separate from the legacy Locker/Monday quote pilot.
-// This feed is read-only until the CRM approval bridge is deployed and verified.
+// Customer decisions are authenticated and checked against the CRM quote owner.
 let crmLockerQuotes={organizationId:null,loading:false,loaded:false,quotes:[],error:''};
 async function loadCrmLockerQuotes(force=false){
  const org=String(directoryState.selected?.mondayItemId||'');
@@ -683,6 +683,36 @@ async function loadCrmLockerQuotes(force=false){
  }catch(e){if(String(directoryState.selected?.mondayItemId)===org)crmLockerQuotes={organizationId:org,loading:false,loaded:false,quotes:[],error:e.message||'Could not load CRM quotes'};}
  finally{if(active==='quotes')render();}
 }
+let crmQuoteDecisionBusy=false;
+async function submitCrmLockerDecision(quoteId,decision){
+ if(crmQuoteDecisionBusy)return;
+ const org=String(directoryState.selected?.mondayItemId||'');
+ const q=crmLockerQuotes.quotes.find(x=>String(x.crm_quote_id)===String(quoteId));
+ if(!q||q.status!=='sent'||!org||!customerToken())return alert('Refresh the quote before responding.');
+ let notes='';
+ if(decision==='changes_requested'){
+  const entered=prompt('Describe the changes you need on quote '+q.quote_number+':');
+  if(entered===null)return;
+  notes=entered.trim();
+  if(notes.length<3){alert('Please provide at least 3 characters explaining the changes.');return;}
+ }else if(decision==='approved'){
+  if(!confirm('Approve GOAT Sports quote '+q.quote_number+' for $'+Number(q.total||0).toFixed(2)+'? This is a REAL approval and will update your CRM quote.'))return;
+ }else return;
+ crmQuoteDecisionBusy=true;render();
+ try{
+  const response=await fetch('https://lbheezjanvalalinqxcd.supabase.co/functions/v1/goat-crm-locker-decision',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({quoteId,organizationMondayId:org,decision,notes})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)throw Error(data.error||'The CRM did not confirm your response. Please contact GOAT Sports before retrying.');
+  alert(decision==='approved'?'Quote approved in GOAT Sports CRM.':'Your requested changes have been sent to GOAT Sports CRM.');
+  const current=crmLockerQuotes.quotes.find(x=>String(x.crm_quote_id)===String(quoteId));
+  if(current)current.status=decision;
+  render();
+ }catch(e){alert(e.message||'Could not submit quote response.');}
+ finally{crmQuoteDecisionBusy=false;render();}
+}
 function crmLockerQuotePanel(){
  const org=String(directoryState.selected?.mondayItemId||'');
  if(!org)return '';
@@ -695,7 +725,7 @@ function crmLockerQuotePanel(){
   const items=Array.isArray(q.items)?q.items:[];
   const rows=items.map(i=>'<div style="padding:7px 0;border-bottom:1px solid #eee">'+safe(i.name||'Item')+' · '+Number(i.qty||0)+' × $'+Number(i.price||0).toFixed(2)+'</div>').join('');
   const status=q.status==='sent'?'Awaiting Customer Approval':q.status==='approved'?'Approved':q.status==='changes_requested'?'Changes Requested':q.status;
-  return '<div class="panel" style="margin:12px 0;background:#fafbfc"><div class="eyebrow">GOAT SPORTS CRM QUOTE</div><h3>'+safe(q.quote_number)+'</h3><p><strong>'+safe(status)+'</strong> · <strong>$'+Number(q.total||0).toFixed(2)+'</strong></p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+rows+(q.status==='sent'?'<p class="muted">Your quote is available to review. Approval and change requests will be enabled here after the secure CRM response connection is verified. Your original review link remains available.</p>':'')+'</div>';
+  return '<div class="panel" style="margin:12px 0;background:#fafbfc"><div class="eyebrow">GOAT SPORTS CRM QUOTE</div><h3>'+safe(q.quote_number)+'</h3><p><strong>'+safe(status)+'</strong> · <strong>$'+Number(q.total||0).toFixed(2)+'</strong></p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+rows+(q.status==='sent'?'<div class="linkrow"><button type="button" class="primary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'approved\')">Approve Quote</button><button type="button" class="secondary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'changes_requested\')">Request Changes</button></div>':'')+'</div>';
  }).join('');
  return '<div class="panel"><div class="eyebrow">LIVE CRM QUOTES</div><h2>Quotes from GOAT Sports CRM</h2><button class="secondary" type="button" onclick="loadCrmLockerQuotes(true)">Refresh CRM Quotes</button>'+body+'</div>';
 }
