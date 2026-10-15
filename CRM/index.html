@@ -322,7 +322,7 @@ async function renderGoatLeads(){
 // GOAT Locker organization management. Customer connections are created PENDING;
 // only verified mappings are eligible for existing quote delivery.
 async function renderGoatLockerIntegration(){
- const v=$('view');v.innerHTML='<section class="panel"><div class="eyebrow">GOAT SPORTS · CUSTOMER PORTALS</div><h2>GOAT Locker Integration</h2><p class="muted">Manage your connected customer organizations and artwork integration.</p><div class="actions" style="margin-bottom:18px"><button class="btn small" id="lkOrgs">Organizations</button><button class="btn small ghost" id="lkArt">Artwork Library</button><button class="btn small ghost" id="lkSync">Delivery Status</button></div><div id="lkBody">Loading...</div></section>';
+ const v=$('view');v.innerHTML='<section class="panel"><div class="eyebrow">GOAT SPORTS · CUSTOMER PORTALS</div><h2>GOAT Locker Integration</h2><p class="muted">Manage your connected customer organizations and artwork integration.</p><div class="actions" style="margin-bottom:18px"><button class="btn small" id="lkOrgs">Organizations</button><button class="btn small ghost" id="lkArt">Artwork Library</button><button class="btn small ghost" id="lkSync">Delivery Status</button><a class="btn small ghost" href="https://ai-apparel-group-inc.monday.com/boards/18434378349" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;text-decoration:none">↗ Monday CRM</a></div><div id="lkBody">Loading...</div></section>';
  $('lkOrgs').onclick=()=>goatLockerOrganizations();
  $('lkArt').onclick=goatLockerArtwork;
  $('lkSync').onclick=goatLockerSync;
