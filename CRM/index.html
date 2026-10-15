@@ -753,7 +753,7 @@ async function openReviewPreview(id){
    const f=files[i];try{
     const res=await fetch(SB_URL+'/storage/v1/object/sign/'+QB_BUCKET+'/'+f.storage_path,{method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:300})});const data=await res.json();if(!res.ok||!data.signedURL)continue;
     if(reviewPreviewId!==id||!$('reviewPreview').open)return;
-    const url=new URL(data.signedURL.startsWith('/storage/v1/')?data.signedURL:'/storage/v1/'+data.signedURL.replace(/^\/+/,''),SB_URL).href;
+    const url=qbSignedUrl(data.signedURL);
     const box=$('reviewArt'+i);if(!box)continue;
     const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='View '+f.file_name;box.replaceChildren(link);
     if((f.content_type||'').startsWith('image/')){const img=document.createElement('img');img.src=url;img.alt=f.file_name;img.loading='lazy';box.append(img)}
@@ -852,6 +852,19 @@ async function qbAttachLibraryArtwork(quoteId,client){
 }
 $('qbChooseLibrary').onclick=qbLoadLibrary;
 
+// Normalize Supabase signed URLs without duplicating /storage/v1.
+function qbSignedUrl(signedURL){
+ if(!signedURL)throw Error('Storage did not return a signed URL');
+ if(/^https?:\/\//i.test(signedURL))return signedURL;
+ const path=signedURL.startsWith('/storage/v1/')?signedURL:'/storage/v1/'+signedURL.replace(/^\/+/, '');
+ return new URL(path,SB_URL).href;
+}
+async function qbSignArtwork(path,seconds=300){
+ const r=await fetch(SB_URL+'/storage/v1/object/sign/'+QB_BUCKET+'/'+path,{method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:seconds})});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok)throw Error(j.message||j.error||'Unable to create secure artwork link');
+ return qbSignedUrl(j.signedURL);
+}
 let qbArtworkList=[];
 function qbPendingFiles(){const files=Array.from($('qbArtworkFiles').files||[]);$('qbPendingArtwork').textContent=files.length?files.length+' file(s) ready to upload when quote is saved: '+files.map(f=>f.name).join(', '):'No new files selected.'}
 $('qbArtworkFiles').addEventListener('change',qbPendingFiles);
@@ -863,8 +876,37 @@ async function qbLoadArtwork(quoteId){
   qbArtworkList=rows;qbDrawArtwork();
  }catch(err){$('qbSavedArtwork').textContent='Could not load saved artwork: '+err.message}
 }
-function qbDrawArtwork(){const host=$('qbSavedArtwork');host.innerHTML=qbArtworkList.length?'<strong>Saved artwork ('+qbArtworkList.length+')</strong>'+qbArtworkList.map(a=>'<div class="qb-file-row"><span>'+escapeHTML(a.file_name)+' <small>('+Math.ceil(a.size_bytes/1024)+' KB)</small></span><button type="button" data-qbdownload="'+escapeHTML(a.id)+'">View / download</button></div>').join(''):'<small>No artwork saved to this quote yet.</small>';
- host.querySelectorAll('[data-qbdownload]').forEach(b=>b.onclick=async()=>{const a=qbArtworkList.find(x=>x.id===b.dataset.qbdownload);if(!a)return;b.disabled=true;try{const r=await fetch(SB_URL+'/storage/v1/object/sign/'+QB_BUCKET+'/'+a.storage_path,{method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:120})});const j=await r.json();if(!r.ok)throw Error(j.message||j.error||'Unable to create secure link');const u=new URL(j.signedURL,SB_URL+'/storage/v1/');window.open(u.href,'_blank','noopener,noreferrer')}catch(e){$('quoteError').textContent='Artwork download failed: '+e.message}finally{b.disabled=false}});
+function qbDrawArtwork(){
+ const host=$('qbSavedArtwork');
+ const quote=quotes.find(q=>q.id===$('quoteId').value);
+ const editable=!!quote&&quote.status==='draft';
+ host.innerHTML=qbArtworkList.length?'<strong>Saved artwork ('+qbArtworkList.length+')</strong>'+qbArtworkList.map(a=>'<div class="qb-file-row"><span>'+escapeHTML(a.file_name)+' <small>('+Math.ceil((a.size_bytes||0)/1024)+' KB)</small></span><span class="actions"><button type="button" data-qbdownload="'+escapeHTML(a.id)+'">View / download</button>'+(editable?'<button type="button" class="btn danger small" data-qbdelete="'+escapeHTML(a.id)+'">Delete</button>':'')+'</span></div>').join(''):'<small>No artwork saved to this quote yet.</small>';
+ host.querySelectorAll('[data-qbdownload]').forEach(b=>b.onclick=async()=>{
+  const a=qbArtworkList.find(x=>x.id===b.dataset.qbdownload);if(!a)return;
+  // Open a tab synchronously so browsers do not block it after the asynchronous signing request.
+  const tab=window.open('about:blank','_blank');b.disabled=true;
+  try{const url=await qbSignArtwork(a.storage_path,300);if(tab)tab.location.replace(url);else{const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener noreferrer';link.click()}}
+  catch(e){if(tab)tab.close();$('quoteError').textContent='Artwork download failed: '+e.message}
+  finally{b.disabled=false}
+ });
+ host.querySelectorAll('[data-qbdelete]').forEach(b=>b.onclick=async()=>{
+  const a=qbArtworkList.find(x=>x.id===b.dataset.qbdelete);if(!a)return;
+  const id=$('quoteId').value;
+  if(!confirm('Delete "'+a.file_name+'" from this draft quote? This cannot be undone.'))return;
+  b.disabled=true;$('quoteError').textContent='';
+  try{
+   // Re-check server status before any destructive operation.
+   const rows=await api('/rest/v1/goat_crm_quotes?select=id,status&id=eq.'+encodeURIComponent(id)+'&organization_id=eq.'+GOAT_ORG+'&limit=1');
+   if(rows.length!==1||rows[0].status!=='draft')throw Error('This quote is no longer a draft. Artwork is locked.');
+   // Remove the attachment record first; do not delete the stored object if the record removal fails.
+   const removed=await api('/rest/v1/goat_quote_artwork?id=eq.'+encodeURIComponent(a.id)+'&quote_id=eq.'+encodeURIComponent(id)+'&organization_id=eq.'+GOAT_ORG,{method:'DELETE',headers:{Prefer:'return=representation'}});
+   if(!Array.isArray(removed)||removed.length!==1)throw Error('Artwork could not be removed. Check your account permissions.');
+   qbArtworkList=qbArtworkList.filter(x=>x.id!==a.id);qbDrawArtwork();
+   // Storage cleanup is best-effort; never claim the attachment is still present if the record is gone.
+   const res=await fetch(SB_URL+'/storage/v1/object/'+QB_BUCKET+'/'+a.storage_path,{method:'DELETE',headers:{apikey:SB_ANON,Authorization:'Bearer '+token}});
+   if(!res.ok)console.warn('Quote artwork detached but storage cleanup needs attention:',await res.text());
+  }catch(e){$('quoteError').textContent='Artwork deletion failed: '+e.message;b.disabled=false}
+ });
 }
 async function qbUploadArtwork(quoteId){const files=Array.from($('qbArtworkFiles').files||[]);for(const f of files){
  if(f.size>25*1024*1024)throw Error(f.name+' is larger than 25 MB');
