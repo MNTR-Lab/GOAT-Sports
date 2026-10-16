@@ -744,6 +744,7 @@ async function openReviewPreview(id){
  }
  $('reviewPreviewSend').disabled=!q.customer_email||!rows.length;
  $('reviewPreviewSend').textContent='Send for Review / Approval';
+ const oldCopy=$('reviewPreviewCopyLink');if(oldCopy)oldCopy.remove();
  $('reviewPreview').showModal();
  try{
   const files=await api('/rest/v1/goat_quote_artwork?select=file_name,storage_path,content_type&organization_id=eq.'+GOAT_ORG+'&quote_id=eq.'+encodeURIComponent(id));
@@ -764,15 +765,31 @@ async function openReviewPreview(id){
 
 async function createReviewLink(id,button){
  const q=quotes.find(x=>x.id===id);if(!q)return;
- if(!q.customer_email){const el=$('reviewPreviewError');if(el)el.textContent='Add a customer email before sending for review.';return}
- if(!confirm('Confirm this is the final version of '+q.quote_number+' and generate the customer approval link? Previous unanswered links will be replaced.'))return;
- button.disabled=true;const previous=button.textContent;button.textContent='Creating…';
+ const errorEl=$('reviewPreviewError');if(errorEl)errorEl.textContent='';
+ if(!q.customer_email){if(errorEl)errorEl.textContent='Add a customer email before sending for review.';return}
+ if(!confirm('Confirm this is the final version of '+q.quote_number+' and email the customer approval link to '+q.customer_email+'? Previous unanswered links will be replaced.'))return;
+ button.disabled=true;const previous=button.textContent;button.textContent='Preparing email…';
  try{
   const r=await fetch(SB_URL+'/functions/v1/goat-quote-review?action=create',{method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({quote_id:id})});
-  const data=await r.json();if(!r.ok)throw Error(data.error||'Unable to generate review link');
-  try{await navigator.clipboard.writeText(data.url);showMessage('Review link copied! Send it to '+q.customer_email+'. Link expires in 14 days.')}catch{prompt('Copy this customer review link:',data.url);showMessage('Review link generated. Copy it from the dialog and send it to '+q.customer_email+'.')}
-  $('reviewPreview').close();await loadQuotes();if(currentPage==='quotes')drawQuotes();
- }catch(e){showMessage('Review link could not be created: '+e.message,true)}finally{button.disabled=false;button.textContent=previous}
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok||!data.url)throw Error(data.error||'Unable to generate review link');
+  const subject='GOAT Sports Quote '+q.quote_number+' — Review & Approval';
+  const body='Hello '+(q.customer_name||'')+',\n\nYour GOAT Sports quote '+q.quote_number+' is ready for review.\n\nPlease open the secure link below to review the quote and submit your approval or request changes:\n'+data.url+'\n\nThis link expires in 14 days.\n\nThank you,\nGOAT Sports';
+  button.textContent='Sending email…';
+  try{
+   const mail=await goatSendMail(q.customer_email,subject,body,'quotes');
+   $('reviewPreview').close();
+   showMessage('Email accepted by the sending service for '+q.customer_email+'. Quote '+q.quote_number+'.'+(mail.logged?' Saved to CRM Sent folder.':' Warning: email was accepted but CRM history was not saved.'));
+   await loadQuotes();if(currentPage==='quotes')drawQuotes();
+  }catch(sendError){
+   if(errorEl)errorEl.textContent='Email was NOT confirmed sent: '+sendError.message+'. The approval link was created; use Copy Review Link below to send it manually.';
+   let copy=$('reviewPreviewCopyLink');
+   if(!copy){copy=document.createElement('button');copy.id='reviewPreviewCopyLink';copy.type='button';copy.className='btn ghost';button.parentNode.insertBefore(copy,button)}
+   copy.textContent='Copy Review Link';copy.onclick=async()=>{try{await navigator.clipboard.writeText(data.url);copy.textContent='Copied!'}catch{prompt('Copy this review link:',data.url)}};
+   showMessage('Email sending failed for '+q.quote_number+': '+sendError.message,true);
+  }
+ }catch(e){if(errorEl)errorEl.textContent='Review link could not be created: '+e.message;showMessage('Review link could not be created: '+e.message,true)}
+ finally{button.disabled=false;button.textContent=previous}
 }
 
 let qbLines=[];
