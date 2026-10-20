@@ -133,6 +133,12 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
 </style>
 <style>
 .goat-mail-selectrow{display:flex;align-items:stretch;border-bottom:1px solid #ece9f2}.goat-mail-selectrow .goat-mail-item{flex:1;min-width:0;border-bottom:0}.goat-mail-check{width:17px;height:17px;flex:0 0 17px;align-self:center;margin:0 4px 0 12px;accent-color:#683695}.goat-mail-bulk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}.goat-mail-bulk label{display:flex;align-items:center;gap:6px;font-size:12px;color:#56536b;white-space:nowrap}.goat-mail-bulk label input{width:15px;height:15px;accent-color:#683695}.goat-mail-bulk .btn{font-size:11px;padding:6px 8px}.goat-mail-reading .btn.danger{background:#fff0f0;color:#a32832;border:1px solid #edc9c9}
+</style><style>
+.goat-shopify-draft{margin:18px 0;padding:18px;border:1px solid #ded3eb;border-radius:12px;background:#faf8fd}
+.goat-shopify-draft>strong{display:block;color:#683695;font-size:16px;margin-bottom:8px}
+.goat-shopify-draft>p{margin:0 0 12px;font-size:13px;line-height:1.5;color:#56536b}
+.goat-shopify-draft .btn{background:#109488}
+.goat-shopify-draft .goat-shopify-draft-status{margin:10px 0 0;overflow-wrap:anywhere}
 </style></head><body>
 <section id="login" class="login"><div class="intro"><img src="https://cdn.shopify.com/s/files/1/0657/3480/3625/files/goat-sports-horizontal.png?v=1763467297" alt="GOAT Sports"><div><h1>Built for the business<br>behind the game.</h1><p>One secure operations workspace for clients, quotes, production, artwork and team collaboration.</p></div><small>GOAT Sports · Operations CRM</small></div>
 <div class="login-right"><form class="login-card" id="loginForm"><div class="eyebrow">Secure workspace</div><h2>Welcome back.</h2><p class="muted">Sign in to your GOAT Sports operations account.</p><label class="field"><span>Email address</span><input id="email" type="email" autocomplete="username" required></label><label class="field"><span>Password</span><input id="password" type="password" autocomplete="current-password" required></label><p class="error" id="loginError" role="alert"></p><button class="btn" type="submit">Sign in to GOAT CRM</button><p class="muted" style="font-size:12px">Access is restricted to authorized GOAT Sports administrators and employees.</p></form></div></section>
@@ -757,6 +763,38 @@ async function openReviewPreview(id){
  $('reviewPreviewSend').textContent='Send for Review / Approval';
  const oldCopy=$('reviewPreviewCopyLink');if(oldCopy)oldCopy.remove();
  $('reviewPreview').showModal();
+ // Approved quote: administrator-only Shopify draft order synchronization.
+ const priorDraftPanel=document.getElementById('goatShopifyDraftAction');
+ if(priorDraftPanel)priorDraftPanel.remove();
+ if(String(q.status||'').toLowerCase()==='approved'&&goatAccessRole==='admin'){
+  const panel=document.createElement('section');panel.id='goatShopifyDraftAction';panel.className='goat-shopify-draft';
+  const title=document.createElement('strong');title.textContent='Shopify Draft Order';
+  const help=document.createElement('p');help.textContent='Create or retrieve the Shopify draft order for this approved quote. No invoice or payment will be initiated.';
+  const button=document.createElement('button');button.type='button';button.className='btn';button.textContent='Create Shopify Draft Order';
+  const status=document.createElement('p');status.className='goat-shopify-draft-status';status.setAttribute('role','status');
+  button.onclick=async()=>{
+   if(!confirm('Create a Shopify draft order for '+q.quote_number+'? This does not send an invoice or collect payment.'))return;
+   button.disabled=true;button.textContent='Connecting to Shopify…';status.textContent='';
+   try{
+    if(!token)throw Error('Your session has expired. Please sign in again.');
+    const response=await fetch(SB_URL+'/functions/v1/goat-quote-review?action=sync-approved',{
+     method:'POST',headers:{apikey:SB_ANON,Authorization:'Bearer '+token,'Content-Type':'application/json'},
+     body:JSON.stringify({quote_id:q.id})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||!data.ok)throw Error(data.error||'Shopify draft creation failed ('+response.status+')');
+    status.style.color='#087b68';status.textContent='Shopify draft confirmed: '+(data.draft_id||'Created');
+    button.textContent='Shopify Draft Order Created';
+   }catch(error){
+    status.style.color='#b42318';status.textContent=error.message||'Unable to create Shopify draft order';
+    // If the server reports an uncertain outcome, block automatic retries to prevent duplicate orders.
+    const uncertain=/reconciliation|already underway|already exists/i.test(status.textContent);
+    button.disabled=uncertain;button.textContent=uncertain?'Check Shopify Before Retrying':'Retry Shopify Draft Order';
+   }
+  };
+  panel.append(title,help,button,status);$('reviewPreviewBody').append(panel);
+ }
+
  try{
   const files=await api('/rest/v1/goat_quote_artwork?select=file_name,storage_path,content_type&organization_id=eq.'+GOAT_ORG+'&quote_id=eq.'+encodeURIComponent(id));
   if(reviewPreviewId!==id||!$('reviewPreview').open)return;
