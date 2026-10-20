@@ -585,20 +585,27 @@ async function renderGoatShipping(){
   if(currentPage!=='shipping')return;
   const jobMap=new Map(jobs.map(j=>[j.id,j]));
   const esc=escapeHTML;
-  $('goatShippingHost').innerHTML=shipments.length?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Delivery status</th><th>Carrier / method</th><th>Tracking number</th><th>Store order ID</th><th>Action</th></tr></thead><tbody>'+shipments.map(x=>{
+  $('goatShippingHost').innerHTML=shipments.some(x=>x.status!=='picked_up')?'<div class="table-wrap"><table><thead><tr><th>Job</th><th>Project</th><th>Delivery status</th><th>Carrier / method</th><th>Tracking number</th><th>Store order ID</th><th>Action</th></tr></thead><tbody>'+shipments.filter(x=>x.status!=='picked_up').map(x=>{
    const j=jobMap.get(x.job_id)||{};
    const options=[['ready_to_ship','Ready to ship'],['packed','Packed'],['shipped','Shipped'],['delivered','Delivered'],['pickup_ready','Ready for pickup'],['picked_up','Picked up']];
    return '<tr><td><strong>'+esc(j.job_number||'—')+'</strong></td><td>'+esc(j.title||'—')+'</td><td><select class="goat-workflow-select" data-shipping-status="'+esc(x.id)+'">'+options.map(([id,label])=>'<option value="'+id+'"'+(x.status===id?' selected':'')+'>'+label+'</option>').join('')+'</select></td><td><input style="min-width:130px" maxlength="120" data-shipping-carrier="'+esc(x.id)+'" value="'+esc(x.carrier||'')+'" placeholder="Carrier or pickup"></td><td><input style="min-width:150px" maxlength="200" data-shipping-tracking="'+esc(x.id)+'" value="'+esc(x.tracking_number||'')+'" placeholder="Optional"></td><td><button class="btn small" data-shipping-save="'+esc(x.id)+'">Save</button></td></tr>'
   }).join('')+'</tbody></table></div>':'<p class="muted">No completed production jobs in the shipping queue yet. When a job is marked Completed, it will appear here automatically.</p>';
   $('goatShippingHost').querySelectorAll('[data-shipping-save]').forEach(btn=>btn.onclick=async()=>{
-   const id=btn.dataset.shippingSave,row=btn.closest('tr'),status=row.querySelector('[data-shipping-status]').value,carrier=row.querySelector('[data-shipping-carrier]').value.trim(),tracking_number=row.querySelector('[data-shipping-tracking]').value.trim(),shopify_order_id=row.querySelector('[data-shipping-order]').value.trim();
+   const id=btn.dataset.shippingSave,previous=shipments.find(x=>x.id===id),row=btn.closest('tr'),status=row.querySelector('[data-shipping-status]').value,carrier=row.querySelector('[data-shipping-carrier]').value.trim(),tracking_number=row.querySelector('[data-shipping-tracking]').value.trim(),shopify_order_id=String(previous?.shopify_order_id||'').trim();
    if(shopify_order_id&&!/^\\d+$/.test(shopify_order_id)){showMessage('Enter the numeric Shopify order ID, not the order number shown with #.',true);return;}
-   const previous=shipments.find(x=>x.id===id);
    const payload={status,carrier:carrier||null,tracking_number:tracking_number||null,shopify_order_id:shopify_order_id||null,updated_at:new Date().toISOString()};
    if(status==='shipped'&&!previous.shipped_at)payload.shipped_at=new Date().toISOString();
    if(['delivered','picked_up'].includes(status)&&!previous.delivered_at)payload.delivered_at=new Date().toISOString();
    btn.disabled=true;
-   try{const updated=await api('/rest/v1/goat_crm_shipments?id=eq.'+encodeURIComponent(id)+'&organization_id=eq.'+GOAT_ORG,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});if(!updated.length)throw Error('No shipment was updated');await renderGoatShipping();showMessage('Shipping / Delivery updated.')}catch(e){btn.disabled=false;showMessage('Could not save delivery: '+e.message,true)}
+   try{const updated=await api('/rest/v1/goat_crm_shipments?id=eq.'+encodeURIComponent(id)+'&organization_id=eq.'+GOAT_ORG,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(payload)});if(!updated.length)throw Error('No shipment was updated');
+    if(status==='picked_up'&&previous?.job_id){
+     const job=jobMap.get(previous.job_id);
+     if(job?.status==='completed'){
+      const archived=await api('/rest/v1/goat_crm_jobs?id=eq.'+encodeURIComponent(previous.job_id)+'&organization_id=eq.'+GOAT_ORG+'&status=eq.completed',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:'archived',updated_at:new Date().toISOString()})});
+      if(!archived.length)throw Error('Pickup saved, but job was not archived. Check Archived History.');
+     }
+    }
+    await renderGoatShipping();showMessage(status==='picked_up'?'Pickup saved; completed production job moved to Archived History.':'Shipping / Delivery updated.');}catch(e){btn.disabled=false;showMessage('Could not save delivery: '+e.message,true)}
   });
  }catch(e){showMessage('Could not load shipping queue: '+e.message,true)}
 }
