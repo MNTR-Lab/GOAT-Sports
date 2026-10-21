@@ -469,6 +469,12 @@ async function renderGoatRevenue(){
    const status=String(o.financial_status||'').toLowerCase();
    return ['pending','unpaid','partially_paid','authorized'].includes(status);
   });
+  // Both cost fields must be recorded, including explicit zero values.
+  // Completed records remain in the database and are accessible in the archive.
+  const costNeedsInfo=o=>o.cogs===null||o.cogs===undefined||
+   o.shipping_label_cost===null||o.shipping_label_cost===undefined;
+  const pendingCostOrders=costOrders.filter(costNeedsInfo);
+  const archivedCostOrders=costOrders.filter(o=>!costNeedsInfo(o));
   const row=o=>'<tr><td>'+escape(o.order_number)+'</td><td>'+escape(o.customer_name||'—')+'</td><td>'+escape(new Date(o.order_date).toLocaleDateString())+'</td><td>'+goatMoney(Number(o.product_subtotal)+Number(o.customer_shipping))+'</td><td><input class="rev-cost" type="number" min="0" step="0.01" data-id="'+escape(o.id)+'" data-field="cogs" value="'+(o.cogs===null?'':o.cogs)+'" placeholder="Enter cost" aria-label="COGS for '+escape(o.order_number)+'"></td><td><input class="rev-cost" type="number" min="0" step="0.01" data-id="'+escape(o.id)+'" data-field="shipping_label_cost" value="'+(o.shipping_label_cost===null?'':o.shipping_label_cost)+'" placeholder="Enter cost" aria-label="Shipping cost for '+escape(o.order_number)+'"></td><td>'+escape(o.financial_status)+'</td></tr>';
   v.innerHTML='<div class="rev-head"><span class="rev-pill">GOAT SPORTS · ACCOUNTING</span><h2>Revenue &amp; Tax</h2><p>New ownership reporting · October 1, 2026 onward · older transactions excluded</p></div>'+
    '<div class="rev-tools"><label for="rev-period">Reporting period</label><select id="rev-period"><option value="month">Monthly</option><option value="quarter">Quarterly</option><option value="ytd">Year to date</option></select><button class="btn" id="rev-refresh">Refresh</button><button class="btn" id="rev-payment-sync" type="button">Sync Verified Payments</button><span id="rev-sync-status" class="muted" role="status" aria-live="polite"></span></div>'+
@@ -486,7 +492,8 @@ async function renderGoatRevenue(){
    '<div class="rev-tile"><small>03 · Shipping label costs</small><strong>'+goatMoney(shipping)+'</strong><span class="rev-note">Your actual shipping expenses</span></div>'+
    '<div class="rev-tile"><small>04 · Profit after COGS &amp; shipping</small><strong>'+goatMoney(profit)+'</strong><span class="rev-note">'+(subtotal?((profit/subtotal)*100).toFixed(1):'0.0')+'% margin · excludes fees, overhead, refunds adjustments</span></div></div>'+
    (missing?'<div class="rev-banner"><strong>'+missing+' paid order(s) missing cost entries.</strong> Profit is provisional until all costs are entered.</div>':'')+
-   '<details class="panel rev-details" id="rev-cost-details"><summary><strong>Order Cost Management</strong><span class="muted">Open to enter COGS and shipping costs</span></summary><p class="muted">Showing orders dated October 1, 2026 onward, older orders with verified payments since October 1, and outstanding orders. Enter COGS and shipping label costs, then click Save Costs to submit your changes.</p><div style="overflow-x:auto"><table class="rev-table"><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Sales + shipping</th><th>COGS ($)</th><th>Label cost ($)</th><th>Payment</th></tr></thead><tbody>'+ (costOrders.length?costOrders.map(row).join(''):'<tr><td colspan="7">No orders imported yet. Shopify order synchronization must be connected; you can also add a manual sale below.</td></tr>')+'</tbody></table></div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px"><button type="button" class="btn" id="rev-save-costs" disabled>Save Costs</button><span id="rev-save-status" class="muted" role="status">No unsaved changes</span></div></details>'+
+   '<details class="panel rev-details" id="rev-cost-details" open><summary><strong>Needs Cost Entry ('+pendingCostOrders.length+')</strong><span class="muted">Only orders with missing COGS or shipping label costs</span></summary><p class="muted">Enter both COGS and label costs, using 0.00 if there was no expense. Click Save Costs to move completed orders into the archive. The October 1 payment-date rules still apply.</p><div style="overflow-x:auto"><table class="rev-table"><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Sales + shipping</th><th>COGS ($)</th><th>Label cost ($)</th><th>Payment</th></tr></thead><tbody>'+ (pendingCostOrders.length?pendingCostOrders.map(row).join(''):'<tr><td colspan="7">All eligible orders have complete cost entries. Nothing needs attention.</td></tr>')+'</tbody></table></div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px"><button type="button" class="btn" id="rev-save-costs" disabled>Save Costs</button><span id="rev-save-status" class="muted" role="status">No unsaved changes</span></div></details>'+
+   '<details class="panel rev-details" id="rev-cost-archive" style="margin-top:16px"><summary><strong>Archived / Completed Cost Entries ('+archivedCostOrders.length+')</strong><span class="muted">Saved orders · reopen to review or edit</span></summary><p class="muted">These orders have both cost fields recorded and no longer appear under Needs Cost Entry. You can edit a saved amount and click Save Archived Changes.</p><div style="overflow-x:auto"><table class="rev-table"><thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Sales + shipping</th><th>COGS ($)</th><th>Label cost ($)</th><th>Payment</th></tr></thead><tbody>'+ (archivedCostOrders.length?archivedCostOrders.map(row).join(''):'<tr><td colspan="7">No completed cost entries yet.</td></tr>')+'</tbody></table></div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px"><button type="button" class="btn" id="rev-save-archived-costs" disabled>Save Archived Changes</button><span id="rev-archive-save-status" class="muted" role="status">No unsaved changes</span></div></details>'+
    '<details class="panel rev-details" id="rev-manual-details"><summary><strong>Add a Non-Shopify Sale</strong><span class="muted">Open to record a separate sale</span></summary><p class="muted">For sales not already in Shopify. Do not enter Shopify orders twice.</p><form id="rev-add" class="rev-add"><input name="order_number" required placeholder="Invoice / order number"><input name="customer_name" placeholder="Customer"><label>Order date <input name="order_date" type="date" min="2026-10-01" required></label><label>Product subtotal ($) <input name="product_subtotal" type="number" step="0.01" min="0" required></label><label>Customer shipping paid ($) <input name="customer_shipping" type="number" step="0.01" min="0" value="0" required></label><label>COGS ($) <input name="cogs" type="number" step="0.01" min="0"></label><label>Label cost ($) <input name="shipping_label_cost" type="number" step="0.01" min="0"></label><button class="btn" type="submit">Save sale</button></form><p id="rev-add-status" class="muted"></p></details>'+
    '<h3>Sales Tax Reporting</h3><div class="rev-grid"><div class="rev-tile"><small>Taxable sales</small><strong>—</strong><span class="rev-note">Classification not connected</span></div><div class="rev-tile"><small>Non-taxable sales</small><strong>—</strong><span class="rev-note">Classification not connected</span></div><div class="rev-tile"><small>Recorded sales tax</small><strong>'+goatMoney(sum('sales_tax'))+'</strong><span class="rev-note">Imported/entered paid-order tax, not tax due</span></div><div class="rev-tile"><small>Sales tax due</small><strong>—</strong><span class="rev-note">Requires tax reconciliation</span></div></div>'+
    '<div class="rev-banner"><strong>Financial reporting note.</strong> Approved quote value ('+goatMoney(approvedValue)+') is excluded from sales. Shopify sales totals require a verified payment and a matching imported order; partial payments and refunds still require allocation. Refunds, processor fees, overhead and tax obligations need reconciliation before treating this as final accounting profit.</div>';
@@ -501,62 +508,61 @@ async function renderGoatRevenue(){
     }catch(err){status.textContent='Sync unsuccessful: '+err.message+' — existing revenue figures have not been changed.'}
     finally{button.disabled=false}
    };
-  // Explicit, multi-order cost submission. Never save simply by leaving a field.
-  const costInputs=[...document.querySelectorAll('.rev-cost')];
-  const costSaveButton=$('rev-save-costs');
-  const costStatus=$('rev-save-status');
-  const originalCostValues=new Map(costInputs.map(input=>[
-   input.dataset.id+'|'+input.dataset.field,input.value.trim()
-  ]));
-  const changedCosts=()=>costInputs.filter(input=>
-   input.value.trim()!==originalCostValues.get(input.dataset.id+'|'+input.dataset.field)
-  );
-  const refreshCostSaveState=()=>{
-   const count=changedCosts().length;
-   costSaveButton.disabled=count===0;
-   costStatus.textContent=count?count+' unsaved cost '+(count===1?'change':'changes')+' — click Save Costs':'All cost changes saved';
-  };
-  costInputs.forEach(input=>input.addEventListener('input',()=>{
-   input.setCustomValidity('');refreshCostSaveState();
-  }));
-  costSaveButton.onclick=async()=>{
-   const changes=changedCosts();
-   if(!changes.length)return;
-   for(const input of changes){
-    const value=input.value.trim();
-    if(value!==''&&(!Number.isFinite(Number(value))||Number(value)<0)){
-     input.setCustomValidity('Enter a nonnegative amount');input.reportValidity();input.focus();return;
-    }
-    input.setCustomValidity('');
-   }
-   costSaveButton.disabled=true;
-   costInputs.forEach(input=>input.disabled=true);
-   let saved=0;
-   let failure=null;
-   for(const input of changes){
-    costStatus.textContent='Saving '+(saved+1)+' of '+changes.length+' cost changes…';
-    try{
+  // Save each section explicitly. Completed orders move out of Needs Cost Entry
+  // only after the database confirms that both cost values are present.
+  function setupCostSave(sectionId,buttonId,statusId,archiveSection=false){
+   const section=$(sectionId),button=$(buttonId),status=$(statusId);
+   const inputs=[...section.querySelectorAll('.rev-cost')];
+   const originals=new Map(inputs.map(input=>[input.dataset.id+'|'+input.dataset.field,input.value.trim()]));
+   const changed=()=>inputs.filter(input=>input.value.trim()!==originals.get(input.dataset.id+'|'+input.dataset.field));
+   const update=()=>{
+    const count=changed().length;
+    button.disabled=count===0;
+    status.textContent=count?count+' unsaved '+(count===1?'change':'changes')+' — click '+(archiveSection?'Save Archived Changes':'Save Costs'):'No unsaved changes';
+   };
+   inputs.forEach(input=>input.addEventListener('input',()=>{input.setCustomValidity('');update()}));
+   button.onclick=async()=>{
+    const changes=changed();
+    if(!changes.length)return;
+    for(const input of changes){
      const value=input.value.trim();
-     await api('/rest/v1/goat_revenue_orders?id=eq.'+encodeURIComponent(input.dataset.id)+'&organization_id=eq.'+GOAT_ORG,{
-      method:'PATCH',
-      headers:{Prefer:'return=representation'},
-      body:JSON.stringify({[input.dataset.field]:value===''?null:Number(value),updated_at:new Date().toISOString()})
-     }).then(rows=>{if(!Array.isArray(rows)||rows.length!==1)throw Error('No matching order was updated')});
-     originalCostValues.set(input.dataset.id+'|'+input.dataset.field,value);
-     saved++;
-    }catch(e){failure=e;break;}
-   }
-   costInputs.forEach(input=>input.disabled=false);
-   if(failure){
-    refreshCostSaveState();
-    costStatus.textContent=saved+' of '+changes.length+' changes saved. Could not save remaining costs: '+failure.message;
-    costSaveButton.disabled=changedCosts().length===0;
-    return;
-   }
-   await renderGoatRevenue();
-   const details=$('rev-cost-details');if(details)details.open=true;
-   const status=$('rev-save-status');if(status)status.textContent='Saved '+saved+' cost '+(saved===1?'change':'changes')+' successfully.';
-  };
+     if(value!==''&&(!Number.isFinite(Number(value))||Number(value)<0)){
+      input.setCustomValidity('Enter a nonnegative amount');
+      input.reportValidity();input.focus();return;
+     }
+     input.setCustomValidity('');
+    }
+    button.disabled=true;
+    inputs.forEach(input=>input.disabled=true);
+    let saved=0,failure=null;
+    for(const input of changes){
+     status.textContent='Saving '+(saved+1)+' of '+changes.length+' changes…';
+     try{
+      const value=input.value.trim();
+      const rows=await api('/rest/v1/goat_revenue_orders?id=eq.'+encodeURIComponent(input.dataset.id)+'&organization_id=eq.'+GOAT_ORG,{
+       method:'PATCH',headers:{Prefer:'return=representation'},
+       body:JSON.stringify({[input.dataset.field]:value===''?null:Number(value),updated_at:new Date().toISOString()})
+      });
+      if(!Array.isArray(rows)||rows.length!==1)throw Error('No matching order was updated');
+      originals.set(input.dataset.id+'|'+input.dataset.field,value);
+      saved++;
+     }catch(e){failure=e;break}
+    }
+    inputs.forEach(input=>input.disabled=false);
+    if(failure){
+     update();
+     status.textContent=saved+' of '+changes.length+' changes saved. Remaining changes not saved: '+failure.message;
+     return;
+    }
+    await renderGoatRevenue();
+    const openSection=$(archiveSection?'rev-cost-archive':'rev-cost-details');
+    if(openSection)openSection.open=true;
+    const updatedStatus=$(statusId);
+    if(updatedStatus)updatedStatus.textContent='Saved '+saved+' '+(saved===1?'change':'changes')+' successfully. Completed orders are in the archive.';
+   };
+  }
+  setupCostSave('rev-cost-details','rev-save-costs','rev-save-status');
+  setupCostSave('rev-cost-archive','rev-save-archived-costs','rev-archive-save-status',true);
   $('rev-add').elements.order_date.value=new Date().toLocaleDateString('en-CA');
   $('rev-add').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget;const b=f.querySelector('button[type=submit]');b.disabled=true;
    const obj={organization_id:GOAT_ORG,source:'manual',financial_status:'paid',order_number:f.elements.order_number.value.trim(),customer_name:f.elements.customer_name.value.trim(),order_date:new Date(f.elements.order_date.value+'T12:00:00').toISOString(),product_subtotal:Number(f.elements.product_subtotal.value),customer_shipping:Number(f.elements.customer_shipping.value),cogs:f.elements.cogs.value===''?null:Number(f.elements.cogs.value),shipping_label_cost:f.elements.shipping_label_cost.value===''?null:Number(f.elements.shipping_label_cost.value)};
