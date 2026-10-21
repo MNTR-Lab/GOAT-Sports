@@ -459,6 +459,10 @@ async function renderGoatRevenue(){
   // on or after the cutoff, regardless of the selected reporting period.
   // Older orders with outstanding balances also remain manageable.
   const costOrders=orders.filter(o=>{
+   // Cancelled/voided orders are not actionable cost-entry work.
+   // Keep historical records intact; exclude only from these worklists.
+   const status=String(o.financial_status||'').trim().toLowerCase();
+   if(['cancelled','canceled','voided','void'].includes(status))return false;
    if(afterCutoff(o.order_date)||afterCutoff(o.payment_date))return true;
    const orderId=String(o.shopify_order_id||'');
    if(orderId&&verifiedPayments.some(t=>
@@ -466,7 +470,6 @@ async function renderGoatRevenue(){
     ['capture','sale'].includes(String(t.transaction_kind||'').toLowerCase())&&
     afterCutoff(t.transaction_date)
    ))return true;
-   const status=String(o.financial_status||'').toLowerCase();
    return ['pending','unpaid','partially_paid','authorized'].includes(status);
   });
   // Both cost fields must be recorded, including explicit zero values.
