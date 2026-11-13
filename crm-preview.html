@@ -1,0 +1,1129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base href="https://locker.begoativated.com/">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GOAT Locker | Customer Workspace</title>
+<meta name="description" content="GOAT Sports private customer workspace for projects, proofs, quotes, invoices and orders.">
+<style>
+:root{--purple:#683695;--teal:#109488;--orange:#be5927;--silver:#868e92;--ink:#171925;--bg:#f5f6f9;--line:#e5e7ee}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Arial,Helvetica,sans-serif}button,a{font:inherit}button{cursor:pointer}a{color:var(--purple)}
+.shell{max-width:1320px;margin:auto;min-height:100vh}.top{background:white;border-bottom:1px solid var(--line);padding:18px clamp(18px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{display:flex;align-items:center;gap:12px;color:var(--purple);font-size:24px;font-weight:900;letter-spacing:1px}.brand-mark{display:grid;place-items:center;background:var(--purple);color:white;width:42px;height:42px;border-radius:12px;font-size:21px}.topright{display:flex;gap:12px;align-items:center}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:800;color:var(--teal)}
+.hero{background:linear-gradient(115deg,#392054,#683695 65%,#109488);color:white;padding:40px clamp(18px,4vw,48px)}.hero .eyebrow{color:#b9f5ed}.hero h1{font-size:clamp(32px,5vw,55px);margin:7px 0}.hero p{max-width:650px;margin:0;color:#eee4f7}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:26px;padding:28px clamp(18px,4vw,48px)}.side{display:flex;flex-direction:column;gap:7px}.side button{border:0;text-align:left;padding:13px 15px;border-radius:10px;background:transparent;font-weight:700;color:#535463}.side button.active{background:var(--purple);color:white}.main{min-width:0}
+.panel{background:white;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:0 6px 24px #17203608}h2{margin:0 0 10px;font-size:25px}h3{margin:0 0 8px}.muted{color:#69717e}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:18px 0}.card{border:1px solid var(--line);background:#fff;border-radius:14px;padding:19px;text-align:left;min-height:145px}.card strong{display:block;font-size:17px;margin:9px 0 5px}.card:hover{border-color:var(--teal)}.pill{display:inline-block;background:#e6f6f3;color:#087b70;padding:5px 9px;border-radius:20px;font-size:11px;font-weight:800}
+.primary{border:0;background:var(--purple);color:white;padding:12px 19px;border-radius:10px;font-weight:800}.secondary{background:white;border:1px solid #d4d6dd;border-radius:10px;padding:11px 16px;font-weight:700}.empty{padding:24px;border:1px dashed #cfd4de;border-radius:12px;background:#fafbfc}.hidden{display:none!important}.footer{text-align:center;color:#7b818b;padding:20px;font-size:12px}.notice{border-left:4px solid var(--teal);padding:12px 16px;background:#f0faf8;border-radius:6px;margin-top:14px}.notice.error{border-left-color:var(--orange);background:#fff7f2}.linkrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.mobile-nav{display:none}
+@media(max-width:750px){.top{padding:14px 18px}.brand{font-size:18px}.topright .eyebrow{display:none}.hero{padding:30px 20px}.layout{display:block;padding:18px 14px 90px}.side{display:none}.cards{grid-template-columns:1fr}.panel{padding:19px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;overflow-x:auto;background:white;border-top:1px solid var(--line);padding:7px;z-index:5;gap:4px}.mobile-nav button{flex:1;min-width:65px;border:0;background:white;color:#525466;font-size:11px;font-weight:800;padding:10px 4px;border-radius:7px}.mobile-nav button.active{background:#f0eaf7;color:var(--purple)}}
+.brand{gap:10px;letter-spacing:normal}.brand .goat-logo{display:block;width:clamp(170px,24vw,270px);height:auto;max-height:52px;object-fit:contain}.brand .locker-wordmark{color:var(--teal);font-size:clamp(15px,2vw,22px);font-weight:900;white-space:nowrap}.brand-mark{display:none}@media(max-width:750px){.brand .goat-logo{width:clamp(125px,37vw,205px)}.brand .locker-wordmark{font-size:15px}.top{gap:8px}.topright .secondary{padding:8px 10px;font-size:12px}}
+.job-list{margin-top:18px;border-top:1px solid var(--line);padding-top:18px}.job-item{border:1px solid var(--line);padding:18px;border-radius:12px;background:#fafbfc;margin:12px 0}.job-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.job-grid div{display:flex;flex-direction:column;gap:3px}.job-grid strong{font-size:13px}@media(max-width:750px){.job-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.timeline-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.timeline-job{border:1px solid var(--line);border-radius:12px;padding:18px;margin:15px 0;background:white}.timeline-track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;margin:18px 0 12px}.timeline-step{background:#edf0f4;border-radius:8px;padding:10px 5px;text-align:center;color:#69717e;font-size:11px;font-weight:700;min-height:64px;display:flex;align-items:center;justify-content:center}.timeline-step.done{background:#e6f6f3;color:#087b70}.timeline-step.current{background:#683695;color:white}.timeline-step.future{opacity:.72}.timeline-detail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.timeline-detail div{background:#f7f8fa;border-radius:8px;padding:10px}.timeline-detail strong{display:block}.timeline-note{font-size:13px;color:#69717e}@media(max-width:750px){.timeline-track{grid-template-columns:repeat(3,minmax(0,1fr))}.timeline-detail{grid-template-columns:1fr}}
+
+.design-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}.design-job{border:1px solid var(--line);border-radius:13px;padding:20px;margin:16px 0;background:#fff}.design-meta{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}.design-meta span{border-radius:7px;background:#f5f6f9;padding:7px 11px;font-size:13px}.proof-area{margin-top:15px;background:#fafbfc;border:1px dashed #cbd2dc;border-radius:11px;padding:17px}.proof-area p{margin:7px 0 0}.proof-files{padding-left:20px;margin:10px 0}.proof-files li{padding:4px 0;overflow-wrap:anywhere}.design-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}.design-actions button:disabled{opacity:.5;cursor:not-allowed}
+
+.proof-decision-box{margin-top:14px;border:1px solid #dce2e9;background:#f8fafb;border-radius:12px;padding:15px}.proof-decision-box label{display:block;font-weight:800;margin:0 0 7px}.proof-decision-box textarea{width:100%;min-height:100px;border:1px solid #cfd4de;border-radius:9px;padding:12px;font:inherit;resize:vertical}.proof-decision-box .hint{font-size:12px;color:#69717e;margin:8px 0}.proof-decision-box .decision-buttons{display:flex;flex-wrap:wrap;gap:10px}.proof-decision-box .danger{background:#fff;color:#a44824;border:1px solid #cf987e;border-radius:10px;padding:11px 16px;font-weight:800}.proof-decision-box button:disabled{opacity:.5;cursor:wait}.proof-feedback{margin-top:10px;font-size:13px;font-weight:700}.proof-feedback.error{color:#a44824}.proof-feedback.success{color:#087b70}
+.job-details{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}.job-details summary{cursor:pointer;font-weight:700;color:var(--purple)}.job-details[open] summary{margin-bottom:14px}.job-details .job-grid{margin-top:12px}
+.goat-artwork-section{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}.artwork-version{border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:12px;background:white}.goat-artwork-results{margin-top:12px}.goat-artwork-section h4{margin:0 0 8px}
+</style>
+<style id="goat-premium-2026">
+:root{--goat-purple:#683695;--goat-teal:#109488;--goat-ink:#15203b;--goat-bg:#f5f7fb}
+body{background:var(--goat-bg)!important;color:var(--goat-ink)}
+.shell{max-width:none!important;margin:0!important;background:#f5f7fb!important;min-height:100vh}
+.top{background:#fff!important;box-shadow:0 2px 12px #1d183015!important;padding:14px 30px!important;position:sticky;top:0;z-index:15}
+.layout{display:grid!important;grid-template-columns:230px minmax(0,1fr)!important;gap:0!important;min-height:calc(100vh - 86px)}
+.side{background:linear-gradient(180deg,#28103f,#1d0a30)!important;border-radius:0!important;padding:25px 12px!important;display:flex;flex-direction:column;gap:7px;min-height:calc(100vh - 85px)}
+.side button{color:#eee6f8!important;text-align:left!important;border:0!important;border-radius:12px!important;padding:14px 16px!important;background:transparent!important;font-weight:650!important;cursor:pointer}
+.side button.active,.side button:hover{background:#ffffff20!important;border-left:3px solid #13c1b0!important;color:#fff!important}
+.side .goat-side-extra{margin-top:auto;display:grid;gap:7px;padding-top:20px;border-top:1px solid #ffffff26}
+.side .goat-side-extra a,.side .goat-side-extra button{color:#eee!important;font-size:13px!important;text-decoration:none!important;padding:12px 10px!important;background:transparent!important;border:0!important;text-align:left!important;cursor:pointer}
+.main{min-width:0!important;padding:26px clamp(16px,3vw,42px)!important;background:#f5f7fb!important}
+.hero{margin:18px 28px 0 258px!important;border-radius:16px!important;padding:26px 32px!important;background:linear-gradient(105deg,#2b1046 0%,#673899 55%,#109488 100%)!important;color:white!important}
+.hero h1{font-size:clamp(25px,3vw,38px)!important;letter-spacing:-.04em}
+.panel{border:1px solid #e9e9f3!important;border-radius:16px!important;box-shadow:0 6px 22px #25133b0b!important;padding:24px!important;background:#fff!important;margin-bottom:17px!important}
+.panel h2{font-size:23px!important;letter-spacing:-.03em!important}
+.eyebrow{color:#109488!important;letter-spacing:.13em!important;font-weight:800!important;font-size:10px!important}
+.card,.design-job,.notice,.empty{border-radius:13px!important}
+.card{box-shadow:0 4px 12px #1c12330a!important;background:white!important;border:1px solid #ecebf4!important}
+button.primary,.primary{background:#683695!important;color:white!important;border-radius:10px!important}
+button.secondary,.secondary{border-radius:10px!important}
+.goat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:15px 0 22px}
+.goat-stat{background:#fff;border:1px solid #e8eaf1;border-radius:14px;padding:18px;box-shadow:0 3px 12px #1c123308;border-top:3px solid var(--accent,#683695)}
+.goat-stat small{font-size:12px;color:#657087;font-weight:700}.goat-stat strong{display:block;font-size:30px;color:#171a30;margin:8px 0}.goat-stat span{font-size:12px;color:#7c8290}
+.goat-cols{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}.goat-activity{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid #eff0f5}.goat-activity:last-child{border:0}
+.goat-job{display:grid;grid-template-columns:1fr auto;gap:12px;border:1px solid #e9eaf0;border-left:4px solid var(--accent,#109488);border-radius:15px;background:white;padding:20px;margin:14px 0;box-shadow:0 6px 22px #25133b0b}
+.goat-job h3{margin:5px 0 8px;font-size:20px}.goat-job p{color:#657087;font-size:13px;margin:6px 0}.goat-chip{display:inline-block;padding:6px 10px;border-radius:100px;background:#e3f8f2;color:#087967;font-size:11px;font-weight:800}
+.goat-progress{display:flex;gap:4px;margin:18px 0 8px}.goat-progress span{height:7px;flex:1;background:#e9edf4;border-radius:9px}.goat-progress span.done{background:#109488}
+.goat-stages{display:flex;justify-content:space-between;gap:8px;color:#667085;font-size:11px}.goat-tabs{display:flex;flex-wrap:wrap;gap:9px;margin:14px 0}.goat-tabs button{border:1px solid #e8e5ef;background:white;color:#49346b;border-radius:24px;padding:10px 17px;cursor:pointer}.goat-tabs button.selected{background:#683695;color:#fff}
+.goat-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.goat-form label{font-size:12px;font-weight:700;color:#475069}.goat-form input{width:100%;padding:12px;border:1px solid #dde2eb;border-radius:9px;margin-top:5px;background:#fff}
+.goat-muted{font-size:13px;color:#7b8293}.goat-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.goat-links a{padding:11px 15px;border:1px solid #d9c6ec;border-radius:9px;color:#683695;text-decoration:none;font-weight:700}
+.goat-sectiontitle{margin:18px 0 9px;font-size:17px;font-weight:800}.goat-collapse{border:1px solid #e9eaf1;border-radius:13px;padding:15px;background:#fff;margin:12px 0}.goat-collapse summary{cursor:pointer;font-weight:800}
+.goat-noauth{margin:10px 0 18px}.goat-brand-mark{font-weight:800;color:#fff;font-size:17px;text-align:center;letter-spacing:.08em;margin:5px 0 24px}
+@media(max-width:980px){.goat-grid{grid-template-columns:repeat(2,1fr)}.goat-cols{grid-template-columns:1fr}.hero{margin-left:20px!important}.layout{grid-template-columns:1fr!important}.side{min-height:auto!important}.goat-form{grid-template-columns:1fr}}
+@media(max-width:550px){.goat-grid{grid-template-columns:1fr 1fr}.goat-job{grid-template-columns:1fr}.main{padding:14px!important}.hero{margin:12px!important}}
+</style>
+<style id="goat-account-polish">
+.ga-page{max-width:1050px;margin:0 auto}.ga-card{padding:28px!important;margin-bottom:18px!important}
+.ga-section-heading{display:flex;align-items:start;justify-content:space-between;gap:18px;margin-bottom:23px}
+.ga-section-heading h3{font-size:21px;letter-spacing:-.03em;color:#19203b;margin:5px 0 7px}
+.ga-kicker{font-size:10px;letter-spacing:.16em;font-weight:900;color:#109488}
+.ga-pill{font-size:10px;font-weight:800;color:#683695;background:#f3edfa;border-radius:20px;padding:8px 12px}
+.ga-brand-row{display:flex;gap:24px;align-items:center;background:#fafbfe;border:1px solid #eceaf3;border-radius:16px;padding:22px}
+.ga-logo-preview{width:150px;height:120px;flex:none;display:flex;align-items:center;justify-content:center;background:#fff;border:1px dashed #c9c5d8;border-radius:14px;overflow:hidden}
+.ga-logo-preview img{max-width:90%;max-height:90%;object-fit:contain}
+.ga-placeholder{font-size:16px;text-align:center;letter-spacing:.12em;font-weight:900;color:#c0b5d1}
+.ga-brand-actions{flex:1;min-width:0}.ga-brand-actions strong{font-size:18px}.ga-brand-actions p{margin:9px 0 16px}
+.ga-buttons{display:flex;flex-wrap:wrap;gap:10px}.ga-button{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:11px 17px;font-weight:800;font-size:13px;cursor:pointer}
+.ga-button-outline{border:1px solid #683695;color:#683695;background:white}.ga-button-plain{border:1px solid #e1dce8;background:white;color:#6b6673}
+.ga-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:19px}
+.ga-field{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;font-weight:800;color:#404861}.ga-wide{grid-column:span 2}
+.ga-field input,.ga-field textarea{display:block;box-sizing:border-box;width:100%;min-width:0;border:1px solid #dfe3ec;border-radius:10px;padding:13px 14px;background:#fff;color:#1c2440;font:inherit;font-size:14px;font-weight:500;outline:none;resize:vertical}
+.ga-field input:focus,.ga-field textarea:focus{border-color:#683695;box-shadow:0 0 0 3px #6836951c}
+.ga-field input[readonly]{background:#f5f6fa;color:#667085}
+.ga-save-row{display:flex;align-items:center;justify-content:space-between;gap:15px;border-top:1px solid #eceef4;margin-top:25px;padding-top:21px}
+.ga-save-button{min-width:150px;padding:13px 20px!important;cursor:pointer}.ga-save-button:disabled{opacity:.5;cursor:not-allowed}
+.ga-error{color:#a72d2d;font-size:13px}.ga-support a{font-weight:800}
+@media(max-width:640px){.ga-card{padding:18px!important}.ga-form{grid-template-columns:1fr}.ga-wide{grid-column:auto}.ga-brand-row{flex-direction:column;align-items:flex-start}.ga-save-row{align-items:stretch;flex-direction:column}.ga-save-button{width:100%}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top"><div class="brand"><img class="goat-logo" src="data:image/png;base64,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" alt="GOAT Sports official logo"><span class="locker-wordmark">/ LOCKER</span></div><div class="topright"><span class="eyebrow">PRIVATE CUSTOMER WORKSPACE</span><button class="secondary" onclick="show('account')">My Account</button></div></header>
+<section class="hero"><div class="eyebrow">GOAT SPORTS · YOUR ORGANIZATION</div><h1>GOAT LOCKER</h1><p>Your workspace for designs and proofs, job progress, quotes, invoices, and orders.</p></section>
+<div class="layout"><nav class="side" aria-label="Locker navigation" id="side"></nav><main class="main" id="content" aria-live="polite"></main></div>
+<footer class="footer">GOAT SPORTS · GOAT LOCKER · Customer workspace</footer>
+</div><nav class="mobile-nav" id="mobile" aria-label="Mobile Locker navigation"></nav>
+<script src="./crm-locker-preview.js"></script>
+<script>
+'use strict';
+// Customer authentication uses the existing GOAT Sports account configuration (PKCE).
+const CUSTOMER_CLIENT_ID='0ce1ce65-71f0-40f5-840c-b30f69e3e924';
+const CUSTOMER_REDIRECT_URI='https://locker.begoativated.com/';
+const CUSTOMER_SCOPE='openid email customer-account-api:full';
+const SUPABASE_URL='https://qpavspvpdebtbbffdcmo.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_NoP_3R4R1WeoM7tivVJPAA_i4flKD1b';
+const tabs=[['dashboard','Dashboard'],['designs','Designs'],['timeline','Timeline'],['quotes','Quotes'],['orders','Orders'],['invoices','Invoices'],['account','Account']];
+const descriptions={designs:['Designs & Proofs','Review artwork, proofs, and requests for revisions.'],timeline:['Project Timeline','Follow milestones and production progress for your organization.'],quotes:['Quotes & Approvals','Review estimates and approved quotes for your projects.'],orders:['Orders','Track orders associated with your customer account.'],invoices:['Invoices & Payments','View invoices and payment information.']};
+let active='dashboard',lockerIdentity=null,lockerError='',checking=false;
+// Compatibility with the shared master-admin artwork library module.
+const lockerSession={get adminRole(){return lockerIdentity?.adminRole||null;}};
+function safe(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function b64url(bytes){return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function randomUrlSafe(n=32){const a=new Uint8Array(n);crypto.getRandomValues(a);return b64url(a);}
+async function sha256url(s){return b64url(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))));}
+async function customerDiscovery(){
+ const [oidc,api]=await Promise.all([fetch('https://www.begoativated.com/.well-known/openid-configuration'),fetch('https://www.begoativated.com/.well-known/customer-account-api')]);
+ if(!oidc.ok||!api.ok)throw new Error('Could not connect to GOAT Sports accounts');
+ return {...await oidc.json(),...await api.json()};
+}
+function customerToken(){
+ const token=sessionStorage.getItem('goat_customer_access_token');
+ const expires=Number(sessionStorage.getItem('goat_customer_token_expires')||0);
+ return token&&Date.now()<expires?token:null;
+}
+async function customerLogin(){
+ try{
+  lockerError='';
+  const cfg=await customerDiscovery();
+  const verifier=randomUrlSafe(48),state=randomUrlSafe(24),nonce=randomUrlSafe(24);
+  sessionStorage.setItem('goat_pkce_verifier',verifier);
+  sessionStorage.setItem('goat_oauth_state',state);
+  const u=new URL(cfg.authorization_endpoint);
+  for(const [k,v] of Object.entries({scope:CUSTOMER_SCOPE,client_id:CUSTOMER_CLIENT_ID,response_type:'code',redirect_uri:CUSTOMER_REDIRECT_URI,state,nonce,code_challenge:await sha256url(verifier),code_challenge_method:'S256'}))u.searchParams.set(k,v);
+  location.assign(u.toString());
+ }catch(e){lockerError='Sign-in could not start: '+e.message;render();}
+}
+async function handleCustomerCallback(){
+ const u=new URL(location.href),code=u.searchParams.get('code'),error=u.searchParams.get('error');
+ if(!code&&!error)return;
+ // Remove sensitive authorization code from the browser address bar.
+ history.replaceState({},'',CUSTOMER_REDIRECT_URI);
+ if(error){lockerError=u.searchParams.get('error_description')||error;return;}
+ const expected=sessionStorage.getItem('goat_oauth_state');
+ const verifier=sessionStorage.getItem('goat_pkce_verifier');
+ sessionStorage.removeItem('goat_oauth_state');sessionStorage.removeItem('goat_pkce_verifier');
+ if(!expected||u.searchParams.get('state')!==expected||!verifier){lockerError='Sign-in security check failed. Please try again.';return;}
+ try{
+  const cfg=await customerDiscovery();
+  const body=new URLSearchParams({grant_type:'authorization_code',client_id:CUSTOMER_CLIENT_ID,redirect_uri:CUSTOMER_REDIRECT_URI,code,code_verifier:verifier});
+  const response=await fetch(cfg.token_endpoint,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body});
+  const result=await response.json();
+  if(!response.ok||!result.access_token)throw new Error(result.error_description||result.error||'Token exchange failed');
+  sessionStorage.setItem('goat_customer_access_token',result.access_token);
+  sessionStorage.setItem('goat_customer_token_expires',String(Date.now()+Number(result.expires_in||3600)*1000));
+ }catch(e){lockerError='Sign-in failed: '+e.message;}
+}
+async function loadLockerIdentity(){
+ const token=customerToken();
+ if(!token){lockerIdentity=null;return;}
+ checking=true;render();
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-access',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({action:'me'})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||'Access verification failed');
+  lockerIdentity={adminRole:data.adminRole||null,lockerAccess:Array.isArray(data.lockerAccess)?data.lockerAccess:[],organizationAccess:Array.isArray(data.organizationAccess)?data.organizationAccess:[]};
+  lockerError='';
+ }catch(e){lockerIdentity=null;lockerError='Could not verify Locker permissions: '+e.message;}
+ finally{checking=false;render();}
+}
+function lockerSignOut(){
+ for(const k of ['goat_customer_access_token','goat_customer_token_expires','goat_pkce_verifier','goat_oauth_state'])sessionStorage.removeItem(k);
+ lockerIdentity=null;lockerError='';sessionStorage.removeItem('goat_locker_selected_org');directoryState.selected=null;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:null};render();
+}
+let directoryState={loading:false,loaded:false,organizations:[],error:'',selected:null};
+let jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:null};
+async function loadAdminDirectory(){
+ if(!lockerIdentity||!customerToken()||!(lockerIdentity.adminRole==='master_admin'||lockerIdentity.organizationAccess?.length))return;
+ directoryState.loading=true;directoryState.error='';render();
+ try{
+  const isMaster=lockerIdentity.adminRole==='master_admin';
+  const response=await fetch(SUPABASE_URL+'/functions/v1/'+(isMaster?'goat-artwork-library':'goat-locker-directory'),{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({action:isMaster?'list':'list_test'})
+  });
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load organizations');
+  if(isMaster){
+   directoryState.organizations=(Array.isArray(data.clients)?data.clients:[]).map(c=>({
+    mondayItemId:String(c.id),name:c.name,clientId:c.clientId,
+    liveJobs:Array.isArray(c.jobs)?c.jobs:[]
+   }));
+  }else{
+   directoryState.organizations=Array.isArray(data.organizations)?data.organizations:[];
+  }
+   directoryState.loaded=true;
+   // Select the only assigned organization without exposing the internal directory.
+   if(!directoryState.selected&&directoryState.organizations.length===1){
+    directoryState.selected=directoryState.organizations[0];
+    sessionStorage.setItem('goat_locker_selected_org',String(directoryState.selected.mondayItemId));
+    loadOrganizationJobs();
+   }
+
+  const savedId=sessionStorage.getItem('goat_locker_selected_org');
+  if(savedId&&!directoryState.selected){const saved=directoryState.organizations.find(x=>String(x.mondayItemId)===savedId);if(saved){directoryState.selected=saved;jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:savedId};loadOrganizationJobs();}else{sessionStorage.removeItem('goat_locker_selected_org');}}
+ }catch(e){directoryState.error=e.message||'Directory unavailable';}
+ finally{directoryState.loading=false;render();}
+}
+function selectAdminOrganization(id){
+ const o=directoryState.organizations.find(x=>String(x.mondayItemId)===String(id));
+ if(!o)return;directoryState.selected=o;sessionStorage.setItem('goat_locker_selected_org',String(o.mondayItemId));jobState={loading:false,loaded:false,jobs:[],error:'',organizationId:String(o.mondayItemId)};crmLockerQuotes={organizationId:null,loading:false,loaded:false,quotes:[],error:''};goatInvoiceState={organizationId:null,loading:false,loaded:false,invoices:[],error:''};render();loadOrganizationJobs();if(active==='quotes')loadCrmLockerQuotes(true);
+}
+async function loadOrganizationJobs(){
+ const o=directoryState.selected;
+ if(!o||!lockerIdentity||!customerToken()||!(lockerIdentity.adminRole==='master_admin'||lockerIdentity.organizationAccess?.some(x=>String(x.organization_monday_id)===String(o.mondayItemId))))return;
+ const id=String(o.mondayItemId);
+ jobState.loading=true;jobState.error='';jobState.organizationId=id;render();
+ if(lockerIdentity.adminRole==='master_admin'&&Array.isArray(o.liveJobs)){
+  jobState.jobs=o.liveJobs.filter(j=>!isLockerTestJob(j)).map(j=>({
+   id:j.id,jobId:j.jobCode||j.id,name:j.name,
+   status:j.status||'View full status in Monday.com',
+   productionStatus:j.productionStatus||'View in Monday.com',
+   artworkStatus:j.artworkStatus||((j.artworks||[]).length+' artwork versions'),
+   quoteStatus:j.quoteStatus||'View in Monday.com',
+   paymentStatus:j.paymentStatus||'View in Monday.com',
+   targetDate:j.targetDate||'',
+   customerNotes:j.customerNotes||'',
+   mondayUrl:j.url
+  }));
+  jobState.loaded=true;jobState.loading=false;render();return;
+ }
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-jobs',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({action:'list_test_jobs',organizationId:id})
+  });
+  const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not load jobs');
+  if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id){
+   jobState.jobs=(Array.isArray(data.jobs)?data.jobs:[]).filter(j=>!isLockerTestJob(j));jobState.loaded=true;
+  }
+ }catch(e){if(directoryState.selected&&String(directoryState.selected.mondayItemId)===id)jobState.error=e.message||'Jobs unavailable';}
+ finally{jobState.loading=false;render();}
+}
+// Read-only order information. The server checks the signed-in customer's organization access.
+async function goatLoadJobOrderDetails(jobId){
+ const org=directoryState.selected?.mondayItemId;
+ const panel=document.getElementById('goat-order-'+jobId);
+ if(!org||!panel)return;
+ panel.textContent='Loading order and delivery details…';
+ try{
+  const token=customerToken();
+  if(!token)throw Error('Please sign in again.');
+  const headers={'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:SUPABASE_PUBLISHABLE_KEY};
+  const [jobsResponse,shopifyResponse]=await Promise.all([
+   fetch(SUPABASE_URL+'/functions/v1/goat-locker-jobs',{method:'POST',headers,body:JSON.stringify({action:'list',organizationId:String(org)})}),
+   fetch(SUPABASE_URL+'/functions/v1/goat-locker-shopify-order',{method:'POST',headers,body:JSON.stringify({organizationId:String(org),jobId:String(jobId)})})
+  ]);
+  const data=await jobsResponse.json().catch(()=>({}));
+  if(!jobsResponse.ok)throw Error(data.error||'Order information unavailable');
+  const job=(data.jobs||[]).find(x=>String(x.id)===String(jobId));
+  if(!job)throw Error('This job is not linked to the selected organization.');
+  const shopify=await shopifyResponse.json().catch(()=>({}));
+  const order=shopifyResponse.ok&&shopify.shopifyLinked?shopify.order:null;
+  const fields=[
+   ['Order / invoice number',order?.name||job.invoiceNumber],
+   ['Invoice amount',order?.total?((order.currency||'USD')+' '+order.total):(job.invoiceAmount?'$'+job.invoiceAmount:'Not available')],
+   ['Quote number',job.quoteNumber],
+   ['Quote amount',job.quoteAmount?'$'+job.quoteAmount:'Not available'],
+   ['Payment status',order?.paymentStatus||job.paymentStatus],
+   ['Production status',job.productionStatus],
+   ['Fulfillment status',order?.fulfillmentStatus||'Not available'],
+   ['Tracking number',order?.tracking?.map(x=>x.number).filter(Boolean).join(', ')||job.trackingNumber]
+  ];
+  panel.innerHTML='<div class="job-grid">'+fields.map(([label,value])=>'<div><span class="muted">'+safe(label)+'</span><strong>'+safe(value||'Not available')+'</strong></div>').join('')+'</div>';
+  if(order?.tracking?.length){
+   const section=document.createElement('p');section.className='muted';section.append('Shipment tracking: ');
+   order.tracking.forEach((t,i)=>{
+    if(i)section.append(' · ');
+    if(t.url){const a=document.createElement('a');a.href=t.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=(t.carrier?t.carrier+' ':'')+t.number;section.append(a);}
+    else section.append((t.carrier?t.carrier+' ':'')+t.number);
+   });
+   panel.append(section);
+  }
+  const note=document.createElement('p');note.className='muted';
+  note.textContent=order?'Live order and delivery details for this verified linked job.':(shopifyResponse.ok?(String(shopify.message||'No verified order linked to this job.').replace(/shopify/gi,'order provider')):'Order details temporarily unavailable; showing job records only.');
+  panel.append(note);
+ }catch(e){panel.textContent=e.message||'Order information unavailable';}
+}
+const goatArtworkCache = new Map();
+async function goatArtworkRequest(payload){
+ const token=customerToken();if(!token)throw Error('Please sign in again to review artwork.');
+ const response=await fetch(SUPABASE_URL+'/functions/v1/goat-customer-artwork',{
+  method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token,apikey:SUPABASE_PUBLISHABLE_KEY},
+  body:JSON.stringify(payload)
+ });
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw Error(data.error||'Artwork service unavailable');
+ return data;
+}
+function artworkPanelHtml(jobId,artworks){
+ if(!artworks.length)return '<p class="muted">No artwork versions have been uploaded for this job yet.</p>';
+ return artworks.map(a=>{
+  const review=a.status==='Sent for Review';
+  return `<div class="artwork-version"><strong>${safe(a.title||'Artwork proof')} · ${safe(a.version||'Version not set')}</strong><div class="muted">Status: ${safe(a.status||'Not set')} · Uploaded: ${safe(a.uploaded||'Not set')}</div>${a.notes?`<p>${safe(a.notes)}</p>`:''}<div class="linkrow">${(a.files||[]).map(f=>`<button class="secondary" type="button" onclick="goatOpenArtworkFile('${safe(f.id)}')">VIEW ${safe(f.name||'ARTWORK')}</button>`).join('')}${review?`<button class="primary" type="button" onclick="goatArtworkDecision('${safe(a.id)}','approve')">APPROVE</button><button class="secondary" type="button" onclick="goatArtworkDecision('${safe(a.id)}','changes')">REQUEST CHANGES</button>`:''}</div></div>`;
+ }).join('');
+}
+async function goatLoadJobArtwork(jobId){
+ const org=directoryState.selected?.mondayItemId;
+ const panel=document.getElementById('goat-art-'+jobId);
+ if(!org||!panel)return;
+ panel.textContent='Loading artwork versions…';
+ try{
+  const data=await goatArtworkRequest({action:'list',organizationId:String(org)});
+  goatArtworkCache.set(String(org),data);
+  const j=(data.jobs||[]).find(j=>String(j.id)===String(jobId));
+  if(!j)throw Error('This job is not available for the selected organization.');
+  panel.innerHTML=artworkPanelHtml(jobId,j.artworks||[]);
+ }catch(e){panel.textContent=e.message||'Artwork unavailable';}
+}
+async function goatOpenArtworkFile(assetId){
+ const org=directoryState.selected?.mondayItemId;
+ if(!org)return;
+ // Open a blank tab directly from the click so browsers do not block the file.
+ const tab=window.open('','_blank');
+ try{
+  const data=await goatArtworkRequest({action:'file',organizationId:String(org),assetId:String(assetId)});
+  if(tab){tab.opener=null;tab.location.replace(data.url);}else window.location.assign(data.url);
+ }catch(e){if(tab)tab.close();alert(e.message||'Could not open artwork');}
+}
+async function goatArtworkDecision(artworkId,decision){
+ const org=directoryState.selected?.mondayItemId;
+ if(!org)return;
+ let feedback='';
+ if(decision==='changes'){
+  const response=prompt('Describe the changes requested (at least 5 characters):');
+  if(response===null)return;
+  feedback=response.trim();
+  if(feedback.length<5||feedback.length>2000){alert('Please enter 5–2000 characters.');return;}
+ }else if(!confirm('Approve this artwork version for the selected job?'))return;
+ try{
+  await goatArtworkRequest({action:'decision',organizationId:String(org),artworkId:String(artworkId),decision,feedback});
+  alert(decision==='approve'?'Artwork approved.':'Change request submitted.');
+  const panels=[...document.querySelectorAll('[id^="goat-art-"]')];
+  for(const panel of panels)if(panel.dataset.loaded==='true')await goatLoadJobArtwork(panel.dataset.jobId);
+ }catch(e){alert(e.message||'Could not submit artwork decision');}
+}
+// Production presentation: legacy pilot jobs are excluded from customer screens.
+// Records remain untouched in the source system.
+function isLockerTestJob(job){
+ const label=[job?.name,job?.jobCode,job?.jobId,job?.title,job?.jobName,job?.job_code,job?.job_id].filter(Boolean).join(' ');
+ return /(^|[\s—:_-])TEST(?:[\s—:_-]|$)|TEST-LOCKER|GOAT Locker Job Visibility|TEST.MNTR.LOCKER/i.test(label);
+}
+function organizationJobs(){
+ const j=jobState;
+ if(!directoryState.selected)return '';
+ if(j.loading)return '<p class="muted">Loading live jobs from the Jobs Board…</p>';
+ if(j.error)return `<div class="notice error"><strong>Jobs connection issue</strong><p>${safe(j.error)}</p><button class="secondary" onclick="loadOrganizationJobs()">Retry jobs</button></div>`;
+ if(!j.loaded)return '<button class="secondary" onclick="loadOrganizationJobs()">Load organization jobs</button>';
+ if(!j.jobs.filter(x=>!isLockerTestJob(x)).length)return '<p class="muted">No active projects are available yet.</p>';
+ return j.jobs.filter(x=>!isLockerTestJob(x)).map(x=>`<div class="job-item"><div class="eyebrow">JOB ${safe(x.jobId||x.id)}</div><h3>${safe(x.name)}</h3><div class="job-grid"><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div></div><details class="job-details"><summary>VIEW JOB DETAILS</summary><div class="job-grid"><div><span class="muted">Job ID</span><strong>${safe(x.jobId||x.id)}</strong></div><div><span class="muted">Job status</span><strong>${safe(x.status||'Not set')}</strong></div><div><span class="muted">Production</span><strong>${safe(x.productionStatus||'Not set')}</strong></div><div><span class="muted">Artwork review</span><strong>${safe(x.artworkStatus||'Not set')}</strong></div><div><span class="muted">Quote</span><strong>${safe(x.quoteStatus||'Not set')}</strong></div><div><span class="muted">Payment</span><strong>${safe(x.paymentStatus||'Not set')}</strong></div><div><span class="muted">Target date</span><strong>${safe(x.targetDate||'Not set')}</strong></div></div>${x.customerNotes?`<p><strong>Customer notes:</strong> ${safe(x.customerNotes)}</p>`:''}<div class="goat-artwork-section"><h4>Artwork Versions & Approvals</h4><p class="muted">Review all proof versions linked to this job. Only versions marked Sent for Review can be approved or returned for changes.</p><button class="secondary" type="button" onclick="document.getElementById('goat-art-${safe(x.id)}').dataset.loaded='true';goatLoadJobArtwork('${safe(x.id)}')">LOAD ARTWORK VERSIONS</button><div class="goat-artwork-results" id="goat-art-${safe(x.id)}" data-job-id="${safe(x.id)}"></div></div><div class="goat-order-section"><h4>Order, Invoice &amp; Delivery</h4><p class="muted">Read-only order and shipping details from your linked GOAT Sports job.</p><button class="secondary" type="button" onclick="goatLoadJobOrderDetails('${safe(x.id)}')">LOAD ORDER &amp; SHIPPING DETAILS</button><div id="goat-order-${safe(x.id)}" class="goat-order-results"></div></div></details></div>`).join('');
+}
+function adminDirectory(){
+ if(!lockerIdentity||(lockerIdentity.adminRole!=='master_admin'&&!lockerIdentity.organizationAccess?.length))return '';
+ const isMaster=lockerIdentity.adminRole==='master_admin';
+ const d=directoryState;
+ let contents=d.loading?'<p class="muted">Loading organizations…</p>':d.error?`<div class="notice error"><strong>Directory connection pending</strong><p class="muted">${safe(d.error)}</p><button class="secondary" onclick="loadAdminDirectory()">Retry</button></div>`:d.loaded?d.organizations.length?d.organizations.map(o=>`<div class="admin-org"><div><strong>${safe(o.name)}</strong><div class="muted">Client ID: ${safe(o.clientId||'Not assigned')}</div></div><button class="primary" onclick="selectAdminOrganization('${safe(o.mondayItemId)}')">OPEN LOCKER</button></div>`).join(''):'<p class="muted">No clients found in the Client CRM.</p>':'<p class="muted">Load your organizations from the Client CRM.</p><button class="primary" onclick="loadAdminDirectory()">LOAD ORGANIZATIONS</button>';
+ if(d.selected)contents+=`<div class="notice"><strong>${safe(d.selected.name)} — ${safe(d.selected.clientId||'')}</strong><p class="muted">Organization selected. Jobs are read-only and retrieved from the existing Monday.com Jobs Board.</p><button class="secondary" onclick="directoryState.selected=null;sessionStorage.removeItem('goat_locker_selected_org');render()">Back to directory</button></div><div class="job-list"><h3>Organization Jobs</h3>${organizationJobs()}<div class="linkrow"><button class="secondary" onclick="loadOrganizationJobs()">Refresh jobs</button></div></div>`;
+ return `<div class="panel"><div class="eyebrow">${isMaster?"MASTER ADMIN / ORGANIZATIONS":"CUSTOMER / ORGANIZATIONS"}</div><h2>${isMaster?"GOAT Locker Directory":"Your Assigned Organizations"}</h2><p class="muted">Live Client CRM directory · Private customer job details</p>${isMaster?'<div class="linkrow"><button type="button" class="primary" onclick="openGoatArtworkLibrary()">CLIENT ARTWORK LIBRARY</button></div>':''}${contents}</div>`;
+}
+function show(id){
+ if(!tabs.some(t=>t[0]===id))id='dashboard';
+ active=id;render();window.scrollTo({top:0,behavior:'instant'});
+ if(id==='quotes'){autoLoadQuotes(true);loadCrmLockerQuotes(true);}
+ else if(id==='designs'){artLoad();loadCrmCustomerLibrary();}
+ else if(id==='timeline')autoLoadJobs();
+ else if(id==='invoices')window.goatLoadInvoices?.();
+ else if(id==='dashboard')autoLoadDirectory();
+}
+function renderNav(){for(const target of ['side','mobile'])document.getElementById(target).innerHTML=tabs.map(([id,label])=>`<button type="button" class="${id===active?'active':''}" onclick="show('${id}')" aria-current="${id===active?'page':'false'}">${label}</button>`).join('');}
+function authMessage(){
+ if(lockerError)return `<div class="notice error"><strong>Account connection issue</strong><p class="muted">${safe(lockerError)}</p><button class="secondary" onclick="customerLogin()">Try signing in again</button></div>`;
+ if(!customerToken())return `<div class="notice"><strong>Sign in to GOAT Locker</strong><p class="muted">Use your existing GOAT Sports account.</p><button class="primary" onclick="customerLogin()">SIGN IN TO GOAT LOCKER</button></div>`;
+ if(checking||!lockerIdentity)return `<div class="notice"><strong>Verifying organization access…</strong><p class="muted">Your account permissions are being checked securely.</p>${checking?'':'<button class="secondary" onclick="loadLockerIdentity()">Retry verification</button>'}</div>`;
+ const a=lockerIdentity,admin=a.adminRole?safe(a.adminRole.replace(/_/g,' ').toUpperCase()):'';
+ return `<div class="notice"><strong>Signed in${admin?' · '+admin:''}</strong><p class="muted">${a.adminRole?'Administrator access verified.':(a.lockerAccess.length||a.organizationAccess?.length)?'Organization access verified.':'No Locker organization has been assigned to this account yet.'} Assigned Lockers: ${a.lockerAccess.length+(a.organizationAccess?.length||0)}.</p><button class="secondary" onclick="lockerSignOut()">Sign out of this website</button></div>`;
+}
+const timelineStages=[['New','New'],['Artwork / Design','Design'],['Awaiting Customer','Customer Review'],['Approved','Approved'],['Quoting','Quote'],['Quote Approved','Quote Approved'],['Invoiced','Invoiced'],['Paid','Paid'],['Production','Production'],['Ready / Shipping','Ready / Shipping'],['Completed','Completed']];
+function renderProjectTimeline(){
+ const selected=directoryState.selected;
+ if(!customerToken()||!lockerIdentity)return `<div class="panel"><h2>Project Timeline</h2>${authMessage()}</div>`;
+ if(lockerIdentity.adminRole!=='master_admin'&&!lockerIdentity.organizationAccess?.length)return `<div class="panel"><h2>Project Timeline</h2><div class="empty">Your organization timeline will become available after your Locker is assigned.</div></div>`;
+ if(!selected)return `<div class="panel"><div class="eyebrow">GOAT LOCKER / PROJECT TIMELINE</div><h2>Project Timeline</h2><p class="muted">Select an organization from the Dashboard to view its live job timeline.</p><button class="primary" onclick="show('dashboard')">Choose organization</button></div>`;
+ let html=`<div class="panel"><div class="eyebrow">GOAT LOCKER / PROJECT TIMELINE</div><div class="timeline-header"><div><h2>Project Timeline</h2><p class="muted">${safe(selected.name)} · ${safe(selected.clientId||'')} · Live job status from GOAT Sports Jobs Board</p></div><button class="secondary" onclick="loadOrganizationJobs()">Refresh timeline</button></div>`;
+ if(jobState.loading)return html+'<p class="muted">Loading timeline…</p></div>';
+ if(jobState.error)return html+`<div class="notice error">${safe(jobState.error)}</div></div>`;
+ if(!jobState.loaded)return html+'<button class="primary" onclick="loadOrganizationJobs()">Load timeline</button></div>';
+ if(!jobState.jobs.length)return html+'<div class="empty">No jobs with a Job ID are currently linked to this organization.</div></div>';
+ for(const j of jobState.jobs.filter(j=>!isLockerTestJob(j))){
+  const status=String(j.status||'').trim();
+  const idx=timelineStages.findIndex(x=>x[0]===status);
+  const exceptional=status==='On Hold'||status==='Cancelled';
+  const stages=[['New','New'],['Artwork / Design','Design'],['Approved','Approval'],['Quoting','Quote'],['Production','Production'],['Completed','Complete']];
+  // Milestone blocks are a simplified visual grouping, not an audit trail.
+  const rank={'New':0,'Artwork / Design':1,'Awaiting Customer':1,'Approved':2,'Quoting':3,'Quote Approved':3,'Invoiced':3,'Paid':3,'Production':4,'Ready / Shipping':4,'Completed':5};
+  const current=Object.prototype.hasOwnProperty.call(rank,status)?rank[status]:-1;
+  html+=`<div class="timeline-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><p><strong>Current status: ${safe(status||'Not set')}</strong>${exceptional?' · Workflow paused or stopped':''}</p><div class="timeline-track">${stages.map((st,i)=>`<div class="timeline-step ${exceptional||current<0?'future':i<current?'done':i===current?'current':'future'}">${safe(st[1])}</div>`).join('')}</div><p class="timeline-note">Timeline reflects the current workflow stage, not confirmed completion dates for earlier milestones.</p><div class="timeline-detail"><div><span class="muted">Artwork status</span><strong>${safe(j.artworkStatus||'Not set')}</strong></div><div><span class="muted">Production status</span><strong>${safe(j.productionStatus||'Not set')}</strong></div><div><span class="muted">Target / in-hand date</span><strong>${safe(j.targetDate||'Not set')}</strong></div><div><span class="muted">Payment status</span><strong>${safe(j.paymentStatus||'Not set')}</strong></div></div></div>`;
+ }
+ return html+'</div>';
+}
+async function openSecureProof(jobId,assetId,filename,download=false){
+ const popup=download?null:window.open('about:blank','_blank');
+ try{
+  if(!directoryState.selected||!customerToken())throw new Error('Please sign in and choose an organization.');
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-proof',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({organizationId:String(directoryState.selected.mondayItemId),jobId:String(jobId),assetId:String(assetId)})
+  });
+  if(!response.ok){let info={};try{info=await response.json()}catch{}throw new Error(info.error||'Unable to open proof');}
+  const blob=await response.blob();const url=URL.createObjectURL(blob);
+  if(download){const a=document.createElement('a');a.href=url;a.download=filename||'proof';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+  else if(popup){popup.location.href=url;setTimeout(()=>URL.revokeObjectURL(url),300000);}
+  else{URL.revokeObjectURL(url);throw new Error('Please allow pop-ups to preview the proof.');}
+ }catch(error){if(popup)popup.close();alert(error.message||'Proof unavailable');}
+}
+let decisionBusy=false;
+function proofDecisionAllowed(job){
+ return lockerIdentity?.adminRole==='master_admin' &&
+ String(directoryState.selected?.mondayItemId)==='13227365382' &&
+ String(job.artworkStatus||'').trim()==='Sent for Review';
+}
+function decisionPanel(job){
+ const files=Array.isArray(job.artworkFiles)?job.artworkFiles.filter(f=>/^[0-9]+$/.test(String(f.assetId||''))):[];
+ if(!files.length)return '<p class="muted">Attach an artwork file in Monday.com before submitting a proof decision.</p>';
+ if(!proofDecisionAllowed(job))return '<p class="muted">Approval and revision requests become available when the artwork status is <strong>Sent for Review</strong>. This test is restricted to the master administrator and MNTR INC.</p>';
+ const id=String(job.id);
+ return `<div class="proof-decision-box"><label for="asset-${safe(id)}">Proof file to review</label><select id="asset-${safe(id)}" class="secondary" style="max-width:100%;width:100%;text-align:left">${files.map(f=>`<option value="${safe(f.assetId)}">${safe(f.name)}</option>`).join('')}</select><label for="comments-${safe(id)}" style="margin-top:14px">Revision instructions</label><textarea id="comments-${safe(id)}" maxlength="2000" placeholder="Describe the changes needed to the selected proof (required for a revision request)"></textarea><p class="hint">Approving confirms the selected proof. Requesting a revision requires 3–2000 characters. Both actions update the artwork status in Monday.com and add a job update identifying the signed-in account.</p><div class="decision-buttons"><button class="danger" data-proof-submit onclick="submitProofDecision('${safe(id)}','revision')">Request Revision</button><button class="primary" data-proof-submit onclick="submitProofDecision('${safe(id)}','approve')">Approve Proof</button></div><div class="proof-feedback" id="feedback-${safe(id)}" role="status"></div></div>`;
+}
+async function submitProofDecision(jobId,decision){
+ if(decisionBusy)return;
+ const job=jobState.jobs.find(j=>String(j.id)===String(jobId));
+ if(!job||!proofDecisionAllowed(job)){alert('This proof is not currently available for approval. Refresh the designs.');return;}
+ const selector=document.getElementById('asset-'+jobId);
+ const commentInput=document.getElementById('comments-'+jobId);
+ const feedback=document.getElementById('feedback-'+jobId);
+ const assetId=selector?.value||'';
+ const comments=commentInput?.value.trim()||'';
+ if(!/^[0-9]+$/.test(assetId)){alert('Select a valid attached proof file.');return;}
+ if(decision==='revision'&&(comments.length<3||comments.length>2000)){alert('Please enter revision instructions between 3 and 2000 characters.');commentInput?.focus();return;}
+ const selectedName=selector?.selectedOptions?.[0]?.textContent||'the selected proof';
+ const confirmation=decision==='approve'?`Approve ${selectedName}? This will update the artwork status in Monday.com.`:`Request revisions to ${selectedName}? Your comments will be saved to the Monday.com job.`;
+ if(!confirm(confirmation))return;
+ decisionBusy=true;
+ document.querySelectorAll('[data-proof-submit]').forEach(b=>b.disabled=true);
+ if(feedback){feedback.className='proof-feedback';feedback.textContent='Submitting your decision securely…';}
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-proof-decision',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({organizationId:String(directoryState.selected.mondayItemId),jobId:String(jobId),assetId:String(assetId),decision,comments})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok){if(data.partial){await loadOrganizationJobs();alert(data.error||'The status changed, but the audit update failed. Contact GOAT Sports.');return;}throw new Error(data.error||'The decision could not be recorded.');}
+  if(feedback){feedback.className='proof-feedback success';feedback.textContent='Decision saved to Monday.com. Refreshing artwork status…';}
+  await loadOrganizationJobs();
+  alert(`Proof decision saved: ${data.status||'Success'}. The job has been refreshed.`);
+ }catch(error){if(feedback){feedback.className='proof-feedback error';feedback.textContent=error.message||'Unable to submit decision';}alert(error.message||'Unable to submit proof decision');}
+ finally{decisionBusy=false;document.querySelectorAll('[data-proof-submit]').forEach(b=>b.disabled=false);}
+}
+// GOAT Locker artwork pilot — MNTR INC only.
+const ART_ORG='13227365382', ART_JOB='13227526735';
+let artProofs=[], artError='', artLoading=false, artBusy=false;
+async function artAPI(action, extra={}) {
+ const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-artwork', {
+  method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+  body:JSON.stringify({action,organizationId:ART_ORG,jobId:ART_JOB,...extra})
+ });
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(data.error||'Artwork service unavailable');
+ return data;
+}
+async function artLoad() {
+ if(artLoading||!customerToken()||!lockerIdentity)return;
+ artLoading=true;
+ try {const result=await artAPI('list');artProofs=result.proofs||[];artError='';}
+ catch(error){artError=error.message||'Could not load artwork';}
+ finally {artLoading=false;if(active==='designs')render();}
+}
+function artPanel(master) {
+ const entries=artProofs.map(p=>{
+  const status=String(p.status||'draft').replaceAll('_',' ');
+  const response=p.response_notes?`<p><strong>Customer feedback:</strong> ${safe(p.response_notes)}</p>`:'';
+  const send=master&&p.status==='draft'?` <button class="primary" onclick="artSend('${safe(p.id)}')">Send for Approval</button>`:'';
+  const decision=!master&&p.status==='sent_for_review'?`<label for="art-comment-${safe(p.id)}">Revision instructions</label><textarea id="art-comment-${safe(p.id)}" maxlength="2000" rows="3" style="display:block;width:100%;margin:8px 0" placeholder="Required if requesting changes"></textarea><div class="linkrow"><button class="primary" onclick="artDecide('${safe(p.id)}','approve')">Approve Artwork</button><button class="secondary" onclick="artDecide('${safe(p.id)}','revision')">Request Changes</button></div>`:'';
+  return `<div class="design-job"><strong>Version ${Number(p.version)} · ${safe(p.file_name)}</strong><p class="muted">Status: ${safe(status)}</p>${p.notes?`<p>${safe(p.notes)}</p>`:''}${response}<div class="linkrow"><button class="secondary" onclick="artOpen('${safe(p.id)}')">Preview / Download</button>${send}</div>${decision}</div>`;
+ }).join('');
+ const uploader=master?`<label for="art-upload-file"><strong>Artwork file</strong> (PDF, PNG, JPG, WEBP; maximum 15 MB)</label><input type="file" id="art-upload-file" accept=".pdf,.png,.jpg,.jpeg,.webp" style="display:block;margin:10px 0 15px"><label for="art-upload-notes"><strong>Instructions for customer</strong></label><textarea id="art-upload-notes" rows="3" maxlength="2000" style="display:block;width:100%;margin:8px 0" placeholder="Describe what the customer should review"></textarea><button class="primary" id="art-upload-button" onclick="artUpload()">Upload Artwork</button><p class="muted">Uploading creates a private draft. Use Send for Approval to make it available to the test customer.</p>`:'';
+ return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ARTWORK APPROVAL PILOT</div><h2>${master?'Upload Artwork Proof':'Artwork for Your Review'}</h2><p class="muted">MNTR INC · TEST-LOCKER-001 · Private proof versions</p>${artError?`<div class="notice error">${safe(artError)}</div>`:''}${uploader}<div class="linkrow"><button class="secondary" onclick="artLoad()">Refresh Proofs</button></div><h3 style="margin-top:20px">Proof History</h3>${entries||'<p class="muted">No GOAT Locker proofs yet.</p>'}<p class="muted">Pilot only: Monday.com status updates and email notifications are not yet connected.</p></div>`;
+}
+async function artUpload(){
+ if(artBusy)return;
+ const file=document.getElementById('art-upload-file')?.files?.[0];
+ const notes=document.getElementById('art-upload-notes')?.value||'';
+ if(!file||file.size>15728640||!['application/pdf','image/png','image/jpeg','image/webp'].includes(file.type)){alert('Select a PDF or image file under 15 MB.');return;}
+ artBusy=true;const btn=document.getElementById('art-upload-button');if(btn)btn.disabled=true;
+ try{
+  const p=await artAPI('upload',{fileName:file.name,mimeType:file.type,notes});
+  const path=p.path.split('/').map(encodeURIComponent).join('/');
+  const url=SUPABASE_URL+'/storage/v1/object/upload/sign/goat-locker-proofs/'+path+'?token='+encodeURIComponent(p.uploadToken);
+  const response=await fetch(url,{method:'PUT',headers:{'Content-Type':file.type,'x-upsert':'false'},body:file});
+  if(!response.ok)throw Error('File upload failed. Do not retry this proof until its record is checked.');
+  await artLoad();alert('Artwork draft uploaded. Use Send for Approval when ready.');
+ }catch(error){alert(error.message||'Upload failed');}
+ finally{artBusy=false;if(btn)btn.disabled=false;}
+}
+async function artSend(id){
+ if(!confirm('Send this artwork version to the test customer for approval?'))return;
+ try{await artAPI('send',{proofId:id});await artLoad();alert('Proof is now available for customer review. No email notification was sent.');}
+ catch(error){alert(error.message||'Unable to send proof');}
+}
+async function artOpen(id){
+ const tab=window.open('','_blank');
+ try{const data=await artAPI('file',{proofId:id});if(tab)tab.location.href=data.url;else alert('Allow pop-ups to preview this proof.');}
+ catch(error){if(tab)tab.close();alert(error.message||'Unable to open proof');}
+}
+async function artDecide(id,decision){
+ const comments=document.getElementById('art-comment-'+id)?.value.trim()||'';
+ if(decision==='revision'&&comments.length<3){alert('Please describe the requested changes.');return;}
+ if(!confirm(decision==='approve'?'Approve this artwork version?':'Submit your revision request?'))return;
+ try{await artAPI('decide',{proofId:id,decision,comments});await artLoad();alert('Artwork decision recorded.');}
+ catch(error){alert(error.message||'Unable to record decision');}
+}
+
+
+let crmCustomerLibrary={loaded:false,loading:false,error:'',files:[]};
+async function loadCrmCustomerLibrary(){
+ if(crmCustomerLibrary.loading)return;
+ const org=directoryState.selected||null;
+ const id=org?.mondayItemId||lockerIdentity?.organizationAccess?.[0]?.organization_monday_id;
+ if(!id||!customerToken()){crmCustomerLibrary={loaded:true,loading:false,error:'Select an organization to view its library.',files:[]};if(active==='designs')render();return}
+ crmCustomerLibrary.loading=true;crmCustomerLibrary.error='';if(active==='designs')render();
+ try{
+  const r=await fetch('https://lbheezjanvalalinqxcd.supabase.co/functions/v1/goat-crm-customer-library',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({organizationMondayId:String(id)})});
+  const j=await r.json().catch(()=>({}));if(!r.ok)throw Error(j.error||'Artwork library unavailable');
+  crmCustomerLibrary.files=j.files||[];crmCustomerLibrary.loaded=true;
+ }catch(e){crmCustomerLibrary.error=e.message;crmCustomerLibrary.loaded=true}
+ finally{crmCustomerLibrary.loading=false;if(active==='designs')render()}
+}
+function crmCustomerLibraryHtml(){
+ const x=crmCustomerLibrary;
+ return `<section class="panel" style="margin-bottom:20px"><div class="eyebrow">GOAT LOCKER / YOUR SAVED ARTWORK</div><h2>Design &amp; Artwork Library</h2><p class="muted">Your organization's reusable logos, designs and mockups, securely shared from GOAT Sports.</p><button class="secondary" type="button" onclick="loadCrmCustomerLibrary()">REFRESH ARTWORK LIBRARY</button>${x.loading?'<p class="muted">Loading artwork...</p>':x.error?`<p class="notice error">${safe(x.error)}</p>`:!x.loaded?'<p class="muted">Select Refresh Artwork Library to load your designs.</p>':!x.files.length?'<p class="muted">No artwork has been shared with this organization yet.</p>':`<div class="job-list">${x.files.map(a=>`<article class="job-item"><strong>${safe(a.title)}</strong><p class="muted">${safe(a.artwork_type)} · ${safe(a.file_name)}</p><a class="secondary" target="_blank" rel="noopener noreferrer" href="${safe(a.url)}">VIEW / DOWNLOAD</a></article>`).join('')}</div>`}</section>`;
+}
+
+function renderDesigns(){
+ if(!customerToken()||!lockerIdentity)return `<div class="panel"><h2>Designs &amp; Proofs</h2>${authMessage()}</div>`;
+ if(lockerIdentity.adminRole!=='master_admin')return artPanel(false);
+ const org=directoryState.selected;
+ if(!org)return `<div class="panel"><div class="eyebrow">GOAT LOCKER / DESIGNS &amp; PROOFS</div><h2>Designs &amp; Proofs</h2><p class="muted">Choose an organization on the Dashboard to see its jobs and artwork statuses.</p><button class="primary" onclick="show('dashboard')">Choose organization</button></div>`;
+ let out=`<div class="panel"><div class="eyebrow">GOAT LOCKER / DESIGNS &amp; PROOFS</div><div class="design-head"><div><h2>Designs &amp; Proofs</h2><p class="muted">${safe(org.name)} · ${safe(org.clientId||'')} · Current artwork status from GOAT Sports Jobs Board</p></div><button class="secondary" onclick="loadOrganizationJobs()">Refresh designs</button></div>`;
+ if(jobState.loading)return out+'<p class="muted">Loading jobs and artwork statuses…</p></div>';
+ if(jobState.error)return out+`<div class="notice error">${safe(jobState.error)}</div></div>`;
+ if(!jobState.loaded)return out+'<button class="primary" onclick="loadOrganizationJobs()">Load designs</button></div>';
+ if(!jobState.jobs.length)return out+'<div class="empty">No linked jobs with Job IDs were found for this organization.</div></div>';
+ for(const j of jobState.jobs.filter(j=>!isLockerTestJob(j))){
+  const artwork=String(j.artworkStatus||'Not set');
+  out+=`<article class="design-job"><div class="eyebrow">JOB ${safe(j.jobId||j.id)}</div><h3>${safe(j.name)}</h3><div class="design-meta"><span><strong>Artwork:</strong> ${safe(artwork)}</span><span><strong>Job:</strong> ${safe(j.status||'Not set')}</span></div><div class="proof-area"><strong>Artwork &amp; proof files</strong>${Array.isArray(j.artworkFiles)&&j.artworkFiles.length?`<p class="muted">${j.artworkFiles.length} file(s) attached in Monday.com:</p><ul class="proof-files">${j.artworkFiles.map(f=>`<li><span aria-hidden="true">📎</span> ${safe(f.name)} ${/^[0-9]+$/.test(String(f.assetId||''))?`<button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),false)">Preview</button> <button class="secondary" onclick="openSecureProof('${safe(j.id)}','${safe(f.assetId)}',decodeURIComponent('${encodeURIComponent(f.name)}'),true)">Download</button>`:''}</li>`).join('')}</ul>`:'<p class="muted">No artwork or proof files are attached to this job in Monday.com.</p>'}</div>${decisionPanel(j)}</article>`;
+ }
+ return out+'</div>'+artPanel(true);
+}
+
+
+// GOAT Locker test-only quote drafts; server enforces master-admin and job authorization.
+let quoteRows=[{source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''}];
+let quoteState={quotes:[],loading:false,error:''};
+function qval(id){return document.getElementById(id)?.value??'';}
+function qcollect(){return quoteRows.map((_,i)=>({source:qval('q-source-'+i),description:qval('q-desc-'+i),quantity:Number(qval('q-qty-'+i)),unitPrice:Number(qval('q-price-'+i)),shopifyVariantId:qval('q-variant-'+i)}));}
+function qremember(){if(document.getElementById('q-desc-0'))quoteRows=qcollect();}
+function qadd(){qremember();quoteRows.push({source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''});render();}
+function qremove(i){qremember();if(quoteRows.length>1){quoteRows.splice(i,1);render();}}
+async function qapi(payload){const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-quote-drafts',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify(payload)});const data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.error||'Quote service unavailable');return data;}
+async function qload(){quoteState.loading=true;quoteState.error='';render();try{quoteState.quotes=(await qapi({action:'list'})).quotes||[];}catch(e){quoteState.error=e.message;}finally{quoteState.loading=false;render();}}
+async function qsave(){const button=document.getElementById('q-save');if(button)button.disabled=true;try{const items=qcollect();const result=await qapi({action:'save_draft',organizationId:'13227365382',jobId:'13227526735',items,notes:qval('q-notes'),shipping:Number(qval('q-shipping')),discount:Number(qval('q-discount')),tax:Number(qval('q-tax'))});alert(revisionSource?'Revised quote saved as a NEW draft. Review it below, then send it to the customer. The original request remains preserved.':'Test quote saved in GOAT Locker. No draft order or job change was made.');revisionSource=null;quoteRows=[{source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''}];await qload();}catch(e){alert(e.message||'Could not save quote');if(button)button.disabled=false;}}
+let qCatalogResults=[];
+async function qsearch(i){
+ const input=document.getElementById('q-search-'+i), target=document.getElementById('q-results-'+i);
+ if(!input||!target)return;
+ const query=input.value.trim();if(query.length<2){target.textContent='Enter at least two letters.';return;}
+ target.textContent='Searching GOAT Sports products…';
+ try{
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-product-search',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({query})});
+  const data=await r.json();if(!r.ok||data.error)throw Error(data.error||'Search unavailable');
+  qCatalogResults=Array.isArray(data.products)?data.products:[];
+  target.innerHTML=qCatalogResults.length?qCatalogResults.map((p,n)=>'<div style="padding:10px 0;border-bottom:1px solid #ddd"><strong>'+safe(p.title)+'</strong><div>'+((p.variants||[]).map((v,k)=>'<button type="button" class="secondary" style="margin:4px" onclick="qchoose('+i+','+n+','+k+')">'+safe(v.title)+' · $'+Number(v.price).toFixed(2)+(v.available?'':' · Out of stock')+'</button>').join('')||'<span>No variants available</span>')+'</div></div>').join(''):'No matching products. Try another search or choose Custom item.';
+ }catch(e){target.textContent=e.message||'Product search failed';}
+}
+function qchoose(i,n,k){
+ const p=qCatalogResults[n],v=p?.variants?.[k];if(!p||!v||!/^gid:\/\/shopify\/ProductVariant\/\d+$/.test(v.id))return;
+ document.getElementById('q-source-'+i).value='shopify';
+ document.getElementById('q-desc-'+i).value=p.title+(v.title==='Default Title'?'':' — '+v.title);
+ document.getElementById('q-price-'+i).value=Number(v.price).toFixed(2);
+ document.getElementById('q-variant-'+i).value=v.id;
+ document.getElementById('q-picked-'+i).textContent='Selected: '+p.title+' / '+v.title;
+ document.getElementById('q-results-'+i).innerHTML='';
+}
+function qtypeChange(i){if(document.getElementById('q-source-'+i).value==='custom'){document.getElementById('q-variant-'+i).value='';document.getElementById('q-picked-'+i).textContent='Custom item — enter your own description and price.';}}
+// Revision workflow: preserve the customer-requested quote and prepare a NEW draft.
+// The backend does not currently allow editing a sent quote in place.
+let revisionSource=null;
+function prepareQuoteRevision(id){
+ const q=quoteState.quotes.find(x=>String(x.id)===String(id));
+ if(!q||q.status!=='changes_requested'){alert('This quote is not awaiting revision. Refresh drafts.');return;}
+ if(q.shopify_draft_order_gid){alert('This quote has an existing draft order. Review it before revising.');return;}
+ revisionSource={id:q.id,notes:String(q.response_notes||'')};
+ quoteRows=(Array.isArray(q.items)?q.items:[]).map(x=>({source:x.source||'custom',description:x.description||'',quantity:Number(x.quantity)||1,unitPrice:Number(x.unitPrice)||0,shopifyVariantId:x.shopifyVariantId||''}));
+ if(!quoteRows.length)quoteRows=[{source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''}];
+ render();
+ for(const [field,value] of [['q-shipping',q.shipping],['q-discount',q.discount],['q-tax',q.tax]]){const el=document.getElementById(field);if(el)el.value=Number(value||0);}
+ const notes=document.getElementById('q-notes');if(notes)notes.value='Revision of quote '+String(q.id).slice(0,8)+(q.notes?'\n'+q.notes:'');
+ document.getElementById('q-desc-0')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function cancelQuoteRevision(){revisionSource=null;quoteRows=[{source:'custom',description:'',quantity:1,unitPrice:0,shopifyVariantId:''}];render();}
+async function qcreateShopify(id){
+ if(!confirm('Create an INTERNAL Draft Order from this saved quote? This will not email the customer or request payment.'))return;
+ const button=document.getElementById('q-shopify-'+id);if(button)button.disabled=true;
+ try{
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-shopify-draft',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'create_shopify_draft',quoteId:id})});
+  const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok)throw Error(data.error||'Draft creation failed');
+  alert('Draft Order '+(data.draftOrder?.name||'created')+' created internally. No invoice sent.');await qload();
+ }catch(e){alert(e.message||'Draft creation failed');await qload();}
+}
+async function qattachCustomer(id){
+ const btn=document.getElementById('q-attach-'+id);if(btn)btn.disabled=true;
+ try{
+  if(!confirm('Find or create the customer from the MNTR INC CRM and attach them to Draft Order D131?\n\nPrimary email: bikard@aiapparelgroup.com\n\nNo invoice will be sent.'))return;
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-customer-sync',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'attach_customer',quoteId:id,confirmEmail:'bikard@aiapparelgroup.com'})});
+  const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok)throw Error(data.error||'Customer attachment failed');
+  alert((data.customerCreated?'Customer created':'Existing customer found')+' and attached to '+data.draftOrder+'. No invoice sent.');
+  await qreviewInvoice(id);
+ }catch(e){alert(e.message||'Customer sync failed. Check the order system before retrying.')}finally{if(btn)btn.disabled=false}
+}
+async function qreviewInvoice(id){
+ const btn=document.getElementById('q-review-'+id);if(btn)btn.disabled=true;
+ try{
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-invoice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'review_invoice',quoteId:id})});
+  const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok)throw Error(data.error||'Invoice review failed');
+  const panel=document.getElementById('q-invoice-review-'+id);
+  if(panel){
+   const details='<strong>Invoice Review — NOT SENT</strong><p>Draft: '+safe(data.draftOrder)+'<br>Recipient: '+safe(data.recipient)+'<br>Amount: $'+Number(data.amount).toFixed(2)+' '+safe(data.currency)+'<br>Status: '+safe(data.status)+'</p><p><a href="'+safe(data.draftOrderUrl)+'" target="_blank" rel="noopener noreferrer">Open draft order</a></p>';
+   const attach=false?'<p><button class="secondary" id="q-attach-'+safe(id)+'" onclick="qattachCustomer(\''+safe(id)+'\')">Find / Create &amp; Attach Customer</button></p><p class="muted">Uses MNTR INC CRM contact information. Does not send an invoice.</p>':'';
+   const difference=Math.abs(Number(data.amount)-Number(quoteState.quotes.find(q=>String(q.id)===String(id))?.total||0))>0.005?'<p class="notice error"><strong>Invoice differs from approved quote.</strong> Confirm changes with the customer as appropriate.</p>':'';
+   const send=data.sendEnabled?'<p><button class="primary" id="q-send-'+safe(id)+'" data-amount="'+Number(data.amount).toFixed(2)+'" data-draft="'+safe(data.draftOrder)+'" onclick="qsendInvoice(\''+safe(id)+'\')">Send Invoice to bikard@aiapparelgroup.com</button></p><p class="muted">This sends a real invoice email. Confirmation required.</p>':'<p class="muted">Sending is blocked: '+safe(data.warning||'Invoice details need review')+'. Verify the customer and order total before sending.</p>';
+   panel.innerHTML='<div class="panel" style="margin:12px 0;padding:14px;border:1px solid #109488">'+details+difference+'<p class="muted">Edit the draft in the order system, attach the MNTR INC test customer, then click Review Invoice again to verify the final amount and recipient.</p>'+attach+send+'</div>';
+  }
+ }catch(e){alert(e.message||'Invoice review failed')}finally{if(btn)btn.disabled=false}
+}
+async function qsendInvoice(id){
+ if(!confirm('SEND A REAL INVOICE EMAIL?\n\nDraft: '+String(document.getElementById('q-send-'+id)?.dataset.draft||'')+'\nRecipient: bikard@aiapparelgroup.com\nAmount: $'+Number(document.getElementById('q-send-'+id)?.dataset.amount||0).toFixed(2)+' USD\n\nThis action will email the recipient. Continue?'))return;
+ const btn=document.getElementById('q-send-'+id);if(btn)btn.disabled=true;
+ try{
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-invoice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'send_invoice',quoteId:id,confirmDraft:String(btn?.dataset.draft||''),confirmRecipient:'bikard@aiapparelgroup.com',confirmAmount:Number(btn?.dataset.amount)})});
+  const data=await r.json().catch(()=>({}));if(!r.ok||!data.ok||!data.invoiceSent)throw Error(data.error||'Invoice sending was not confirmed. Check the order system before retrying.');
+  const panel=document.getElementById('q-invoice-review-'+id);
+  if(panel)panel.innerHTML='<div class="panel"><strong>Invoice sent and confirmed.</strong><p>Recipient: bikard@aiapparelgroup.com · $'+Number(btn?.dataset.amount).toFixed(2)+' USD</p><p>'+safe(data.message||'Invoice sent')+'</p></div>';
+  alert(data.mondaySynced?'Invoice sent. Monday.com updated.':'Invoice sent. Monday.com sync needs review. Do NOT resend.');
+ }catch(e){alert(e.message||'Invoice sending failed. Check the order system before retrying.');if(btn)btn.disabled=true}
+}
+// MNTR INC pilot: quotes stay in GOAT Locker/Monday; sending does not create invoices.
+let customerQuotes={loading:false,loaded:false,quotes:[],error:''};
+async function quoteReviewAPI(payload){
+ const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-quote-review',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(payload)});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok||data.error)throw new Error(data.error||'Quote review service unavailable');
+ return data;
+}
+async function refreshCustomerQuotes(){
+ if(customerQuotes.loading)return;
+ customerQuotes.loading=true;customerQuotes.error='';render();
+ try{const data=await quoteReviewAPI({action:'list'});customerQuotes.quotes=Array.isArray(data.quotes)?data.quotes:[];customerQuotes.loaded=true;}
+ catch(e){customerQuotes.error=e.message;}
+ finally{customerQuotes.loading=false;render();}
+}
+async function sendCustomerQuote(id){
+ if(!confirm('Send this MNTR INC test quote to bikard@aiapparelgroup.com? This will update Monday.com and attempt an email. No invoice will be created.'))return;
+ try{const result=await quoteReviewAPI({action:'send',quoteId:id});alert('Quote saved. Monday.com synced: '+(result.mondaySynced?'Yes':'No')+'. Email: '+(result.emailStatus||'Not sent')+'.');await qload();}
+ catch(e){alert('Quote send requires review: '+e.message+'\nDo not retry until the Monday.com job is checked.');await qload();}
+}
+async function respondCustomerQuote(id,decision){
+ const notes=decision==='changes_requested'?prompt('Describe the changes you need (at least 3 characters):'):'';
+ if(notes===null)return;
+ if(decision==='approved'&&!confirm('Approve this quote for your organization?'))return;
+ try{const result=await quoteReviewAPI({action:'respond',quoteId:id,decision,notes});alert(result.mondaySynced?'Response saved in GOAT Locker and Monday.com.':'Response saved in GOAT Locker. Monday.com sync needs review.');await refreshCustomerQuotes();}
+ catch(e){alert(e.message);}
+}
+function customerQuoteScreen(){
+ if(String(directoryState.selected?.mondayItemId)!=='13227365382')return '<div class="panel"><h2>Quotes &amp; Approvals</h2><p>Select MNTR INC from your assigned organizations on the Dashboard.</p><button class="secondary" onclick="show(\'dashboard\')">Dashboard</button></div>';
+ const body=customerQuotes.error?'<div class="notice error">'+safe(customerQuotes.error)+'</div>':customerQuotes.loading?'<p>Loading quotes…</p>':!customerQuotes.loaded?'<p>Loading your organization quotes automatically…</p>':!customerQuotes.quotes.length?'<p>No quotes have been sent to your organization yet.</p>':customerQuotes.quotes.map(q=>{
+ const items=Array.isArray(q.items)?q.items:[];
+ return '<div class="panel" style="margin-top:14px"><strong>Quote '+safe(String(q.id).slice(0,8))+'</strong> · '+safe(q.status)+'<h3>$'+Number(q.total||0).toFixed(2)+'</h3>'+items.map(x=>'<p>'+safe(x.description||'Item')+' · '+Number(x.quantity||0)+' × $'+Number(x.unitPrice||0).toFixed(2)+'</p>').join('')+'<p>Shipping: $'+Number(q.shipping||0).toFixed(2)+' · Discount: $'+Number(q.discount||0).toFixed(2)+' · Tax: $'+Number(q.tax||0).toFixed(2)+'</p>'+(q.notes?'<p>'+safe(q.notes)+'</p>':'')+(q.status==='sent'?'<div class="linkrow"><button class="primary" onclick="respondCustomerQuote(\''+safe(q.id)+'\',\'approved\')">Approve Quote</button><button class="secondary" onclick="respondCustomerQuote(\''+safe(q.id)+'\',\'changes_requested\')">Request Changes</button></div>':'')+'</div>';
+ }).join('');
+ return '<div class="panel"><div class="eyebrow">CUSTOMER / MNTR INC TEST</div><h2>Quotes &amp; Approvals</h2><button class="secondary" onclick="refreshCustomerQuotes()">Refresh Quotes</button>'+body+'</div>';
+}
+
+let quoteHistoryVisible=false;
+function invoiceReadyQuotes(){return quoteState.quotes.filter(q=>q.status==='approved'&&!q.shopify_draft_order_gid);}
+function reviewInvoiceQueue(id){
+ const q=invoiceReadyQuotes().find(x=>String(x.id)===String(id));
+ if(!q)return alert('This quote is no longer awaiting invoicing. Refresh quotes.');
+ const items=(Array.isArray(q.items)?q.items:[]).map(x=>x.description+' | Qty '+x.quantity+' | $'+Number(x.unitPrice).toFixed(2)).join('\n');
+ if(!confirm('REVIEW APPROVED QUOTE\n\nQuote: '+String(q.id).slice(0,8)+'\nCustomer: '+String(q.customer_email||'')+'\n\n'+items+'\n\nAPPROVED TOTAL: $'+Number(q.total).toFixed(2)+'\n\nCreate an EDITABLE Draft Order?\n\nThis does NOT email the customer or charge them.'))return;
+ createApprovedShopifyDraft(id);
+}
+async function createApprovedShopifyDraft(id){
+ try{
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-shopify-draft',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'create_shopify_draft',quoteId:id})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.ok)throw Error(d.error||'Draft creation was not confirmed. Check the order system before retrying.');
+  alert('Draft Order '+(d.draftOrder?.name||'created')+' is ready. Open it under Quote History to edit, attach the test customer, and review before sending. No invoice was sent.');
+  await qload();
+  quoteHistoryVisible=true;render();
+ }catch(e){alert(e.message||'Could not create draft. Check the order system before retrying.');}
+}
+
+function quoteIsHistory(q){
+ return q.status==='declined'||q.status==='invoiced'||!!q.shopify_draft_order_gid;
+}
+async function qsyncInvoiceStatus(id){
+ const btn=document.getElementById('q-sync-'+id);if(btn)btn.disabled=true;
+ try{
+  const r=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-invoice',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+customerToken()},body:JSON.stringify({action:'sync_status',quoteId:id})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok||!d.ok)throw Error(d.error||'Could not verify order status');
+  await qload();quoteHistoryVisible=true;render();
+  alert('Order status: '+(d.paid?'Paid':d.invoiceStatus==='invoice_sent'?'Invoice Sent':'Draft Created')+'. No invoice sent by this check.');
+ }catch(e){alert(e.message||'Status check failed')}finally{if(btn)btn.disabled=false}
+}
+function invoiceDisplayStatus(q){
+ if(q.invoice_shopify_status==='paid'||q.invoice_paid_at)return 'Paid';
+ if(q.invoice_shopify_status==='invoice_sent'||q.invoice_sent_at)return 'Invoice Sent';
+ return quoteStatusLabel(q.status);
+}
+function quoteStatusLabel(status){
+ return ({draft:'Draft',sent_for_review:'Awaiting Customer Approval',sent:'Awaiting Customer Approval',changes_requested:'Changes Requested',approved:'Approved',sync_pending:'Order Sync Pending',invoiced:'Invoiced',declined:'Declined'})[status]||String(status||'Unknown').replaceAll('_',' ');
+}
+function setQuoteHistory(value){quoteHistoryVisible=!!value;render();}
+
+function renderQuotes(){
+ if(!customerToken()||!lockerIdentity)return '<div class="panel"><h2>Quotes &amp; Approvals</h2>'+authMessage()+'</div>';
+ if(lockerIdentity.adminRole!=='master_admin')return customerQuoteScreen();
+ if(String(directoryState.selected?.mondayItemId)!=='13227365382')return '<div class="panel"><h2>Quotes &amp; Approvals</h2><p class="muted">Select MNTR INC on the Dashboard to access the test quote builder.</p></div>';
+ const rows=quoteRows.map((r,i)=>`<div class="panel" style="margin:12px 0;padding:14px"><strong>Line item ${i+1}</strong><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:10px 0"><label>Item type<select id="q-source-${i}" onchange="qtypeChange(${i})"><option value="custom" ${r.source==='custom'?'selected':''}>Custom item</option><option value="shopify" ${r.source==='shopify'?'selected':''}>Catalog product variant</option></select></label><label>Description<input id="q-desc-${i}" value="${safe(r.description)}" placeholder="Apparel, decoration or service"></label><label>Quantity<input id="q-qty-${i}" type="number" min="1" step="1" value="${Number(r.quantity)||1}"></label><label>Unit price ($)<input id="q-price-${i}" type="number" min="0" step="0.01" value="${Number(r.unitPrice)||0}"></label><div><label>Search catalog products<input id="q-search-${i}" placeholder="Search by product name" autocomplete="off"></label><button class="secondary" type="button" onclick="qsearch(${i})">Search products</button><div id="q-results-${i}" style="max-height:250px;overflow:auto"></div><small id="q-picked-${i}">${r.shopifyVariantId?'Catalog variant selected':'Select a product and size, or use Custom item'}</small><input id="q-variant-${i}" type="hidden" value="${safe(r.shopifyVariantId||'')}"></div></div><button class="secondary" type="button" onclick="qremove(${i})">Remove line</button></div>`).join('');
+ return `<div class="panel"><div class="eyebrow">MASTER ADMIN · MNTR INC TEST ONLY</div><h2>${revisionSource?"Prepare Revised Quote":"Create Quote Draft"}</h2>${revisionSource?`<div class="notice"><strong>Customer requested changes to quote ${safe(String(revisionSource.id).slice(0,8))}</strong><p>${safe(revisionSource.notes||"No written instructions provided")}</p><p class="muted">Saving creates a replacement draft linked to the original quote. The customer's original feedback is preserved in the records.</p><button class="secondary" onclick="cancelQuoteRevision()">Cancel revision</button></div>`:""}<p class="muted">Job TEST-LOCKER-001. Prepare and save quotes in GOAT Locker. Send a saved draft for customer review before invoicing. Creating or sending a quote does not create a invoice. Search catalog products and select a size or color, or enter a custom item. Product IDs are filled in automatically.</p>${rows}<button class="secondary" onclick="qadd()">+ Add line item</button><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0"><label>Shipping ($)<input id="q-shipping" type="number" min="0" step=".01" value="0"></label><label>Discount ($)<input id="q-discount" type="number" min="0" step=".01" value="0"></label><label>Tax ($)<input id="q-tax" type="number" min="0" step=".01" value="0"></label></div><label>Internal notes<textarea id="q-notes" rows="3" style="display:block;width:100%"></textarea></label><div class="linkrow"><button class="primary" id="q-save" onclick="qsave()">Save quote draft</button><button class="secondary" onclick="qload()">Refresh drafts</button></div></div><div class="panel"><h3>Ready to Invoice (${invoiceReadyQuotes().length})</h3><p class="muted">Approved customer quotes awaiting order preparation. No invoice is sent automatically.</p>${invoiceReadyQuotes().length?invoiceReadyQuotes().map(q=>`<div style="padding:14px 0;border-bottom:1px solid #ddd"><strong>MNTR INC · TEST-LOCKER-001</strong><p>Quote ${safe(String(q.id).slice(0,8))} · ${safe(q.customer_email||'Customer')} · <strong>$${Number(q.total).toFixed(2)}</strong></p><button class="primary" onclick="reviewInvoiceQueue('${safe(q.id)}')">Review for Invoice</button></div>`).join(''):'<p class="muted">No approved quotes awaiting invoicing.</p>'}</div><div class="panel"><h3>Quotes</h3><div class="linkrow"><button class="${!quoteHistoryVisible?'primary':'secondary'}" onclick="setQuoteHistory(false)">Active Quotes</button><button class="${quoteHistoryVisible?'primary':'secondary'}" onclick="setQuoteHistory(true)">Draft Orders / History</button></div>${quoteState.loading?'<p>Loading…</p>':quoteState.error?'<p class="muted">'+safe(quoteState.error)+'</p>':quoteState.quotes.length?quoteState.quotes.filter(q=>q.status!=='approved'&&(quoteHistoryVisible ? quoteIsHistory(q) : !quoteIsHistory(q))).map(q=>`<div style="padding:12px 0;border-bottom:1px solid #ddd"><strong>${safe(String(q.id).slice(0,8))}</strong> · $${Number(q.total).toFixed(2)} · ${safe(invoiceDisplayStatus(q))} · ${safe(String(q.created_at).slice(0,10))}${q.status==='changes_requested'?`<div class="notice error"><strong>Customer requested changes</strong><p>${safe(q.response_notes||'No instructions provided')}</p><button class="primary" onclick="prepareQuoteRevision('${safe(q.id)}')">Prepare Revised Quote</button></div>`:''}${q.shopify_draft_order_gid?`<p><strong>Draft Order: ${safe(q.shopify_draft_order_name||q.shopify_draft_order_gid)}</strong> · ${safe(q.invoice_shopify_status==='paid'?'Paid':q.invoice_shopify_status==='invoice_sent'?'Invoice Sent':'Draft Created')}</p><p><button class="secondary" id="q-review-${safe(q.id)}" onclick="qreviewInvoice(\'${safe(q.id)}\')">Review Invoice</button> <button class="secondary" id="q-sync-${safe(q.id)}" onclick="qsyncInvoiceStatus('${safe(q.id)}')">Refresh Order Status</button></p><div id="q-invoice-review-${safe(q.id)}"></div>`:q.status==='draft'?`<p><button class="primary" onclick="sendCustomerQuote('${safe(q.id)}')">Send Quote to Customer</button> <button class="secondary" id="q-shopify-${safe(q.id)}" onclick="qcreateShopify('${safe(q.id)}')">Create Draft Order</button></p>`:'<p class="muted">'+safe(quoteStatusLabel(q.status))+'</p>'}</div>`).join(''):'<p class="muted">No quotes in this view.</p>'}</div>`;
+}
+
+function section(id){const [title,desc]=descriptions[id];return `<div class="panel"><div class="eyebrow">GOAT LOCKER / ${safe(title.toUpperCase())}</div><h2>${safe(title)}</h2><p class="muted">${safe(desc)}</p><div class="empty"><strong>No customer records are connected yet.</strong><p class="muted">This section will show your organization's ${safe(title.toLowerCase())} once the GOAT Sports project database is connected.</p></div>${authMessage()}</div>`;}
+function render(){
+ renderNav();const el=document.getElementById('content');
+ if(active==='dashboard')el.innerHTML=`<div class="panel"><div class="eyebrow">CUSTOMER DASHBOARD</div><h2>Your Organization</h2><p class="muted">Everything related to your GOAT Sports projects, organized in one place.</p>${authMessage()}</div><div class="cards">${[['designs','D','Designs & Proofs','Artwork, reviews, and approvals'],['timeline','T','Project Timeline','Production and job updates'],['quotes','Q','Quotes','Pricing and approvals'],['orders','O','Orders','Order status and history'],['invoices','$','Invoices','Billing and payments'],['account','A','Account','Organization access']].map(([id,letter,title,desc])=>`<button class="card" onclick="show('${id}')"><span class="pill">${letter}</span><strong>${title}</strong><span class="muted">${desc}</span></button>`).join('')}</div>`;
+ else if(active==='account')el.innerHTML=`<div class="panel"><div class="eyebrow">GOAT LOCKER / ACCOUNT</div><h2>Customer Account</h2><p class="muted">Use your existing GOAT Sports account login. GOAT Locker permissions are checked using the same backend as the main GOAT Sports app.</p>${authMessage()}<div class="linkrow"><a class="secondary" href="https://www.begoativated.com/account" target="_blank" rel="noopener noreferrer">Open GOAT Sports customer account ↗</a><a class="secondary" href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener noreferrer">Contact GOAT Sports ↗</a></div></div>`;
+ else if(active==='timeline')el.innerHTML=renderProjectTimeline();
+ else if(active==='designs')el.innerHTML=crmCustomerLibraryHtml()+renderDesigns();
+ else if(active==='quotes')el.innerHTML=renderQuotes();
+ else el.innerHTML=section(active);
+}
+
+// CRM customer quotes are separate from the legacy Locker/Monday quote pilot.
+// Customer decisions are authenticated and checked against the CRM quote owner.
+let crmLockerQuotes={organizationId:null,loading:false,loaded:false,quotes:[],error:''};
+async function loadCrmLockerQuotes(force=false){
+ const org=String(directoryState.selected?.mondayItemId||'');
+ if(!customerToken()||!lockerIdentity||!org)return;
+ if(crmLockerQuotes.loading||(!force&&crmLockerQuotes.loaded&&crmLockerQuotes.organizationId===org))return;
+ crmLockerQuotes={organizationId:org,loading:true,loaded:false,quotes:[],error:''};
+ if(active==='quotes')render();
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-crm-quotes',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken(),apikey:SUPABASE_PUBLISHABLE_KEY},
+   body:JSON.stringify({organizationMondayId:org})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)throw Error(data.error||'CRM quotes are unavailable');
+  if(String(directoryState.selected?.mondayItemId)!==org)return;
+  crmLockerQuotes={organizationId:org,loading:false,loaded:true,quotes:Array.isArray(data.quotes)?data.quotes:[],error:''};
+ }catch(e){if(String(directoryState.selected?.mondayItemId)===org)crmLockerQuotes={organizationId:org,loading:false,loaded:false,quotes:[],error:e.message||'Could not load CRM quotes'};}
+ finally{if(active==='quotes')render();}
+}
+const crmQuoteArtwork={};
+async function showCrmQuoteArtwork(quoteId){
+ const org=String(directoryState.selected?.mondayItemId||'');
+ if(!customerToken()||!org)return;
+ crmQuoteArtwork[quoteId]={loading:true,files:[],error:''};if(active==='quotes')render();
+ try{
+  const response=await fetch('https://lbheezjanvalalinqxcd.supabase.co/functions/v1/goat-crm-locker-artwork',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken()},body:JSON.stringify({quoteId,organizationMondayId:org})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)throw Error(data.error||'Unable to load artwork');
+  if(String(directoryState.selected?.mondayItemId)!==org)return;
+  crmQuoteArtwork[quoteId]={loading:false,files:Array.isArray(data.files)?data.files:[],error:''};
+ }catch(e){crmQuoteArtwork[quoteId]={loading:false,files:[],error:e.message||'Unable to load artwork'};}
+ finally{if(active==='quotes')render();}
+}
+function crmArtworkHtml(quoteId){
+ const state=crmQuoteArtwork[quoteId];
+ if(!state)return `<button type="button" class="secondary" onclick="showCrmQuoteArtwork('${safe(quoteId)}')">View Artwork / Mockup</button>`;
+ if(state.loading)return '<p>Loading artwork securely…</p>';
+ if(state.error)return `<div class="notice error">${safe(state.error)}</div><button type="button" class="secondary" onclick="showCrmQuoteArtwork('${safe(quoteId)}')">Retry Artwork</button>`;
+ if(!state.files.length)return '<p>No artwork attached to this quote.</p>';
+ return '<div style="margin:14px 0;padding:15px;border:1px solid #e2dbe8;border-radius:12px;background:white"><strong>Artwork &amp; Mockups</strong><p class="muted">Review these files before approving your quote. Links expire after 10 minutes.</p>'+state.files.map(f=>`<div style="margin:12px 0"><a href="${safe(f.url)}" target="_blank" rel="noopener noreferrer">View / Download ${safe(f.file_name)}</a>${(f.content_type||'').startsWith('image/')?`<div><img src="${safe(f.url)}" alt="${safe(f.file_name)}" loading="lazy" style="max-width:100%;max-height:420px;object-fit:contain;border:1px solid #eee;border-radius:8px;margin-top:8px"></div>`:''}</div>`).join('')+`<button type="button" class="secondary" onclick="showCrmQuoteArtwork('${safe(quoteId)}')">Refresh Artwork Links</button></div>`;
+}
+let crmQuoteDecisionBusy=false;
+async function submitCrmLockerDecision(quoteId,decision){
+ if(crmQuoteDecisionBusy)return;
+ const org=String(directoryState.selected?.mondayItemId||'');
+ const q=crmLockerQuotes.quotes.find(x=>String(x.crm_quote_id)===String(quoteId));
+ if(!q||q.status!=='sent'||!org||!customerToken())return alert('Refresh the quote before responding.');
+ let notes='';
+ if(decision==='changes_requested'){
+  const entered=prompt('Describe the changes you need on quote '+q.quote_number+':');
+  if(entered===null)return;
+  notes=entered.trim();
+  if(notes.length<3){alert('Please provide at least 3 characters explaining the changes.');return;}
+ }else if(decision==='approved'){
+  if(!confirm('Approve GOAT Sports quote '+q.quote_number+' for $'+Number(q.total||0).toFixed(2)+'? This is a REAL approval and will update your CRM quote.'))return;
+ }else return;
+ crmQuoteDecisionBusy=true;render();
+ try{
+  const response=await fetch('https://lbheezjanvalalinqxcd.supabase.co/functions/v1/goat-crm-locker-decision',{
+   method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+customerToken()},
+   body:JSON.stringify({quoteId,organizationMondayId:org,decision,notes})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)throw Error(data.error||'The CRM did not confirm your response. Please contact GOAT Sports before retrying.');
+  alert(decision==='approved'?'Quote approved in GOAT Sports CRM.':'Your requested changes have been sent to GOAT Sports CRM.');
+  const current=crmLockerQuotes.quotes.find(x=>String(x.crm_quote_id)===String(quoteId));
+  if(current)current.status=decision;
+  render();
+  // CRM decisions are mirrored into the Locker database by a background publisher.
+  // Refresh immediately and retry once if the mirror is still catching up.
+  await loadCrmLockerQuotes(true);
+  const updated=crmLockerQuotes.quotes.find(x=>String(x.crm_quote_id)===String(quoteId));
+  if(updated&&updated.status!==decision){
+   setTimeout(()=>{if(active==='quotes')loadCrmLockerQuotes(true);},4000);
+  }
+ }catch(e){alert(e.message||'Could not submit quote response.');}
+ finally{crmQuoteDecisionBusy=false;render();}
+}
+function crmLockerQuotePanel(){
+ const org=String(directoryState.selected?.mondayItemId||'');
+ if(!org)return '';
+ const state=crmLockerQuotes;
+ let body='';
+ if(state.organizationId!==org||!state.loaded){
+  body=state.error?'<div class="notice error">'+safe(state.error)+'</div>':state.loading?'<p class="muted">Loading CRM quotes…</p>':'<p class="muted">Select Refresh CRM Quotes to load your current quotes.</p>';
+ }else{
+  const pending=state.quotes.filter(q=>q.status==='sent'||q.status==='changes_requested');
+  const history=state.quotes.filter(q=>q.status!=='sent'&&q.status!=='changes_requested');
+  const renderRows=q=>(Array.isArray(q.items)?q.items:[]).map(i=>'<div style="padding:7px 0;border-bottom:1px solid #eee">'+safe(i.name||'Item')+' · '+Number(i.qty||0)+' × $'+Number(i.price||0).toFixed(2)+'</div>').join('');
+  body='<h3 style="margin-top:20px">Awaiting Your Response</h3>';
+  body+=pending.length?pending.map(q=>{
+   const status=q.status==='sent'?'Awaiting Customer Approval':'Changes Requested';
+   return '<div class="panel" style="margin:12px 0;background:#fafbfc"><div class="eyebrow">GOAT SPORTS CRM QUOTE</div><h3>'+safe(q.quote_number)+'</h3><p><strong>'+safe(status)+'</strong> · <strong>$'+Number(q.total||0).toFixed(2)+'</strong></p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+renderRows(q)+crmArtworkHtml(q.crm_quote_id)+(q.status==='sent'?'<div class="linkrow"><button type="button" class="primary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'approved\')">Approve Quote</button><button type="button" class="secondary" '+(crmQuoteDecisionBusy?'disabled':'')+' onclick="submitCrmLockerDecision(\''+safe(q.crm_quote_id)+'\',\'changes_requested\')">Request Changes</button></div>':'')+'</div>';
+  }).join(''):'<p class="muted">No quotes currently need your approval.</p>';
+  body+='<h3 style="margin-top:28px">Quote History</h3>';
+  body+=history.length?history.map(q=>'<details class="panel" style="margin:10px 0;padding:16px;background:#fafbfc"><summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span><strong>'+safe(q.quote_number)+'</strong> · '+safe(q.status==='approved'?'Approved':q.status)+'</span><strong>$'+Number(q.total||0).toFixed(2)+'</strong></summary><div style="padding-top:16px"><p class="muted">Last updated: '+safe(q.published_at?new Date(q.published_at).toLocaleString():'Not available')+'</p>'+(q.description?'<p>'+safe(q.description)+'</p>':'')+renderRows(q)+crmArtworkHtml(q.crm_quote_id)+'</div></details>').join(''):'<p class="muted">No completed quotes yet.</p>';
+ }
+ return '<div class="panel"><div class="eyebrow">LIVE CRM QUOTES</div><h2>Quotes from GOAT Sports CRM</h2><button class="secondary" type="button" onclick="loadCrmLockerQuotes(true)">Refresh CRM Quotes</button>'+body+'</div>';
+}
+// Only CRM quotes are presented to customers. The older quote-builder code
+// remains available internally for compatibility but is no longer rendered.
+renderQuotes=function(){
+ if(!customerToken()||!lockerIdentity)return '<div class="panel"><h2>Quotes &amp; Approvals</h2>'+authMessage()+'</div>';
+ if(!directoryState.selected)return '<div class="panel"><h2>Quotes &amp; Approvals</h2><p class="muted">Select your organization on the Dashboard to view quotes.</p><button class="primary" onclick="show(\'dashboard\')">Choose organization</button></div>';
+ return crmLockerQuotePanel();
+};
+
+// Refresh only the real CRM quotes; never load legacy test quotes.
+async function autoLoadQuotes(force=false){
+ if(active==='quotes')await loadCrmLockerQuotes(force);
+}
+function autoLoadJobs(){if(directoryState.selected&&!jobState.loading)loadOrganizationJobs();}
+function autoLoadDirectory(){if(lockerIdentity&&!directoryState.loading&&!directoryState.loaded)loadAdminDirectory();}
+function autoRefreshCurrent(){
+ if(document.hidden||!customerToken()||!lockerIdentity)return;
+ if(active==='quotes')loadCrmLockerQuotes(true);
+ else if(active==='timeline')autoLoadJobs();
+ else if(active==='dashboard')autoLoadDirectory();
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoRefreshCurrent();});
+window.addEventListener('focus',()=>autoRefreshCurrent());
+setInterval(autoRefreshCurrent,30000);
+
+async function initializeLocker(){
+ render();await handleCustomerCallback();
+ if(customerToken()&&!lockerError){await loadLockerIdentity();if(lockerIdentity?.adminRole==='master_admin'||lockerIdentity?.organizationAccess?.length)await loadAdminDirectory();}else render();
+ if(window.GoatLockerPreview?.active())await window.GoatLockerPreview.activate();
+ if(active==='quotes')loadCrmLockerQuotes(true);
+}
+/* Initialization is supplied by the authenticated CRM parent. */
+</script>
+<style>
+#goat-artwork-overlay[hidden]{display:none!important}#goat-artwork-overlay{position:fixed;inset:0;z-index:10000;background:#171925bd;padding:20px;display:flex;justify-content:center;align-items:center}#goat-artwork-window{background:#f5f6f9;width:min(1100px,100%);max-height:92vh;overflow:auto;border-radius:16px;box-shadow:0 12px 60px #0004}#goat-artwork-top{position:sticky;top:0;background:#683695;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}#goat-artwork-content{padding:24px}#goat-artwork-content .cards{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}@media(max-width:750px){#goat-artwork-content .cards{grid-template-columns:1fr}}
+</style>
+<div id="goat-artwork-overlay" hidden><section id="goat-artwork-window" role="dialog" aria-modal="true" aria-label="Client Artwork Library"><div id="goat-artwork-top"><strong>GOAT SPORTS · CLIENT ARTWORK LIBRARY</strong><button class="secondary" onclick="closeGoatArtworkLibrary()">CLOSE ✕</button></div><div id="goat-artwork-content"></div></section></div>
+<script>// GOAT Locker master-admin artwork library (uses existing Locker login).
+let goatArtworkData=null,goatArtworkSelected=null;
+function goatArtworkEsc(x){return safe(x??'');}
+async function goatAdminArtworkRequest(action,extra={}){
+ const token=customerToken();if(!token)throw Error('Sign in to GOAT Locker first.');
+ const response=await fetch(SUPABASE_URL+'/functions/v1/goat-artwork-library',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+token},body:JSON.stringify({action,...extra})});
+ const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Artwork library service unavailable');return data;
+}
+async function openGoatArtworkLibrary(){
+ if(lockerIdentity?.adminRole!=='master_admin'){alert('Master admin access is required.');return;}
+ const modal=document.getElementById('goat-artwork-overlay');modal.hidden=false;
+ document.getElementById('goat-artwork-content').innerHTML='<p>Loading client artwork…</p>';
+ try{goatArtworkData=await goatAdminArtworkRequest('list');goatArtworkSelected=null;goatArtworkRender();}
+ catch(e){document.getElementById('goat-artwork-content').innerHTML='<div class="notice error"><strong>Could not load artwork library</strong><p>'+goatArtworkEsc(e.message)+'</p><button class="secondary" onclick="openGoatArtworkLibrary()">Retry</button></div>';}
+}
+function closeGoatArtworkLibrary(){document.getElementById('goat-artwork-overlay').hidden=true;}
+function goatArtworkRender(term=''){
+ const el=document.getElementById('goat-artwork-content');const clients=Array.isArray(goatArtworkData?.clients)?goatArtworkData.clients:[];
+ if(goatArtworkSelected!==null){const client=clients.find(c=>String(c.id)===String(goatArtworkSelected));if(!client){goatArtworkSelected=null;return goatArtworkRender();}
+ const jobs=(client.jobs||[]).filter(j=>!isLockerTestJob(j));
+ el.innerHTML='<button class="secondary" onclick="goatArtworkSelected=null;goatArtworkRender()">← All clients</button><h2 style="margin-top:16px">'+goatArtworkEsc(client.name)+'</h2><p class="muted">'+jobs.length+' linked jobs</p>';
+ // Build job cards with artwork versions and secure file actions.
+ const container=document.createElement('div');
+ for(const job of jobs){const card=document.createElement('section');card.className='job-item';const h=document.createElement('h3');h.textContent=(job.jobCode?job.jobCode+' · ':'')+(job.name||'Job');card.appendChild(h);
+ const art=(Array.isArray(job.artworks)?job.artworks:[]).filter(a=>!isLockerTestJob(a));
+ if(!art.length){const p=document.createElement('p');p.className='muted';p.textContent='No artwork versions linked to this job.';card.appendChild(p);}
+ for(const a of art){const box=document.createElement('div');box.className='design-job';const title=document.createElement('strong');title.textContent=a.title||'Artwork';box.appendChild(title);const meta=document.createElement('p');meta.className='muted';meta.textContent='Version '+(a.version||'—')+' · '+(a.status||'Not set')+(a.uploaded?' · '+a.uploaded:'');box.appendChild(meta);
+ for(const f of a.files||[]){const btn=document.createElement('button');btn.className='secondary';btn.style.margin='5px';btn.textContent='Download '+(f.name||'file');btn.onclick=()=>goatArtworkDownload(f.id);box.appendChild(btn);}
+ if(a.url&&/^https:\/\//.test(a.url)){const link=document.createElement('a');link.href=a.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=' Open in Monday.com ↗';box.appendChild(link);}card.appendChild(box);}
+ container.appendChild(card);}el.appendChild(container);return;}
+ el.innerHTML='<h2>Client Artwork Library</h2><p class="muted">'+clients.length+' CRM clients</p><input id="goat-artwork-search" type="search" placeholder="Search clients or jobs" style="width:100%;padding:13px;border:1px solid #ddd;border-radius:8px;margin:12px 0"><div id="goat-artwork-clients" class="cards"></div>';
+ const list=document.getElementById('goat-artwork-clients');const input=document.getElementById('goat-artwork-search');
+ function filter(){list.replaceChildren();const q=input.value.toLowerCase().trim();for(const c of clients.filter(c=>String(c.name||'').toLowerCase().includes(q)||String(c.clientId||'').toLowerCase().includes(q)||(c.jobs||[]).filter(j=>!isLockerTestJob(j)).some(j=>String(j.name||'').toLowerCase().includes(q)||String(j.jobCode||'').toLowerCase().includes(q)))){const b=document.createElement('button');b.className='card';const strong=document.createElement('strong');strong.textContent=c.name||'Unnamed client';b.appendChild(strong);const p=document.createElement('span');p.className='muted';p.textContent=(c.jobs||[]).filter(j=>!isLockerTestJob(j)).length+' jobs · '+(c.artworks||[]).filter(a=>!isLockerTestJob(a)).length+' artwork versions';b.appendChild(p);b.onclick=()=>{goatArtworkSelected=String(c.id);goatArtworkRender()};list.appendChild(b);}if(!list.children.length)list.textContent='No matching clients.';}
+ input.addEventListener('input',filter);filter();
+}
+async function goatArtworkDownload(assetId){const popup=window.open('about:blank','_blank');try{const data=await goatAdminArtworkRequest('file',{assetId:String(assetId)});if(!data.url)throw Error('No download URL returned');if(popup)popup.location.href=data.url;else alert('Please allow popups for artwork downloads.');}catch(e){popup?.close();alert(e.message);}}
+</script>
+<script>
+/* Phase 3: organization-scoped Monday artwork history, read-only */
+let customerArtworkState={org:'',loading:false,loaded:false,error:'',artworks:[]};
+function customerArtworkEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function customerArtworkApi(action,extra={}){
+ const token=customerToken();if(!token)throw Error('Sign in to view artwork.');
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),18000);
+ try{
+  const response=await fetch(SUPABASE_URL+'/functions/v1/goat-customer-artwork',{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json','apikey':SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+token},body:JSON.stringify({action,...extra})});
+  const data=await response.json().catch(()=>({}));if(!response.ok)throw Error(data.error||'Artwork service unavailable');return data;
+ }finally{clearTimeout(timeout);}
+}
+async function loadCustomerArtwork(force=false){
+ const org=directoryState.selected;const id=String(org?.mondayItemId||'');if(!id||!customerToken())return;
+ if(customerArtworkState.loading||(!force&&customerArtworkState.loaded&&customerArtworkState.org===id))return;
+ customerArtworkState={org:id,loading:true,loaded:false,error:'',artworks:[]};if(active==='designs')render();
+ try{
+  const data=await customerArtworkApi('list',{organizationId:id});
+  if(String(directoryState.selected?.mondayItemId)!==id)return;
+  customerArtworkState={org:id,loading:false,loaded:true,error:'',artworks:(Array.isArray(data.artworks)?data.artworks:[]).filter(x=>!isLockerTestJob(x))};
+ }catch(e){customerArtworkState={org:id,loading:false,loaded:false,error:e?.name==='AbortError'?'Artwork request timed out':String(e?.message||e),artworks:[]};}
+ if(active==='designs')render();
+}
+async function downloadCustomerArtwork(assetId,download=false){
+ const org=String(directoryState.selected?.mondayItemId||'');if(!org||!/^\d+$/.test(String(assetId)))return;
+ try{
+  const data=await customerArtworkApi('file',{organizationId:org,assetId:String(assetId)});
+  if(!/^https:\/\//i.test(data.url||''))throw Error('Artwork file URL unavailable');
+  window.open(data.url,'_blank','noopener,noreferrer');
+ }catch(e){alert('Unable to open artwork: '+String(e?.message||e));}
+}
+function customerArtworkPanel(){
+ const org=directoryState.selected;if(!org)return '';
+ const id=String(org.mondayItemId);const a=customerArtworkState;
+ if(a.org!==id||(!a.loading&&!a.loaded&&!a.error))queueMicrotask(()=>loadCustomerArtwork());
+ let content='';
+ if(a.org!==id||a.loading)content='<p class="muted">Loading artwork versions from Monday.com…</p>';
+ else if(a.error)content='<div class="notice error"><strong>Artwork connection issue</strong><p>'+customerArtworkEsc(a.error)+'</p></div>';
+ else if(!a.artworks.length)content='<p class="muted">No artwork versions linked to this organization yet.</p>';
+ else content=a.artworks.map(x=>{
+  const files=Array.isArray(x.files)?x.files:[];
+  return '<article class="design-job"><div class="eyebrow">JOB '+customerArtworkEsc(x.jobCode||x.jobId||'Unassigned')+'</div><h3>'+customerArtworkEsc(x.title||'Artwork')+'</h3><div class="design-meta"><span><strong>Version:</strong> '+customerArtworkEsc(x.version||'Not set')+'</span><span><strong>Status:</strong> '+customerArtworkEsc(x.status||'Not set')+'</span><span><strong>Uploaded:</strong> '+customerArtworkEsc(x.uploaded||'Not set')+'</span></div>'+(x.notes?'<p>'+customerArtworkEsc(x.notes)+'</p>':'')+(files.length?'<div class="proof-area"><strong>Artwork files</strong><div class="linkrow">'+files.filter(f=>/^\d+$/.test(String(f.id))).map(f=>'<button type="button" class="secondary" onclick="downloadCustomerArtwork(\''+customerArtworkEsc(f.id)+'\')">Open '+customerArtworkEsc(f.name||'Artwork file')+' ↗</button>').join('')+'</div></div>':'<p class="muted">No files attached to this version.</p>')+'</article>';
+ }).join('');
+ return '<div class="panel"><div class="design-head"><div><div class="eyebrow">GOAT LOCKER / CLIENT ARTWORK HISTORY</div><h2>Artwork Versions</h2><p class="muted">'+customerArtworkEsc(org.name)+' · '+(a.loaded?a.artworks.length+' artwork version(s)':'Secure organization-scoped artwork')+' · Read-only review</p></div><button class="secondary" type="button" onclick="loadCustomerArtwork(true)">Refresh artwork</button></div>'+content+'<p class="muted">Artwork decisions are not enabled in this new history section yet. Existing approval workflows remain unchanged.</p></div>';
+}
+const previousRenderDesigns=renderDesigns;
+renderDesigns=function(){return customerArtworkPanel()+previousRenderDesigns();};
+</script>
+<script>
+/* GOAT Locker Phase 4 — Customer artwork decisions. Load after the existing locker scripts. */
+(function(){
+  if(typeof customerArtworkPanel!=='function'||typeof customerArtworkApi!=='function')return;
+  const oldPanel=customerArtworkPanel;
+  const esc=customerArtworkEsc;
+  const busy=new Set();
+  window.goatArtworkDecision=async function(id,decision){
+    const artwork=(customerArtworkState.artworks||[]).find(x=>String(x.id)===String(id));
+    if(!artwork||String(artwork.status).toLowerCase()!=='sent for review')return;
+    const feedback=decision==='changes'?String(document.getElementById('goat-feedback-'+id)?.value||'').trim():'';
+    if(decision==='changes'&&(feedback.length<5||feedback.length>2000)){
+      alert('Please enter 5–2000 characters describing the requested changes.');return;
+    }
+    if(!confirm(decision==='approve'?'Approve artwork version '+artwork.version+'? This decision will be recorded in Monday.com.':'Send these revision instructions for artwork version '+artwork.version+'?'))return;
+    if(busy.has(id))return;
+    busy.add(id);
+    document.querySelectorAll('[data-goat-decision="'+id+'"]').forEach(b=>b.disabled=true);
+    try{
+      await customerArtworkApi('decision',{organizationId:String(directoryState.selected.mondayItemId),artworkId:String(id),decision,feedback});
+      alert('Artwork decision recorded. The artwork history will refresh.');
+      await loadCustomerArtwork(true);
+    }catch(e){alert('Decision was not saved: '+String(e?.message||e));}
+    finally{busy.delete(id);document.querySelectorAll('[data-goat-decision="'+id+'"]').forEach(b=>b.disabled=false);}
+  };
+  customerArtworkPanel=function(){
+    let html=oldPanel();
+    const a=customerArtworkState;
+    if(!a.loaded||!Array.isArray(a.artworks))return html;
+    // Insert controls into each exact artwork card, never into a different job/version.
+    for(const art of a.artworks){
+      if(String(art.status).toLowerCase()!=='sent for review'||!/^\d+$/.test(String(art.id)))continue;
+      const id=String(art.id),title=esc(art.title||'Artwork');
+      const marker='<h3>'+title+'</h3>';
+      const position=html.indexOf(marker);
+      if(position<0)continue;
+      const end=html.indexOf('</article>',position);
+      if(end<0)continue;
+      const controls='<div class="proof-area" style="margin-top:14px"><strong>Review this version</strong><p class="muted">Confirm you have opened the artwork before making a decision.</p><div class="linkrow"><button type="button" class="primary" data-goat-decision="'+id+'" onclick="goatArtworkDecision(\''+id+'\',\'approve\')">Approve this version</button></div><label for="goat-feedback-'+id+'" style="display:block;margin-top:12px">Revision instructions</label><textarea id="goat-feedback-'+id+'" rows="3" maxlength="2000" placeholder="Describe the changes needed for this artwork version"></textarea><div class="linkrow"><button type="button" class="secondary" data-goat-decision="'+id+'" onclick="goatArtworkDecision(\''+id+'\',\'changes\')">Request changes</button></div></div>';
+      html=html.slice(0,end)+controls+html.slice(end);
+    }
+    return html;
+  };
+})();
+
+</script>
+<script id="goat-premium-behavior">
+(function(){'use strict';
+const originalRender=render, originalNav=renderNav;
+const statusColor=s=>/await|hold|review/i.test(s)?'#e68a28':/complet|deliver/i.test(s)?'#109488':'#683695';
+const isComplete=s=>/complet|deliver/i.test(String(s||''));
+const jobs=()=>{try{return (jobState.jobs||[]).filter(j=>!isLockerTestJob(j))}catch{return []}};
+const esc=v=>safe(String(v??''));
+const stats=(arr)=>arr.map(([name,value,sub,color])=>`<div class="goat-stat" style="--accent:${color}"><small>${name}</small><strong>${value}</strong><span>${sub}</span></div>`).join('');
+const header=(label,title,subtitle)=>`<div class="panel"><div class="eyebrow">GOAT LOCKER / ${label}</div><h2>${title}</h2><p class="goat-muted">${subtitle}</p></div>`;
+function addSidebar(){const side=document.getElementById('side');if(!side)return;if(!side.querySelector('.goat-brand-mark'))side.insertAdjacentHTML('afterbegin','<div class="goat-brand-mark">GOAT SPORTS<br><small>LOCKER</small></div>');if(!side.querySelector('.goat-side-extra'))side.insertAdjacentHTML('beforeend',`<div class="goat-side-extra"><a href="https://www.begoativated.com/account" target="_blank" rel="noopener">↗ Open GOAT Sports Customer Account</a><a href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener">✉ Contact GOAT Sports</a><button type="button" onclick="lockerSignOut()">⇥ Sign Out</button></div>`);}
+function dashboard(){const j=jobs(),activeJobs=j.filter(x=>!isComplete(x.status));let qs=[];try{qs=crmLockerQuotes.quotes||[]}catch{};return `<div class="goat-grid">${stats([['Designs',j.length,'Linked projects','#683695'],['Quotes',qs.length,'CRM quotes','#387ce0'],['Orders',activeJobs.length,'Active jobs','#109488'],['Invoices','—','Awaiting invoice connection','#be5927']])}</div><div class="goat-cols"><div class="panel"><div class="eyebrow">RECENT ACTIVITY</div><h2>Current Projects</h2>${activeJobs.length?activeJobs.slice(0,6).map(x=>`<div class="goat-activity"><span><strong>${esc(x.name||'Project')}</strong><br><small>${esc(x.status||'Status pending')}</small></span><button class="secondary" onclick="show('timeline')">Track job →</button></div>`).join(''):'<p class="goat-muted">No active jobs are linked to this organization yet.</p>'}</div><div class="panel"><div class="eyebrow">YOUR ORGANIZATION</div><h2>${esc(directoryState.selected?.name||'Your Organization')}</h2><p class="goat-muted">Manage your team details, logos and contact information.</p><button class="secondary" onclick="show('account')">View / Update Account →</button></div></div>${(!customerToken()||!lockerIdentity)?'<div class="goat-noauth">'+authMessage()+'</div>':''}`;}
+let timelineFilter='all';
+function jobCard(j){const s=String(j.status||'Status pending');let step=/complet|deliver/i.test(s)?5:/ship|ready/i.test(s)?4:/product/i.test(s)?3:/approv|paid|invoic/i.test(s)?2:/design|artwork|review|await/i.test(s)?1:0;const stages=['Created','Design / Review','Approved','Production','Shipping','Completed'];return `<article class="goat-job" style="--accent:${statusColor(s)}"><div><span class="goat-chip">${esc(s)}</span><h3>${esc(j.name||'GOAT Sports Job')}</h3><p>Job #${esc(j.jobId||j.id||'—')} · Artwork: ${esc(j.artworkStatus||'Not set')}</p><div class="goat-progress">${stages.map((_,i)=>`<span class="${i<=step?'done':''}"></span>`).join('')}</div><div class="goat-stages">${stages.map(x=>`<span>${x}</span>`).join('')}</div></div><div><button class="secondary" onclick="show('designs')">View Artwork →</button></div></article>`;}
+function timeline(){const j=jobs(),open=j.filter(x=>!isComplete(x.status)),closed=j.filter(x=>isComplete(x.status));const shown=timelineFilter==='completed'?closed:timelineFilter==='active'?open:j;return `${header('PRODUCTION TRACKING','Production Timeline','Follow every active order from design to delivery.') }<div class="goat-grid">${stats([['Active Jobs',open.length,'In progress','#683695'],['Awaiting Approval',open.filter(x=>/await|review/i.test(x.status||'')).length,'Needs review','#e68a28'],['Shipping Soon',open.filter(x=>/ship|ready/i.test(x.status||'')).length,'Final stages','#387ce0'],['Completed Jobs',closed.length,'Historical jobs','#109488']])}</div><div class="goat-tabs"><button class="${timelineFilter==='all'?'selected':''}" onclick="goatTimelineFilter('all')">All Jobs (${j.length})</button><button class="${timelineFilter==='active'?'selected':''}" onclick="goatTimelineFilter('active')">Active (${open.length})</button><button class="${timelineFilter==='completed'?'selected':''}" onclick="goatTimelineFilter('completed')">Completed (${closed.length})</button><button onclick="loadOrganizationJobs()">Refresh</button></div>${!customerToken()||!lockerIdentity?authMessage():!directoryState.selected?'<div class="panel">Choose an organization from Dashboard to view its jobs.</div>':!jobState.loaded?'<div class="panel">Loading jobs…</div>':shown.length?shown.map(jobCard).join(''):'<div class="panel">No jobs in this category.</div>'}<details class="goat-collapse"><summary>Completed Jobs (${closed.length})</summary>${closed.map(jobCard).join('')||'<p>No completed jobs yet.</p>'}</details>`;}
+window.goatTimelineFilter=function(f){timelineFilter=f;render()};
+function orders(){const j=jobs(),open=j.filter(x=>!isComplete(x.status)),closed=j.filter(x=>isComplete(x.status));return `${header('ORDERS','Orders','Track current orders and revisit completed jobs.')}<h3 class="goat-sectiontitle">Active Orders (${open.length})</h3>${open.map(jobCard).join('')||'<div class="panel"><p class="goat-muted">No active orders are currently linked.</p></div>'}<details class="goat-collapse"><summary>Completed Jobs (${closed.length})</summary>${closed.map(jobCard).join('')||'<p>No completed jobs yet.</p>'}</details>`;}
+let goatInvoiceState={organizationId:null,loading:false,loaded:false,invoices:[],error:''};
+window.goatSeedPreviewInvoices=data=>{goatInvoiceState={organizationId:data.organization.mondayItemId,loaded:true,loading:false,invoices:data.invoices||[],error:''};};
+async function goatLoadInvoices(force=false){
+ const org=String(directoryState.selected?.mondayItemId||'');
+ if(!org||!customerToken()){goatInvoiceState={organizationId:org,loading:false,loaded:false,invoices:[],error:'Sign in and select an organization.'};if(active==='invoices')render();return;}
+ if(goatInvoiceState.loading||(!force&&goatInvoiceState.loaded&&goatInvoiceState.organizationId===org))return;
+ goatInvoiceState={organizationId:org,loading:true,loaded:false,invoices:[],error:''};if(active==='invoices')render();
+ try{const r=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-invoices',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+customerToken()},body:JSON.stringify({organizationId:org})});const d=await r.json();if(!r.ok)throw Error(d.error||'Invoice connection unavailable');if(org!==String(directoryState.selected?.mondayItemId||''))return;goatInvoiceState={organizationId:org,loading:false,loaded:true,invoices:d.invoices||[],error:''};}
+ catch(e){goatInvoiceState={organizationId:org,loading:false,loaded:false,invoices:[],error:e.message||'Invoice connection unavailable'};}
+ finally{if(active==='invoices')render();}
+}
+window.goatLoadInvoices=goatLoadInvoices;
+window.goatRefreshInvoices=()=>goatLoadInvoices(true);
+function invoices(){
+ const state=goatInvoiceState,org=String(directoryState.selected?.mondayItemId||'');
+ const valid=state.loaded&&state.organizationId===org;
+ const inv=valid?state.invoices:[];
+ const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(n)||0);
+ const open=inv.filter(x=>x.status!=='paid'),paid=inv.filter(x=>x.status==='paid');
+ const outstanding=open.reduce((n,x)=>n+Number(x.amount||0),0);
+ const year=new Date().getFullYear();const paidYtd=paid.filter(x=>x.paidAt&&new Date(x.paidAt).getFullYear()===year).reduce((n,x)=>n+Number(x.amount||0),0);
+ const card=x=>`<div class="goat-activity"><span><strong>${esc(x.number)}</strong><br><small>${x.status==='paid'?'Paid':'Outstanding'} · ${x.sentAt?'Sent '+new Date(x.sentAt).toLocaleDateString():'Date unavailable'}</small></span><span style="text-align:right"><strong>${money(x.amount)}</strong><br>${x.url&&/^https:\/\//i.test(x.url)?`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">View invoice ↗</a>`:'<small>Invoice link unavailable</small>'}</span></div>`;
+ return `${header('INVOICES & PAYMENTS','Invoices & Payments','Your organization’s invoices and payment history.')}
+ <div class="goat-grid">${stats([['Total Outstanding',valid?money(outstanding):'—',valid?'Unpaid invoice totals':'Waiting for connection','#683695'],['Past Due','—','Due dates not available','#be5927'],['Current Invoices',valid?open.length:'—','Outstanding invoices','#109488'],['Paid This Year',valid?money(paidYtd):'—','Confirmed paid invoices','#868e92']])}</div>
+ <div class="panel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><h3>Current Invoices</h3><button class="secondary" onclick="goatRefreshInvoices()">Refresh Invoices</button></div>
+ ${state.loading?'<p class="goat-muted">Loading invoices securely…</p>':state.error?`<p class="goat-muted">${esc(state.error)}</p>`:!valid?'<p class="goat-muted">Select your organization to load invoices.</p>':open.length?open.map(card).join(''):'<p class="goat-muted">No outstanding invoices for this organization.</p>'}</div>
+ <details class="goat-collapse"><summary>Archived / Paid Invoices (${paid.length})</summary>${valid?(paid.map(card).join('')||'<p>No paid invoices yet.</p>'):'<p>Load invoices to view paid history.</p>'}</details>
+ <p class="goat-muted" style="margin:14px 0">Balances reflect recorded invoice totals; partial payments and due-date aging are not yet available from this source. Use View invoice for the original hosted invoice.</p>`;
+}
+let goatProfile={organizationId:null,loaded:false,loading:false,data:{},logo:null,error:''};
+window.goatSeedPreviewProfile=data=>{goatProfile={organizationId:data.organization.mondayItemId,loaded:true,loading:false,data:data.profile||{},logo:data.profile?.logo_data||null,error:''};};
+function goatProfileOrg(){return String(directoryState.selected?.mondayItemId||'');}
+async function goatProfileApi(action,extra={}){const token=customerToken(),organizationMondayId=goatProfileOrg();if(!token||!organizationMondayId)throw Error('Sign in and select an organization first.');const response=await fetch(SUPABASE_URL+'/functions/v1/goat-locker-organization-profile',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+token},body:JSON.stringify({action,organizationMondayId,...extra})});const data=await response.json();if(!response.ok)throw Error(data.error||'Could not update organization');return data;}
+async function goatLoadProfile(force=false){const org=goatProfileOrg();if(!org||!customerToken())return;if(goatProfile.loading||(!force&&goatProfile.loaded&&goatProfile.organizationId===org))return;goatProfile={organizationId:org,loaded:false,loading:true,data:{},logo:null,error:''};try{const result=await goatProfileApi('get');if(org!==goatProfileOrg())return;goatProfile={organizationId:org,loaded:true,loading:false,data:result.profile||{},logo:result.profile?.logo_data||null,error:''};}catch(e){goatProfile.loading=false;goatProfile.error=e.message||'Unable to load organization profile';}goatUpdateHeader();if(active==='account')render();}
+function goatUpdateHeader(){const el=document.querySelector('.topright');if(!el)return;let img=el.querySelector('#goat-header-org-logo');if(goatProfile.organizationId!==goatProfileOrg()||!goatProfile.logo){if(img)img.remove();return;}if(!img){img=document.createElement('img');img.id='goat-header-org-logo';img.alt='Organization logo';img.style.cssText='height:38px;max-width:110px;object-fit:contain;margin-right:10px;vertical-align:middle';el.insertBefore(img,el.firstChild);}img.src=goatProfile.logo;}
+function goatAccountVal(field){return esc(goatProfile.data?.[field]||'');}
+window.goatSaveAccount=async function(){const btn=document.getElementById('goat-account-save');if(btn)btn.disabled=true;try{const payload={};for(const field of ['contact_name','email','phone','billing_address','shipping_address'])payload[field]=document.getElementById('goat-account-'+field)?.value.trim()||'';await goatProfileApi('save',payload);goatProfile.data={...goatProfile.data,...payload};alert('Organization information saved successfully.');}catch(e){alert('Could not save: '+e.message)}finally{if(btn)btn.disabled=false;}};
+window.goatPreviewOrgLogo=async function(input){const file=input.files?.[0];if(!file)return;if(!/^image\/(png|jpeg|webp)$/.test(file.type)){alert('Select a PNG, JPG or WEBP image.');return;}if(file.size>6*1024*1024){alert('Please select an image under 6 MB.');return;}try{const bitmap=await createImageBitmap(file);const ratio=Math.min(1,640/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*ratio));canvas.height=Math.max(1,Math.round(bitmap.height*ratio));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);const logo_data=canvas.toDataURL('image/png');if(logo_data.length>350000)throw Error('Image is too detailed; use a simpler or smaller logo.');const fields={};for(const field of ['contact_name','email','phone','billing_address','shipping_address'])fields[field]=document.getElementById('goat-account-'+field)?.value.trim()||goatProfile.data?.[field]||'';await goatProfileApi('save',{...fields,logo_data});goatProfile.logo=logo_data;goatProfile.data={...goatProfile.data,...fields};goatUpdateHeader();render();alert('Organization logo saved.');}catch(e){alert('Logo upload failed: '+e.message)}finally{input.value='';}};
+window.goatRemoveOrgLogo=async function(){if(!confirm('Remove this organization logo?'))return;try{const fields={};for(const field of ['contact_name','email','phone','billing_address','shipping_address'])fields[field]=document.getElementById('goat-account-'+field)?.value.trim()||goatProfile.data?.[field]||'';await goatProfileApi('save',{...fields,logo_data:null});goatProfile.logo=null;goatUpdateHeader();render();}catch(e){alert('Could not remove logo: '+e.message)}};
+function account(){
+if(goatProfile.organizationId!==goatProfileOrg()||(!goatProfile.loaded&&!goatProfile.loading&&!goatProfile.error))queueMicrotask(()=>goatLoadProfile());
+const logo=goatProfile.organizationId===goatProfileOrg()?goatProfile.logo:null;
+const org=esc(directoryState.selected?.name||'Your Organization');
+const field=(label,id,type='text',wide=false)=>`<label class="ga-field ${wide?'ga-wide':''}"><span>${label}</span><input type="${type}" id="goat-account-${id}" value="${goatAccountVal(id)}" placeholder="Enter ${label.toLowerCase()}" autocomplete="off"></label>`;
+return `${header('ACCOUNT','Account Settings','Manage your organization profile, contact details and branding.')}
+<div class="ga-page">
+ <section class="panel ga-card ga-brand-card">
+  <div class="ga-section-heading"><div><div class="ga-kicker">YOUR ORGANIZATION</div><h3>Organization Branding</h3><p class="goat-muted">Your saved logo appears beside Private Customer Workspace in the top header.</p></div><span class="ga-pill">BRANDING</span></div>
+  <div class="ga-brand-row">
+   <div class="ga-logo-preview">${logo?`<img src="${logo}" alt="Organization logo">`:'<span class="ga-placeholder">YOUR<br>LOGO</span>'}</div>
+   <div class="ga-brand-actions"><strong>${org}</strong><p class="goat-muted">Upload a PNG, JPG or WEBP image. Your logo will retain its proportions.</p>
+   <div class="ga-buttons"><label class="ga-button ga-button-outline" for="goat-account-logo-input">${logo?'Replace Logo':'Upload Logo'}</label><input id="goat-account-logo-input" type="file" accept="image/png,image/jpeg,image/webp" onchange="goatPreviewOrgLogo(this)" style="display:none" ${!goatProfile.loaded?'disabled':''}>
+   ${logo?'<button type="button" class="ga-button ga-button-plain" onclick="goatRemoveOrgLogo()">Remove Logo</button>':''}</div></div>
+  </div>
+ </section>
+ <section class="panel ga-card">
+  <div class="ga-section-heading"><div><div class="ga-kicker">ACCOUNT DETAILS</div><h3>Organization Information</h3><p class="goat-muted">Keep your contact and delivery information current.</p></div></div>
+  ${goatProfile.error?`<p class="ga-error">${esc(goatProfile.error)} <button class="secondary" onclick="goatLoadProfile(true)">Retry</button></p>`:''}
+  <div class="ga-form">
+    <label class="ga-field"><span>Organization</span><input value="${org}" readonly aria-label="Organization name"></label>
+    ${field('Contact Name','contact_name')}
+    ${field('Email Address','email','email')}
+    ${field('Phone Number','phone','tel')}
+    <label class="ga-field ga-wide"><span>Billing Address</span><textarea id="goat-account-billing_address" rows="3" placeholder="Enter billing address">${goatAccountVal('billing_address')}</textarea></label>
+    <label class="ga-field ga-wide"><span>Shipping Address</span><textarea id="goat-account-shipping_address" rows="3" placeholder="Enter shipping address">${goatAccountVal('shipping_address')}</textarea></label>
+  </div>
+  <div class="ga-save-row"><span id="goat-account-status" class="goat-muted">Changes are saved securely to your organization profile.</span><button type="button" id="goat-account-save" class="primary ga-save-button" onclick="goatSaveAccount()" ${!goatProfile.loaded?'disabled':''}>Save Changes</button></div>
+ </section>
+ <section class="panel ga-card">
+  <div class="ga-section-heading"><div><div class="ga-kicker">HERE TO HELP</div><h3>GOAT Sports Support</h3><p class="goat-muted">Manage your customer account or contact our team.</p></div></div>
+  <div class="goat-links ga-support"><a href="https://www.begoativated.com/account" target="_blank" rel="noopener">Open GOAT Sports Customer Account ↗</a><a href="https://www.begoativated.com/pages/contact" target="_blank" rel="noopener">Contact GOAT Sports ↗</a></div>
+ </section>
+</div>`;
+}
+function cleanDesigns(){const root=document.getElementById('content');const panels=[...root.querySelectorAll('.panel')];const library=panels.find(p=>/Design & Artwork Library/i.test(p.querySelector('h2')?.textContent||''));const history=panels.find(p=>/Artwork Versions/i.test(p.querySelector('h2')?.textContent||''));if(!library||!history)return;const detail=document.createElement('details');detail.className='goat-collapse';detail.innerHTML='<summary>Previous Artwork Versions</summary>';while(history.firstChild)detail.appendChild(history.firstChild);library.appendChild(detail);history.remove();}
+
+function cleanQuotes(){const root=document.getElementById('content');const labels=[...root.querySelectorAll('h2,h3,strong')];for(const e of labels){if(/Quote History/i.test(e.textContent||'')){const parent=e.closest('.panel')||e.parentElement;if(parent&&parent!==root&&!parent.closest('details')){const d=document.createElement('details');d.className='goat-collapse';d.innerHTML='<summary>Quote History — click to expand</summary>';parent.parentNode.insertBefore(d,parent);d.appendChild(parent);}}}}
+function renderPremium(){if(active==='dashboard')document.getElementById('content').innerHTML=dashboard();if(active==='timeline')document.getElementById('content').innerHTML=timeline();if(active==='orders')document.getElementById('content').innerHTML=orders();if(active==='invoices')document.getElementById('content').innerHTML=invoices();if(active==='account')document.getElementById('content').innerHTML=account();if(active==='designs')cleanDesigns();if(active==='quotes')cleanQuotes();addSidebar();document.querySelector('.hero h1').textContent=active==='dashboard'?'GOAT LOCKER':({designs:'Designs & Artwork',timeline:'Production Timeline',quotes:'Quotes from GOAT Sports',orders:'Orders',invoices:'Invoices & Payments',account:'Account & Organization Settings'}[active]||'GOAT LOCKER');}
+render=function(){originalRender();renderPremium();goatUpdateHeader();if(goatProfileOrg()&&customerToken()&&goatProfile.organizationId!==goatProfileOrg()&&!goatProfile.loading)queueMicrotask(()=>goatLoadProfile());};
+render();
+})();
+</script>
+<script>window.GoatEmbeddedPreview.install();</script>
+</body>
+</html>
+
