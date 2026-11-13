@@ -1,0 +1,20 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const path=require('path'),{stripTypeScriptTypes}=require('module');const code=stripTypeScriptTypes(fs.readFileSync(path.join(__dirname,'../supabase/functions/goat-crm-workflow-sync/index.ts'),'utf8'));let handler;
+const ctx={console,crypto:global.crypto,Response,Request,URL,URLSearchParams,TextEncoder,atob,fetch:()=>{throw Error('Unexpected external call')},Deno:{env:{get:k=>({SUPABASE_SERVICE_ROLE_KEY:'test-service-only',SHOPIFY_SHOP_DOMAIN:'186815-4c.myshopify.com'})[k]},serve:f=>handler=f}};
+vm.createContext(ctx);vm.runInContext(code+'\nglobalThis.test={syncDraft,draftLines,syncMondayJob,jobPlacement,setDb:f=>db=f,setShop:f=>shopGraphql=f,setMonday:f=>monday=f,setToken:f=>shopToken=f};',ctx);const t=ctx.test;
+const id='48ebd930-d711-45b8-b9c0-72ceda0c2b3e',snapshot={quote_number:'Q-TEST',customer_email:'client@example.test',amount:1061.5,line_items:[{name:'Setup',qty:1,price:50},{name:'Football',qty:350,price:2.89}]};
+(async()=>{
+assert.equal((await handler(new Request('https://worker.test',{method:'POST'}))).status,401);
+let row=null,calls=[];t.setToken(async()=> 'test-token');t.setDb(async(path,opts={})=>{if(!opts.method)return row?[row]:[];if(opts.method==='POST'){assert(!row);row=JSON.parse(opts.body);return []}if(opts.method==='PATCH'){row={...row,...JSON.parse(opts.body)};return [row]}throw Error(path)});
+t.setShop(async(domain,token,q,vars)=>{calls.push(q);return q.startsWith('query')?{draftOrders:{nodes:[]}}:{draftOrderCreate:{draftOrder:{id:'gid://shopify/DraftOrder/1',name:'#D1',invoiceUrl:'https://checkout.test'},userErrors:[]}}});
+await t.syncDraft(id,snapshot);assert.equal(row.status,'created');assert.equal(calls.filter(q=>q.includes('draftOrderCreate')).length,1);await t.syncDraft(id,snapshot);assert.equal(calls.length,2);assert(!calls.some(q=>q.includes('InvoiceSend')));
+row=null;calls=[];await assert.rejects(t.syncDraft(id,{...snapshot,amount:2}),/total does not match/);assert.equal(row.status,'failed');assert(!calls.some(q=>q.includes('draftOrderCreate')));
+row={status:'creating'};await assert.rejects(t.syncDraft(id,snapshot),/reconciliation/);
+row=null;calls=[];t.setShop(async()=>({draftOrders:{nodes:[{id:'gid://shopify/DraftOrder/2',name:'#D2',invoiceUrl:'https://checkout.test'}]}}));await t.syncDraft(id,snapshot);assert.equal(row.shopify_draft_name,'#D2');
+assert.throws(()=>t.draftLines({...snapshot,line_items:[{qty:1.5,price:2}]}),/quantity/);
+let tracking=null,mcalls=[];t.setDb(async(path,opts={})=>{if(!opts.method)return tracking?[tracking]:[];tracking=JSON.parse(opts.body);return []});t.setMonday(async(q,vars)=>{mcalls.push({q,vars});if(q.startsWith('query'))return {items_page_by_column_values:{items:[]}};return {create_item:{id:'12345'}}});
+const job={id:'job-test',job_number:'GJ-TEST',title:'Team quote',status:'in_production'},quote={...snapshot,status:'approved',business_client_id:'team',line_items:snapshot.line_items},map={status:'verified',locker_organization_monday_id:'13295833416'};
+await t.syncMondayJob(job,quote,map,null);assert.equal(mcalls.length,2);const values=JSON.parse(mcalls[1].vars.values);assert.equal(values.board_relation_mm7xkgt6.item_ids[0],13295833416);assert.equal(mcalls[1].vars.group,'group_mm7xf6px');await t.syncMondayJob(job,quote,map,null);assert.equal(mcalls.length,2);
+await assert.rejects(t.syncMondayJob(job,quote,{...map,status:'pending'},null),/Verified/);assert.equal(t.jobPlacement('completed').group,'group_mm7x1729');assert.equal(t.jobPlacement('pending').group,'topics');
+console.log('PASS: service-only auth; exact approved price; one draft per quote; no invoice email; preflight reconciliation; invalid quantity blocked; verified team mapping; Monday group placement; unchanged jobs skipped');
+})().catch(e=>{console.error(e);process.exitCode=1});
