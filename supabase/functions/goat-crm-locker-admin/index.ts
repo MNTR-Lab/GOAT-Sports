@@ -13,7 +13,7 @@ Deno.serve(async req=>{
   const members=mr.ok?await mr.json():[];
   if(!members.some((m:any)=>['owner','admin','super_admin'].includes(m.role)))return reply({error:'GOAT administrator access required'},403);
   const b=await req.json(),action=String(b.action||'list'),clientId=String(b.clientId||'');
-  if(!['list','grant','revoke','reactivate'].includes(action)||!/^[0-9a-f-]{36}$/i.test(clientId))return reply({error:'Invalid team or action'},400);
+  if(!['list','preview','grant','revoke','reactivate'].includes(action)||!/^[0-9a-f-]{36}$/i.test(clientId))return reply({error:'Invalid team or action'},400);
   const cr=await fetch(url+'/rest/v1/goat_crm_clients?select=id,name,inactive&organization_id=eq.'+ORG+'&id=eq.'+clientId,{headers:auth});
   const client=cr.ok?(await cr.json())[0]:null;if(!client||client.inactive)return reply({error:'Active GOAT team not found'},404);
   const lr=await fetch(url+'/rest/v1/goat_crm_locker_mapping?select=locker_organization_monday_id,status&crm_organization_id=eq.'+ORG+'&crm_client_id=eq.'+clientId,{headers:auth});
@@ -22,6 +22,18 @@ Deno.serve(async req=>{
   const secret=Deno.env.get('GOAT_CRM_LOCKER_BRIDGE_SECRET')||'';if(secret.length<32)return reply({error:'Locker management connection is not configured'},503);
   const br=await fetch('https://qpavspvpdebtbbffdcmo.supabase.co/functions/v1/goat-locker-admin-bridge',{method:'POST',headers:{'Content-Type':'application/json','x-goat-bridge-secret':secret},body:JSON.stringify({action,organizationMondayId:mapping.locker_organization_monday_id,email:String(b.email||''),accessId:b.accessId??null,actor:{id:user.id,email:user.email}})});
   const result=await br.json();if(!br.ok)return reply({error:result.error||'Locker management unavailable'},br.status);
+  if(action==='preview'){
+   result.library=[];
+   try{
+    const ar=await fetch(url+'/rest/v1/goat_locker_artwork_library?select=id,title,file_name,storage_path,artwork_type,created_at,version&organization_id=eq.'+ORG+'&crm_client_id=eq.'+client.id+'&status=eq.active&order=created_at.desc&limit=100',{headers:auth});
+    if(!ar.ok)throw Error('Shared artwork unavailable');
+    for(const a of await ar.json()){
+     const sr=await fetch(url+'/storage/v1/object/sign/goat-customer-artwork/'+a.storage_path,{method:'POST',headers:{...auth,'Content-Type':'application/json'},body:JSON.stringify({expiresIn:300})});
+     const signed=await sr.json();if(sr.ok&&signed.signedURL){result.library.push({id:a.id,title:a.title,file_name:a.file_name,artwork_type:a.artwork_type,created_at:a.created_at,version:a.version,url:new URL(signed.signedURL.startsWith('/storage/v1/')?signed.signedURL:'/storage/v1/'+signed.signedURL.split('/').filter(Boolean).join('/'),url).href});}
+    }
+   }catch{result.errors=[...(result.errors||[]),'Shared artwork unavailable'];}
+  }
   return reply({...result,client:{id:client.id,name:client.name},organizationMondayId:mapping.locker_organization_monday_id});
  }catch(e){return reply({error:'Locker management failed: '+String((e as Error).message||e)},500)}
 });
+
