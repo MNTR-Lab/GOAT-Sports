@@ -68,7 +68,6 @@ async function syncMondayJob(job:any,q:any,map:any,draft:any){
   numeric_mm7xtq7p:String(q.amount),color_mm7x8f5a:{label:q.status==='approved'?'Approved':q.status==='sent'?'Sent':'Preparing'},
   color_mm7x2v3r:{label:placement.label},
   board_relation_mm7xkgt6:{item_ids:[Number(map.locker_organization_monday_id)]},
-  board_relation_mm7xkhqf:{item_ids:[Number(map.locker_organization_monday_id)]},
   long_text_mm7xh2ng:{text:(q.line_items||[]).map((l:any)=>(l.name||l.description||'Item')+' × '+(l.qty??l.quantity??1)).join('\n').slice(0,10000)}
  };
  if(draft?.status==='created'){
