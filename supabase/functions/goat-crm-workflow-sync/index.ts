@@ -56,7 +56,9 @@ function jobPlacement(status:string){
  if(status==='archived')return {group:'group_mm7xjdqa',label:'Completed'};
  if(status==='completed')return {group:'group_mm7x1729',label:'Completed'};
  if(status==='cancelled')return {group:'group_mm7xjdqa',label:'Cancelled'};
- if(['in_production','awaiting_approval','ready_for_shipping','shipped','delivered'].includes(status))return {group:'group_mm7xf6px',label:status==='in_production'?'Production':'Ready / Shipping'};
+ if(status==='awaiting_approval')return {group:'group_mm7xh2y9',label:'Awaiting Customer'};
+ if(status==='in_production')return {group:'group_mm7xf6px',label:'Production'};
+ if(status==='approved')return {group:'group_mm7xf6px',label:'Ready / Shipping'};
  if(status==='on_hold')return {group:'topics',label:'On Hold'};
  return {group:'topics',label:'Quote Approved'};
 }
