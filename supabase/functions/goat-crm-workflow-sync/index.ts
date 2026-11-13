@@ -62,6 +62,53 @@ function jobPlacement(status:string){
  if(status==='on_hold')return {group:'topics',label:'On Hold'};
  return {group:'topics',label:'Quote Approved'};
 }
+
+function terminal(value:any){return /^(complete(?:d)?|delivered|fulfilled)(?:$|\s*[-–—:/])/i.test(String(value||'').trim());}
+function paymentLabel(order:any){return order?.displayFinancialStatus==='PAID'?'Paid':order?.displayFinancialStatus==='PARTIALLY_PAID'?'Partial Payment':order?.displayFinancialStatus==='PENDING'?'Invoiced':null;}
+async function mondayJobs(){
+ let cursor:any=null,items:any[]=[];
+ do{
+  const data=cursor?await monday('query Next($cursor:String!){next_items_page(limit:100,cursor:$cursor){cursor items{id group{id} column_values(ids:["text_mm7xv2st","color_mm7x2v3r","color_mm7xhebj"]){id text}}}}',{cursor}):await monday('query {boards(ids:[18434382163]){items_page(limit:100){cursor items{id group{id} column_values(ids:["text_mm7xv2st","color_mm7x2v3r","color_mm7xhebj"]){id text}}}}}');
+  const page=cursor?data.next_items_page:data.boards?.[0]?.items_page;
+  items.push(...(page?.items||[]));cursor=page?.cursor;
+ }while(cursor);
+ return items;
+}
+const column=(item:any,id:string)=>item?.column_values?.find((c:any)=>c.id===id)?.text||'';
+async function reconcileCompletion(jobs:any[],drafts:any[],results:any){
+ // Resolve exact saved draft IDs to orders. A completed draft alone is NOT fulfillment.
+ const ids=[...new Set(drafts.filter((d:any)=>d.status==='created'&&d.shopify_draft_id).map((d:any)=>d.shopify_draft_id))];
+ const orders=new Map();
+ if(ids.length){
+  const domain=shopDomain(),token=await shopToken(domain);
+  for(let i=0;i<ids.length;i+=50){
+   const data=await shopGraphql(domain,token,'query Completion($ids:[ID!]!){nodes(ids:$ids){... on DraftOrder{id order{id displayFinancialStatus displayFulfillmentStatus}}}}',{ids:ids.slice(i,i+50)});
+   for(const d of data.nodes||[])if(d?.id&&d.order)orders.set(d.id,d.order);
+  }
+ }
+ const items=await mondayJobs();
+ for(const job of jobs){
+  const draft=drafts.find((d:any)=>d.quote_id===job.quote_id);
+  const order=orders.get(draft?.shopify_draft_id);job.shopifyOrder=order;
+  const item=items.find((item:any)=>column(item,'text_mm7xv2st')===job.job_number);
+  const finished=order?.displayFulfillmentStatus==='FULFILLED'||terminal(column(item,'color_mm7x2v3r'))||terminal(column(item,'color_mm7xhebj'));
+  if(finished&&!['completed','archived'].includes(job.status)){
+   // Conditional update cannot reopen or overwrite an administrator's concurrent change.
+   const changed=await db('goat_crm_jobs?id=eq.'+job.id+'&organization_id=eq.'+ORG+'&status=eq.'+job.status,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({status:'completed',updated_at:new Date().toISOString()})});
+   if(changed.length){job.status='completed';results.completed.push(job.job_number);}
+  }
+  // Recheck Monday state even if our previous outgoing hash is unchanged.
+  job.mondayDrift=!!item&&(column(item,'color_mm7x2v3r')!==jobPlacement(job.status).label||item.group?.id!==jobPlacement(job.status).group);
+ }
+ // Shopify imports are separate records too; completed jobs must leave Active Jobs.
+ for(const item of items){
+  if(!column(item,'text_mm7xv2st').startsWith('SHOPIFY-'))continue;
+  if((terminal(column(item,'color_mm7x2v3r'))||terminal(column(item,'color_mm7xhebj')))&&item.group?.id!=='group_mm7x1729'){
+   await monday('mutation Close($item:ID!,$values:JSON!){change_multiple_column_values(board_id:18434382163,item_id:$item,column_values:$values){id} move_item_to_group(item_id:$item,group_id:"group_mm7x1729"){id}}',{item:item.id,values:JSON.stringify({color_mm7x2v3r:{label:'Completed'}})});
+  }
+ }
+}
+
 async function syncMondayJob(job:any,q:any,map:any,draft:any){
  if(!map||map.status!=='verified'||!q.business_client_id)throw Error('Verified team Locker mapping required');
  const placement=jobPlacement(job.status);
@@ -77,9 +124,12 @@ async function syncMondayJob(job:any,q:any,map:any,draft:any){
   vals.link_mm7yx9mf={url:'https://'+shopDomain()+'/admin/draft_orders/'+draft.shopify_draft_id.split('/').pop(),text:'Open '+draft.shopify_draft_name};
   if(draft.shopify_draft_url)vals.link_mm7yddhe={url:draft.shopify_draft_url,text:'Shopify payment link'};
  }
+ const payment=paymentLabel(job.shopifyOrder);
+ if(payment)vals.color_mm7xqsr={label:payment};
+ // Fulfilled means work complete; it does not establish carrier delivery or payment.
  const hash=await hex(JSON.stringify({vals,group:placement.group,title:job.title}));
  const tracking=(await db('goat_crm_monday_job_sync?job_id=eq.'+job.id))[0];
- if(tracking?.payload_hash===hash&&!tracking.last_error)return false;
+ if(tracking?.payload_hash===hash&&!tracking.last_error&&!job.mondayDrift)return false;
  let item=tracking?.monday_item_id;
  if(!item){
   const found=await monday('query Find($board:ID!,$value:String!){items_page_by_column_values(board_id:$board,columns:[{column_id:"text_mm7xv2st",column_values:[$value]}],limit:10){items{id}}}',{board:BOARD,value:job.job_number});
@@ -106,7 +156,7 @@ Deno.serve(async(req:Request)=>{
  if(!auth.ok)return out({error:'Unauthorized'},401);
  const locked=await auth.json();
  if(!locked)return out({ok:true,busy:true});
- const results:any={shopify:[],monday:[],errors:[]};
+ const results:any={shopify:[],monday:[],completed:[],errors:[]};
  try{
   const pending=await db('goat_crm_approval_sync?state=in.(pending,error)&order=updated_at.asc&limit=10');
   for(const task of pending){
@@ -128,6 +178,7 @@ Deno.serve(async(req:Request)=>{
    db('goat_crm_locker_mapping?crm_organization_id=eq.'+ORG+'&status=eq.verified'),
    db('goat_quote_shopify_drafts?organization_id=eq.'+ORG)
   ]);
+  await reconcileCompletion(jobs,drafts,results);
   for(const job of jobs){
    const q=quotes.find((q:any)=>q.id===job.quote_id);if(!q?.business_client_id)continue;
    const map=maps.find((m:any)=>m.crm_client_id===q.business_client_id);if(!map)continue;
