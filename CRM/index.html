@@ -163,12 +163,12 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
 <div class="qb-column">
 <section class="qb-panel"><div class="qb-sub"><div><h3>1. Add Products</h3><p style="margin:4px 0;color:#737783;font-size:13px">Add items, quantities and estimated unit prices.</p></div><span class="pill">Shopify + SAGE catalogs</span></div>
 <div class="goat-catalog-tabs" role="tablist" aria-label="Product catalog">
-<button class="btn small" id="catalogShopifyTab" data-goat-catalog="shopify" type="button" role="tab" aria-controls="qbShopifyCatalog" aria-selected="true">Shopify products</button>
+<button class="btn small" id="catalogShopifyTab" data-goat-catalog="shopify" type="button" role="tab" aria-controls="qbShopifyCatalog" aria-selected="true">Our products / Shopify</button>
 <button class="btn small" id="catalogSageTab" data-goat-catalog="sage" type="button" role="tab" aria-controls="qbSageCatalog" aria-selected="false" tabindex="-1">Promotional / SAGE</button>
 </div>
 <div id="qbShopifyCatalog" role="tabpanel" aria-labelledby="catalogShopifyTab">
-<div class="catalog-search"><input id="catalogQuery" type="search" placeholder="Search Shopify by item name or SKU (e.g. hoodie, jersey, GS-123)" autocomplete="off"><button class="btn small" type="button" id="catalogSearch">Search</button></div>
-<div id="catalogMessage" class="catalog-message">Search your GOAT Sports storefront catalog, or add a custom item below.</div>
+<div class="catalog-search"><input id="catalogQuery" type="search" placeholder="Search Product Catalog or Shopify by name or SKU" autocomplete="off"><button class="btn small" type="button" id="catalogSearch">Search</button></div>
+<div id="catalogMessage" class="catalog-message">Search your saved Product Catalog (including drafts) and Shopify products, or add a custom item below.</div>
 <div id="catalogResults" class="catalog-results" aria-live="polite"></div>
 </div>
 <div id="qbSageCatalog" class="hidden" role="tabpanel" aria-labelledby="catalogSageTab">
@@ -958,14 +958,25 @@ let catalogProducts=[];
 async function searchCatalog(){
  const q=$('catalogQuery').value.trim();const btn=$('catalogSearch');
  if(q.length<2){$('catalogMessage').textContent='Enter at least 2 characters.';return}
- btn.disabled=true;$('catalogMessage').classList.remove('error');$('catalogMessage').textContent='Searching Shopify catalog…';$('catalogResults').innerHTML='';
+ btn.disabled=true;$('catalogMessage').classList.remove('error');$('catalogMessage').textContent='Searching Product Catalog and Shopify…';$('catalogResults').innerHTML='';
  try{
-  const res=await fetch(SB_URL+'/functions/v1/goat-catalog-search?q='+encodeURIComponent(q),{headers:{apikey:SB_ANON,authorization:'Bearer '+token}});
-  const data=await res.json();if(!res.ok)throw Error(data.error||'Catalog search unavailable');
-  catalogProducts=data.products||[];
-  $('catalogMessage').textContent=catalogProducts.length?catalogProducts.length+' matching products found. Choose a variant and add it to the quote.':'No matching products found. Try another name or SKU, or add a custom item.';
-  $('catalogResults').innerHTML=catalogProducts.map((p,i)=>'<div class="catalog-product">'+(p.image?'<img src="'+escapeHTML(p.image)+'" alt="'+escapeHTML(p.title)+'" loading="lazy">':'<div style="height:105px;background:#f6f6f7;border-radius:7px;display:grid;place-items:center;color:#aaa">No image</div>')+'<h4>'+escapeHTML(p.title)+'</h4><select aria-label="Variant for '+escapeHTML(p.title)+'" data-variant="'+i+'">'+p.variants.map((v,j)=>'<option value="'+j+'">'+escapeHTML(v.title==='Default Title'?'Standard':v.title)+' · '+qbMoney(v.price)+(v.sku?' · '+escapeHTML(v.sku):'')+'</option>').join('')+'</select><button class="btn small" type="button" data-addcatalog="'+i+'">+ Add to quote</button></div>').join('');
-  $('catalogResults').querySelectorAll('[data-addcatalog]').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.addcatalog),p=catalogProducts[i],sel=$('catalogResults').querySelector('[data-variant="'+i+'"]'),v=p.variants[Number(sel.value)];if(!v)return;qbLines=qbLines.filter(r=>r.name.trim()||r.price>0);qbLines.push({name:p.title+(v.title&&v.title!=='Default Title'?' — '+v.title:''),qty:1,price:v.price,shopify_product_id:String(p.id),shopify_variant_id:String(v.id),sku:v.sku||''});qbDrawLines();$('catalogMessage').textContent='Added '+p.title+' to the quote. You can adjust its quantity or price below.'});
+  const sources=await Promise.allSettled([
+   api('/rest/v1/rpc/crm_product_catalog',{method:'POST',body:JSON.stringify({p_action:'list',p_payload:{query:q}})}),
+   (async()=>{const res=await fetch(SB_URL+'/functions/v1/goat-catalog-search?q='+encodeURIComponent(q),{headers:{apikey:SB_ANON,authorization:'Bearer '+token}});const data=await res.json();if(!res.ok)throw Error(data.error||'Shopify search unavailable');return data.products||[];})()
+  ]);
+  if(sources.every(r=>r.status==='rejected'))throw Error('Product Catalog and Shopify search are unavailable');
+  const saved=sources[0].status==='fulfilled'?sources[0].value:[];
+  const local=saved.map(p=>({id:null,catalog_product_id:p.id,title:p.name,image:p.settings?.images?.[0]||null,source:'crm_catalog',
+   variants:(p.variants||[]).map(v=>({id:null,catalog_variant_id:v.id,title:[v.color,v.size].filter(x=>x&&x!=='N/A').join(' / ')||'Standard',sku:v.sku,price:p.settings?.price!==''&&p.settings?.price!=null&&Number.isFinite(Number(p.settings.price))?Number(p.settings.price):null}))
+  })).filter(p=>p.variants.length);
+  const localSkus=new Set(local.flatMap(p=>p.variants.map(v=>v.sku)));
+  const storefront=sources[1].status==='fulfilled'?sources[1].value:[];
+  catalogProducts=[...local,...storefront.map(p=>({...p,variants:p.variants.filter(v=>!v.sku||!localSkus.has(v.sku))})).filter(p=>p.variants.length)];
+  const partial=sources.some(r=>r.status==='rejected');
+
+  $('catalogMessage').textContent=catalogProducts.length?catalogProducts.length+' matching products found. Choose a variant and add it to the quote.'+(partial?' One catalog source is temporarily unavailable.':''):'No matching products found. Try another name or SKU, or add a custom item.';
+  $('catalogResults').innerHTML=catalogProducts.map((p,i)=>'<div class="catalog-product">'+(p.image?'<img src="'+escapeHTML(p.image)+'" alt="'+escapeHTML(p.title)+'" loading="lazy">':'<div style="height:105px;background:#f6f6f7;border-radius:7px;display:grid;place-items:center;color:#aaa">No image</div>')+'<h4>'+escapeHTML(p.title)+'</h4><select aria-label="Variant for '+escapeHTML(p.title)+'" data-variant="'+i+'">'+p.variants.map((v,j)=>'<option value="'+j+'">'+escapeHTML(v.title==='Default Title'?'Standard':v.title)+' · '+(v.price===null?'Set price in Product Catalog':qbMoney(v.price))+(v.sku?' · '+escapeHTML(v.sku):'')+'</option>').join('')+'</select><button class="btn small" type="button" data-addcatalog="'+i+'">+ Add to quote</button></div>').join('');
+  $('catalogResults').querySelectorAll('[data-addcatalog]').forEach(b=>b.onclick=()=>{const i=Number(b.dataset.addcatalog),p=catalogProducts[i],sel=$('catalogResults').querySelector('[data-variant="'+i+'"]'),v=p.variants[Number(sel.value)];if(!v)return;if(v.price===null){$('catalogMessage').textContent='Set this product’s selling price in Product Catalog before adding it to a quote.';return;}qbLines=qbLines.filter(r=>r.name.trim()||r.price>0);qbLines.push({name:p.title+(v.title&&v.title!=='Default Title'?' — '+v.title:''),qty:1,price:v.price,shopify_product_id:p.id?String(p.id):null,shopify_variant_id:v.id?String(v.id):null,catalog_product_id:p.catalog_product_id||null,catalog_variant_id:v.catalog_variant_id||null,sku:v.sku||''});qbDrawLines();$('catalogMessage').textContent='Added '+p.title+' to the quote. You can adjust its quantity or price below.'});
  }catch(err){$('catalogMessage').classList.add('error');$('catalogMessage').textContent='Catalog search could not connect: '+err.message+'. You can still add custom items.'}finally{btn.disabled=false}
 }
 $('catalogSearch').onclick=searchCatalog;$('catalogQuery').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchCatalog()}});
@@ -974,7 +985,7 @@ $('qbDiscount').oninput=qbRecalculate;$('qbTaxRate').oninput=qbRecalculate;
 function updateQuoteType(){const business=$('quoteBusinessType').checked;$('quoteBusinessWrap').classList.toggle('hidden',!business);$('quoteBusiness').required=business;const approved=['sent','approved','changes_requested'].includes($('quoteStatus').value);const assigned=!!$('quoteBusiness').value;const eligible=business&&assigned&&approved;$('quoteLockerPreview').textContent=eligible?'Business quote · Eligible for GOAT Locker':business?(assigned?'Business assigned · Set status to Sent for Locker':'Select a business account · Not eligible for Locker'):'Personal quote · Not eligible for GOAT Locker';$('quoteLockerPreview').classList.toggle('eligible',eligible)}
 $('quotePersonal').onchange=updateQuoteType;$('quoteBusinessType').onchange=updateQuoteType;$('quoteBusiness').onchange=updateQuoteType;$('quoteStatus').onchange=updateQuoteType;
 $('closeQuote').onclick=()=>$('quoteDialog').close();
-function openQuote(q){if(window.goatSageReset)window.goatSageReset();$('quoteForm').reset();$('catalogResults').innerHTML='';$('catalogMessage').textContent='Search your GOAT Sports storefront catalog, or add a custom item below.';
+function openQuote(q){if(window.goatSageReset)window.goatSageReset();$('quoteForm').reset();$('catalogResults').innerHTML='';$('catalogMessage').textContent='Search your saved Product Catalog (including drafts) and Shopify products, or add a custom item below.';
  const details=q?.project_details||{};
  $('qbPhone').value=details.phone||'';$('qbOrgType').value=details.organization_type||'';$('qbSeason').value=details.season||'';$('qbNeededBy').value=details.needed_by||'';$('qbArtworkNotes').value=q?.artwork_notes||'';
  $('qbDiscount').value=q?.discount_amount??0;$('qbTaxRate').value=q?.tax_rate??0;
