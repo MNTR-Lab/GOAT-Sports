@@ -92,6 +92,7 @@ button.secondary,.secondary{border-radius:10px!important}
 <div class="layout"><nav class="side" aria-label="Locker navigation" id="side"></nav><main class="main" id="content" aria-live="polite"></main></div>
 <footer class="footer">GOAT SPORTS · GOAT LOCKER · Customer workspace</footer>
 </div><nav class="mobile-nav" id="mobile" aria-label="Mobile Locker navigation"></nav>
+<script src="./locker-preview.js"></script>
 <script>
 'use strict';
 // Customer authentication uses the existing GOAT Sports account configuration (PKCE).
@@ -883,6 +884,7 @@ setInterval(autoRefreshCurrent,30000);
 async function initializeLocker(){
  render();await handleCustomerCallback();
  if(customerToken()&&!lockerError){await loadLockerIdentity();if(lockerIdentity?.adminRole==='master_admin'||lockerIdentity?.organizationAccess?.length)await loadAdminDirectory();}else render();
+ if(window.GoatLockerPreview?.active())await window.GoatLockerPreview.activate();
  if(active==='quotes')loadCrmLockerQuotes(true);
 }
 initializeLocker();
@@ -1118,5 +1120,6 @@ render=function(){originalRender();renderPremium();goatUpdateHeader();if(goatPro
 render();
 })();
 </script>
+<script>window.GoatLockerPreview?.install();</script>
 </body>
 </html>
