@@ -43,8 +43,8 @@ function apply(){
  document.body.dataset.teamThemed=String(!!theme);
  const props=['primary','accent','button','link','dark','deep','hero','end','nav','soft'];
  if(!theme){for(const p of props)document.documentElement.style.removeProperty('--team-'+p);document.querySelectorAll('.locker-team-signature').forEach(x=>x.remove());return;}
- const dark=blend(theme.primary,'#000000',.77),button=readable(theme.primary,'#FFFFFF'),link=readable(theme.accent,'#FFFFFF');
- const values={primary:theme.primary,accent:theme.accent,button,link,dark,deep:blend(theme.primary,'#000000',.9),hero:readable(theme.primary,'#FFFFFF',false,7),end:readable(theme.accent,'#FFFFFF',false,7),nav:readable(theme.accent,dark,true,3),soft:blend(theme.primary,'#FFFFFF',.94)};
+ const dark=blend(theme.primary,'#000000',.77),soft=blend(theme.primary,'#FFFFFF',.94),button=readable(theme.primary,soft),link=readable(theme.accent,'#FFFFFF');
+ const values={primary:theme.primary,accent:theme.accent,button,link,dark,deep:blend(theme.primary,'#000000',.9),hero:readable(theme.primary,'#FFFFFF',false,7),end:readable(theme.accent,'#FFFFFF',false,7),nav:readable(theme.accent,dark,true,3),soft};
  for(const [p,v]of Object.entries(values))document.documentElement.style.setProperty('--team-'+p,v);
  const hero=document.querySelector('.hero');if(hero){let label=hero.querySelector('.locker-team-signature');if(!label){label=document.createElement('div');label.className='locker-team-signature';const swatch=document.createElement('i');swatch.setAttribute('aria-hidden','true');label.appendChild(swatch);label.appendChild(document.createElement('span'));hero.prepend(label);}label.querySelector('span').textContent=selected.name+' · Team Locker';}
 }
