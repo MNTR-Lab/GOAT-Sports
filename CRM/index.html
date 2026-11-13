@@ -209,7 +209,7 @@ dialog{border:0;border-radius:18px;max-width:min(720px,94vw);width:100%;padding:
 <div class="quote-foot"><p class="error" id="quoteError" role="alert"></p><div class="modal-actions"><button class="btn ghost" type="button" id="cancelQuote">Cancel</button><button class="btn" type="submit" id="saveQuote">Save quote</button></div></div>
 </form></dialog>
 <dialog id="reviewPreview" class="review-preview"><div class="review-preview-head"><div><small>GOAT SPORTS · FINAL QUOTE REVIEW</small><h2 id="reviewPreviewTitle">Review quote</h2></div><button type="button" id="closeReviewPreview" aria-label="Close preview">×</button></div><div class="review-preview-body" id="reviewPreviewBody"></div><div class="review-preview-foot"><button class="btn ghost" type="button" id="reviewPreviewEdit">Edit quote</button><button class="btn" type="button" id="reviewPreviewSend">Send for Review / Approval</button></div></dialog>
-<script src="./session-manager.js"></script>
+<script src="https://mntr-lab.github.io/GOAT-Sports/CRM/session-manager.js"></script>
 <script>
 'use strict';
 const SB_URL='https://lbheezjanvalalinqxcd.supabase.co';
@@ -1112,4 +1112,4 @@ brand:'GOAT Sports',prefix:'GS',
 rpc:(action,payload)=>api('/rest/v1/rpc/crm_product_catalog',{method:'POST',body:JSON.stringify({p_action:action,p_payload:payload})}),
 shopify:async(id,check=false)=>{const r=await fetch(SB_URL+'/functions/v1/crm-catalog-shopify-draft',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_ANON,Authorization:'Bearer '+token},body:JSON.stringify(check?{action:'check_connection'}:{id})});const j=await r.json();if(!r.ok)throw Error(j.error||'Shopify draft failed');return j;}
 });}
-</script><script src="./locker-admin.js"></script></body></html>
+</script><script src="https://mntr-lab.github.io/GOAT-Sports/CRM/locker-admin.js"></script></body></html>
