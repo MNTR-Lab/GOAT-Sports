@@ -96,10 +96,14 @@ async function syncMondayJob(job:any,q:any,map:any,draft:any){
 }
 Deno.serve(async(req:Request)=>{
  if(req.method!=='POST')return out({error:'Method not allowed'},405);
- // Internal scheduled worker only. Never accept decoded-but-unverified JWT roles.
- if(!KEY||req.headers.get('authorization')!=='Bearer '+KEY)return out({error:'Unauthorized'},401);
+ // PostgREST verifies the JWT, and this RPC is executable only by service_role.
+ // Valid rotated service credentials need not equal the runtime's current key.
+ const authorization=req.headers.get('authorization')||'';
+ if(!authorization.startsWith('Bearer '))return out({error:'Unauthorized'},401);
  const owner=crypto.randomUUID();
- const locked=await db('rpc/goat_workflow_sync_lease',{method:'POST',body:JSON.stringify({p_owner:owner})});
+ const auth=await fetch(SB+'/rest/v1/rpc/goat_workflow_sync_lease',{method:'POST',headers:{apikey:ANON,Authorization:authorization,'Content-Type':'application/json'},body:JSON.stringify({p_owner:owner})});
+ if(!auth.ok)return out({error:'Unauthorized'},401);
+ const locked=await auth.json();
  if(!locked)return out({ok:true,busy:true});
  const results:any={shopify:[],monday:[],errors:[]};
  try{
